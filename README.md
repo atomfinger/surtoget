@@ -1,4 +1,6 @@
-# surtoget
+<p align="center">
+  <img src="./priv/static/surtoget_logo.png" alt="surtoget logo">
+</p>
 
 ## Prerequisites
 
