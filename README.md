@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./priv/static/surtoget_logo.png" alt="surtoget logo">
+  <img src="./priv/static/surtoget_logo.png" alt="surtoget logo" width="200px">
 </p>
 
 ## Prerequisites
