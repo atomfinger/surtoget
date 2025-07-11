@@ -1,0 +1,26 @@
+{
+  "name": "surbane",
+  "version": "1.0.0",
+  "description": "[![Package Version](https://img.shields.io/hexpm/v/surbane)](https://hex.pm/packages/surbane) [![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/surbane/)",
+  "homepage": "https://github.com/atomfinger/surbane#readme",
+  "bugs": {
+    "url": "https://github.com/atomfinger/surbane/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/atomfinger/surbane.git"
+  },
+  "license": "MIT",
+  "author": "John Mikael Lindbakk",
+  "type": "commonjs",
+  "main": "tailwind.config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "tailwindcss": "^4.1.11"
+  }
+}

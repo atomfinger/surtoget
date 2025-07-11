@@ -1,24 +1,45 @@
 # surbane
 
-[![Package Version](https://img.shields.io/hexpm/v/surbane)](https://hex.pm/packages/surbane)
-[![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/surbane/)
+## Prerequisites
 
-```sh
-gleam add surbane@1
-```
-```gleam
-import surbane
+To run this project, you need:
 
-pub fn main() -> Nil {
-  // TODO: An example of the project in use
-}
-```
-
-Further documentation can be found at <https://hexdocs.pm/surbane>.
+- [Gleam](https://gleam.run/getting-started/installing/)
+- [Node.js](https://nodejs.org/en/download/) and [npm](https://www.npmjs.com/get-npm)
 
 ## Development
 
+First, install the Node.js dependencies for Tailwind CSS:
+
 ```sh
-gleam run   # Run the project
-gleam test  # Run the tests
+npm install
 ```
+
+Then you need to generate the actual CSS for Tailwind:
+
+```sh
+ npx tailwindcss -o ./priv/css/tailwind.css && gzip -k -f ./priv/css/tailwind.css
+```
+
+If you have [Gleam](https://gleam.run/getting-started/installing/) installed, you can use the `gleam` CLI to start a new project:
+
+```sh
+gleam new --template=surbane my_app
+cd my_app
+gleam run
+```
+
+The easiest approach is to use the make commands to run the server:
+
+```sh
+make run
+```
+
+This command will:
+
+1. Format the Gleam code.
+2. Generate the Tailwind CSS file (`./priv/css/tailwind.css`).
+3. Start the Gleam server.
+
+When the server starts it starts on port 8000 and can be reached on:
+[localhost:8000](http://localhost:8000)
