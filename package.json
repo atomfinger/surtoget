@@ -1,14 +1,14 @@
 {
-  "name": "surbane",
+  "name": "surtoget",
   "version": "1.0.0",
-  "description": "[![Package Version](https://img.shields.io/hexpm/v/surbane)](https://hex.pm/packages/surbane) [![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/surbane/)",
-  "homepage": "https://github.com/atomfinger/surbane#readme",
+  "description": "[![Package Version](https://img.shields.io/hexpm/v/surtoget)](https://hex.pm/packages/surtoget) [![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/surtoget/)",
+  "homepage": "https://github.com/atomfinger/surtoget#readme",
   "bugs": {
-    "url": "https://github.com/atomfinger/surbane/issues"
+    "url": "https://github.com/atomfinger/surtoget/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/atomfinger/surbane.git"
+    "url": "git+https://github.com/atomfinger/surtoget.git"
   },
   "license": "MIT",
   "author": "John Mikael Lindbakk",

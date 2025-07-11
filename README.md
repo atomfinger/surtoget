@@ -1,4 +1,4 @@
-# surbane
+# surtoget
 
 ## Prerequisites
 
@@ -24,7 +24,7 @@ Then you need to generate the actual CSS for Tailwind:
 If you have [Gleam](https://gleam.run/getting-started/installing/) installed, you can use the `gleam` CLI to start a new project:
 
 ```sh
-gleam new --template=surbane my_app
+gleam new --template=surtoget my_app
 cd my_app
 gleam run
 ```
