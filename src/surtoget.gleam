@@ -40,6 +40,7 @@ fn render_index() -> Response {
     html.html([attribute("lang", "no")], [
       html.head([], [
         html.title([], "Surtoget - Sørbanens sanne ansikt"),
+        html.script([src("https://d3js.org/d3.v7.min.js")], ""),
         html.link([href("/css/tailwind.css"), rel("stylesheet")]),
         html.meta([
           attribute("content", "width=device-width, initial-scale=1.0"),
@@ -47,6 +48,7 @@ fn render_index() -> Response {
         ]),
       ]),
       html.body([class("bg-gray-50 text-gray-800")], [
+        html.script([src("/static/charts.js"), attribute("defer", "")], ""),
         html.div([class("container mx-auto px-4")], [
           header(),
           main_content(),
