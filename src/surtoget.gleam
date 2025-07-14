@@ -1,8 +1,11 @@
 import gleam/erlang/process
-import lustre/attribute.{attribute, href, rel}
-import lustre/element
-import lustre/element/html.{html}
+import lustre/attribute.{attribute, class, href, rel, src}
+import lustre/element.{type Element}
+import lustre/element/html
 import mist
+import news
+import statistics
+import stories
 import wisp.{type Request, type Response}
 import wisp/wisp_mist
 
@@ -11,12 +14,18 @@ pub fn main() -> Nil {
   wisp.configure_logger()
 
   let assert Ok(_) =
-    wisp_mist.handler(route_request, secret_key_base)
-    |> mist.new
+    wisp_mist.handler(handle_request, secret_key_base)
+    |> mist.new()
     |> mist.port(8000)
     |> mist.start()
 
   process.sleep_forever()
+}
+
+pub fn handle_request(req: Request) -> Response {
+  use <- wisp.serve_static(req, under: "/static", from: "priv/static")
+  use <- wisp.serve_static(req, under: "/css", from: "priv/css")
+  route_request(req)
 }
 
 fn route_request(req: Request) -> Response {
@@ -27,23 +36,83 @@ fn route_request(req: Request) -> Response {
 }
 
 fn render_index() -> Response {
-  let index_page: element.Element(msg) =
-    html([attribute("lang", "en")], [
+  let index_page: Element(msg) =
+    html.html([attribute("lang", "no")], [
       html.head([], [
-        html.title([], "Surtoget"),
-        html.link([href("/css/main.css"), rel("stylesheet")]),
+        html.title([], "Surtoget - Sørbanens sanne ansikt"),
+        html.link([href("/css/tailwind.css"), rel("stylesheet")]),
         html.meta([
           attribute("content", "width=device-width, initial-scale=1.0"),
           attribute.name("viewport"),
         ]),
       ]),
-      html.body([], [index_page()]),
+      html.body([class("bg-gray-50 text-gray-800")], [
+        html.div([class("container mx-auto px-4")], [
+          header(),
+          main_content(),
+          footer(),
+        ]),
+      ]),
     ])
+
   index_page
-  |> element.to_string_tree
+  |> element.to_string_tree()
   |> wisp.html_response(200)
 }
 
-fn index_page() -> element.Element(msg) {
-  html.h1([], [html.text("Velkommen til Surtoget!")])
+fn header() -> Element(msg) {
+  html.header([class("py-6 border-b border-gray-200 bg-white shadow-sm")], [
+    html.div(
+      [class("container mx-auto px-4 flex items-center justify-between")],
+      [
+        html.a([href("/")], [
+          html.img([
+            src("/static/surtoget_logo.png"),
+            attribute("alt", "Surtoget Logo"),
+            class("h-24 w-auto"),
+          ]),
+        ]),
+        html.nav([], [
+          html.ul([class("flex items-center space-x-8 text-lg font-medium")], [
+            li_nav_item("/", "Hjem"),
+            li_nav_item("/om", "Om Oss"),
+            li_nav_item("/kontakt", "Kontakt"),
+          ]),
+        ]),
+      ],
+    ),
+  ])
+}
+
+fn li_nav_item(href_val: String, text_val: String) -> Element(msg) {
+  html.li([], [
+    html.a(
+      [
+        href(href_val),
+        class(
+          "text-gray-500 hover:text-yellow-600 transition-colors duration-200",
+        ),
+      ],
+      [html.text(text_val)],
+    ),
+  ])
+}
+
+fn main_content() -> Element(msg) {
+  html.main([class("my-10 space-y-16")], [
+    html.section([], [statistics.render()]),
+    html.section([], [stories.render()]),
+    html.section([], [news.render()]),
+  ])
+}
+
+fn footer() -> Element(msg) {
+  html.footer(
+    [
+      class(
+        "py-8 mt-10 border-t border-gray-200 text-center text-gray-500 text-sm",
+      ),
+    ],
+    [html.p([], [html.text("Laget med frustrasjon og Gleam.")])],
+  )
 }
