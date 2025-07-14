@@ -37,9 +37,13 @@ fn render_index() -> Response {
           attribute.name("viewport"),
         ]),
       ]),
-      html.body([], [html.h1([], [html.text("Velkommen til Surtoget!")])]),
+      html.body([], [index_page()]),
     ])
   index_page
   |> element.to_string_tree
   |> wisp.html_response(200)
+}
+
+fn index_page() -> element.Element(msg) {
+  html.h1([], [html.text("Velkommen til Surtoget!")])
 }
