@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-  function createDonutChart(elementId, data, colors, chartWidth = 250, chartHeight = 250, centerContent = null) {
+  function createDonutChart(elementId, data, colors, chartWidth, chartHeight) {
     const width = chartWidth;
     const height = chartHeight;
-    const radius = Math.min(width, height) / 2;
+    const radius = Math.min(width, height) / 2 * 0.6; // Make donut smaller to leave more space
 
     // Clear any existing SVG to prevent multiplication
     d3.select(`#${elementId}`).select("svg").remove();
@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .append("svg")
       .attr("width", width)
       .attr("height", height)
+      .attr("viewBox", `0 0 ${width} ${height}`)
       .append("g")
       .attr("transform", `translate(${width / 2}, ${height / 2})`);
 
@@ -21,6 +22,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const arc = d3.arc()
       .innerRadius(radius * 0.6)
       .outerRadius(radius);
+
+    const outerArc = d3.arc()
+      .innerRadius(radius * 1.1) // Brought even closer to the chart
+      .outerRadius(radius * 1.1); // Brought even closer to the chart
 
     // Tooltip setup
     const tooltip = d3.select("body").append("div")
@@ -34,10 +39,13 @@ document.addEventListener('DOMContentLoaded', () => {
       .style("padding", "10px")
       .style("pointer-events", "none"); // Important for mouse events to pass through
 
-    svg.selectAll("path")
+    const arcs = svg.selectAll("arc")
       .data(pie(data))
       .enter()
-      .append("path")
+      .append("g")
+      .attr("class", "arc");
+
+    arcs.append("path")
       .attr("d", arc)
       .attr("fill", (d, i) => colors[i % colors.length])
       .on("mouseover", function(event, d) {
@@ -55,35 +63,47 @@ document.addEventListener('DOMContentLoaded', () => {
         d3.select(this).style("stroke", "none").style("opacity", 1);
       });
 
-    // Render center content (logo or text)
-    if (centerContent) {
-      if (centerContent.type === 'image') {
-        svg.append("image")
-          .attr("xlink:href", centerContent.value)
-          .attr("x", -radius * 0.4) // Adjust position to center image
-          .attr("y", -radius * 0.4)
-          .attr("width", radius * 0.8)
-          .attr("height", radius * 0.8);
-      } else if (centerContent.type === 'text') {
-        svg.append("text")
-          .attr("text-anchor", "middle")
-          .attr("dominant-baseline", "middle")
-          .attr("fill", "#333")
-          .style("font-size", "18px")
-          .style("font-weight", "bold")
-          .text(centerContent.value);
-      }
-    } else {
-      // Default percentage text if no centerContent is provided
-      svg.selectAll("text")
-        .data(pie(data))
-        .enter()
-        .append("text")
-        .attr("transform", d => `translate(${arc.centroid(d)})`)
-        .attr("text-anchor", "middle")
-        .attr("fill", "white")
-        .style("font-size", "14px")
-        .text(d => `${d.data.value}%`);
+    // Always display percentage text on segments
+    arcs.append("text")
+      .attr("transform", d => `translate(${arc.centroid(d)})`)
+      .attr("text-anchor", "middle")
+      .attr("fill", "white")
+      .style("font-size", "14px")
+      .text(d => `${d.data.value}%`);
+
+    // Add external labels (logos or text) for blame chart
+    const chartType = d3.select(`#${elementId}`).attr("data-charttype");
+    if (chartType === 'blame') {
+      arcs.each(function(d) {
+        const midAngle = d.startAngle + (d.endAngle - d.startAngle) / 2;
+        const pos = outerArc.centroid(d);
+        let angle = (midAngle * 180 / Math.PI); // Convert radians to degrees
+
+        // Rotate GoAhead logo by an additional 180 degrees
+        if (d.data.image_url === '/static/goahead_logo.png' || d.data.label === "Uforutsette Årsaker") {
+          angle += 180;
+        }
+
+        const imageSize = 80;
+        const textFontSize = "20px";
+
+        if (d.data.image_url && d.data.image_url !== '') {
+          d3.select(this).append("image")
+            .attr("xlink:href", d.data.image_url)
+            .attr("width", imageSize)
+            .attr("height", imageSize)
+            .attr("x", pos[0] - imageSize / 2) // Center the image
+            .attr("y", pos[1] - imageSize / 2)
+            .attr("transform", `rotate(${angle}, ${pos[0]}, ${pos[1]})`); // Rotate image
+        } else {
+          d3.select(this).append("text")
+            .attr("transform", `translate(${pos}) rotate(${angle})`)
+            .attr("text-anchor", "middle")
+            .attr("fill", "#333")
+            .style("font-size", textFontSize)
+            .text(d.data.label);
+        }
+      });
     }
   }
 
@@ -91,25 +111,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const overallDataElement = document.getElementById(`${tabId}-overall-chart`);
     if (overallDataElement) {
       const overallData = JSON.parse(overallDataElement.dataset.chartdata);
-      createDonutChart(`${tabId}-overall-chart`, overallData, ['#4CAF50', '#F44336']);
+      createDonutChart(`${tabId}-overall-chart`, overallData, ['#4CAF50', '#F44336'], 500, 500);
     }
 
-    const banenorDataElement = document.getElementById(`${tabId}-banenor-chart`);
-    if (banenorDataElement) {
-      const banenorData = JSON.parse(banenorDataElement.dataset.chartdata);
-      createDonutChart(`${tabId}-banenor-chart`, banenorData, ['#2196F3', '#FFC107'], 150, 150, { type: 'image', value: '/static/banenor_logo.png' });
-    }
-
-    const goaheadDataElement = document.getElementById(`${tabId}-goahead-chart`);
-    if (goaheadDataElement) {
-      const goaheadData = JSON.parse(goaheadDataElement.dataset.chartdata);
-      createDonutChart(`${tabId}-goahead-chart`, goaheadData, ['#9C27B0', '#FF9800'], 150, 150, { type: 'image', value: '/static/goahead_logo.png' });
-    }
-
-    const unforeseenDataElement = document.getElementById(`${tabId}-unforeseen-chart`);
-    if (unforeseenDataElement) {
-      const unforeseenData = JSON.parse(unforeseenDataElement.dataset.chartdata);
-      createDonutChart(`${tabId}-unforeseen-chart`, unforeseenData, ['#607D8B', '#B0BEC5'], 150, 150, { type: 'text', value: 'Annet' });
+    const blameDataElement = document.getElementById(`${tabId}-blame-chart`);
+    if (blameDataElement) {
+      const blameData = JSON.parse(blameDataElement.dataset.chartdata);
+      createDonutChart(`${tabId}-blame-chart`, blameData, ['#2196F3', '#9C27B0', '#607D8B', '#FF5722'], 500, 500);
     }
   }
 
