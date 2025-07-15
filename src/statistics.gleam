@@ -1,3 +1,4 @@
+import gleam/float
 import gleam/json
 import lustre/attribute.{attribute, class, id}
 import lustre/element.{type Element}
@@ -95,10 +96,6 @@ fn tab_content(tab_id: String, active_class: String) -> Element(a) {
   let overall_stats = get_overall_stats(tab_id)
   let blame_stats = get_blame_stats(tab_id)
 
-  let overall_chart_data = [
-    ChartData("På Tid", overall_stats.on_time, ""),
-    ChartData("Ikke På Tid", overall_stats.not_on_time, ""),
-  ]
   let blame_chart_data = [
     ChartData("BaneNor Ansvar", blame_stats.banenor, "/static/banenor_logo.png"),
     ChartData("GoAhead Ansvar", blame_stats.goahead, "/static/goahead_logo.png"),
@@ -112,27 +109,28 @@ fn tab_content(tab_id: String, active_class: String) -> Element(a) {
       class("tab-content p-8 bg-white rounded-b-lg shadow-md " <> active_class),
     ],
     [
-      html.div([class("grid grid-cols-2 gap-8 justify-items-center")], [
+      html.div([class("grid grid-cols-2 gap-4 justify-items-center")], [
+        html.div(
+          [
+            class(
+              "flex flex-col items-center justify-center text-center w-[500px] h-[300px]",
+            ),
+          ],
+          [
+            html.div([class("text-9xl font-extrabold text-red-700")], [
+              html.text(float.to_string(overall_stats.not_on_time) <> "%"),
+            ]),
+            html.p([class("text-xl text-gray-600 mt-4")], [
+              html.text("sjanse for å være forsinket eller forstyrret"),
+            ]),
+          ],
+        ),
         html.div([class("flex flex-col items-center")], [
-          html.h3([class("text-xl font-semibold text-gray-800 mb-4")], [
-            html.text("Overall Punktlighet"),
-          ]),
-          chart_container(
-            tab_id <> "-overall-chart",
-            overall_chart_data,
-            "overall",
-            "w-[500px] h-[500px]",
-          ),
-        ]),
-        html.div([class("flex flex-col items-center")], [
-          html.h3([class("text-xl font-semibold text-gray-800 mb-4")], [
-            html.text("Skyldfordeling"),
-          ]),
           chart_container(
             tab_id <> "-blame-chart",
             blame_chart_data,
             "blame",
-            "w-[500px] h-[500px]",
+            "w-[500px]",
           ),
         ]),
       ]),
