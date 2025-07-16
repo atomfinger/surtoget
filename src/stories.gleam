@@ -35,29 +35,54 @@ fn get_stories() -> List(Story) {
 pub fn render() -> Element(a) {
   let stories = list.take(get_stories(), 3)
 
-  html.div([class("p-4 bg-white rounded-lg")], [
-    html.h2([class("text-2xl font-bold text-gray-800 mb-8 text-center")], [
-      html.text("Personlige Historier"),
-    ]),
-    html.div(
-      [class("flex justify-center space-x-4")],
-      list.map(stories, fn(story: Story) {
+  html.div([class("py-12 bg-white")], [
+    html.div([class("max-w-7xl mx-auto px-4 sm:px-6 lg:px-8")], [
+      html.div([class("text-center")], [
+        html.h2(
+          [
+            class(
+              "text-base text-yellow-600 font-semibold tracking-wide uppercase",
+            ),
+          ],
+          [html.text("Personlige Historier")],
+        ),
+        html.p(
+          [
+            class(
+              "mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl",
+            ),
+          ],
+          [html.text("Hva folk sier om Sørbanen")],
+        ),
+      ]),
+      html.div([class("mt-10")], [
         html.div(
           [
             class(
-              "w-1/3 bg-surtoget-yellow/20 rounded-lg flex flex-col items-center justify-center text-center p-6 shadow-lg",
+              "space-y-10 md:space-y-0 md:grid md:grid-cols-3 md:gap-x-8 md:gap-y-10",
             ),
           ],
-          [
-            html.p([class("text-gray-800 italic text-md mb-4")], [
-              html.text(story.quote),
-            ]),
-            html.p([class("text-gray-600 font-semibold text-sm")], [
-              html.text("- " <> story.author),
-            ]),
-          ],
-        )
-      }),
-    ),
+          list.map(stories, fn(story: Story) {
+            html.div([class("relative")], [
+              html.div(
+                [
+                  class(
+                    "p-6 bg-gray-50 rounded-lg border border-gray-200 shadow-sm",
+                  ),
+                ],
+                [
+                  html.p([class("text-lg text-gray-600")], [
+                    html.text("“" <> story.quote <> "”"),
+                  ]),
+                  html.p([class("mt-4 text-right text-gray-500")], [
+                    html.text("- " <> story.author),
+                  ]),
+                ],
+              ),
+            ])
+          }),
+        ),
+      ]),
+    ]),
   ])
 }
