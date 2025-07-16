@@ -147,7 +147,7 @@ fn tab_content(tab_id: String, is_active: Bool) -> Element(a) {
                 [html.text(float.to_string(overall_stats.not_on_time) <> "%")],
               ),
               html.p([class("text-lg text-gray-700 mt-4 font-medium")], [
-                html.text("sjanse for å være forsinket"),
+                html.text("sjanse for forsinkelse"),
               ]),
             ],
           ),

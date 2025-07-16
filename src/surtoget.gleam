@@ -135,10 +135,33 @@ fn main_content() -> Element(msg) {
   let latest_news = list.take(articles, 3)
 
   html.main([class("my-10 space-y-16")], [
+    blurb(),
     html.section([], [statistics.render()]),
     html.section([], [refund.render()]),
     html.section([], [stories.render()]),
     html.section([], [news.render(latest_news)]),
+  ])
+}
+
+fn blurb() -> Element(msg) {
+  html.section([class("my-10 flex items-center space-x-8")], [
+    html.img([
+      src("/static/surtoget_logo.png"),
+      attribute("alt", "Surtoget Logo"),
+      class("h-32 w-auto"),
+    ]),
+    html.div([class("text-lg text-gray-700")], [
+      html.p([], [
+        html.text(
+          "Velkommen til Surtoget! Kjenner du på den spesielle blandingen av håp og fortvilelse hver gang du setter deg på Sørlandsbanen?",
+        ),
+      ]),
+      html.p([class("mt-4")], [
+        html.text(
+          "Her deler vi historier fra virkeligheten, belyser problemene og gir deg verktøyene du trenger for å takle en hverdag med en av Norges mest utilregnelige toglinjer.",
+        ),
+      ]),
+    ]),
   ])
 }
 
