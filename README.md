@@ -45,3 +45,7 @@ This command will:
 
 When the server starts it starts on port 8000 and can be reached on:
 [localhost:8000](http://localhost:8000)
+
+## Credits
+
+- News placeholder photo is created by [Raquel Candia](https://pixabay.com/users/ideativas-tlm-19346105/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=8316054)
