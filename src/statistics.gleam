@@ -1,5 +1,6 @@
+import gleam/float
 import gleam/json
-import lustre/attribute.{attribute, class, id}
+import lustre/attribute.{attribute, class, href, id}
 import lustre/element.{type Element}
 import lustre/element/html
 
@@ -63,76 +64,81 @@ fn chart_data_encoder(data: ChartData) -> json.Json {
 }
 
 pub fn render() -> Element(a) {
-  html.div([class("p-4 bg-gray-100 rounded-lg")], [
-    html.h2([class("text-2xl font-bold text-gray-800 mb-8 text-center")], [
-      html.text("Statistikk om Punktlighet"),
+  html.div([class("rounded-lg")], [
+    html.div([class("border-b border-gray-200")], [
+      html.nav([attribute("-mx-1", ""), class("flex space-x-1")], [
+        tab_button("last_month", "Siste måned", True),
+        tab_button("this_year", "Dette året så langt", False),
+      ]),
     ]),
-    html.div([class("flex justify-center mb-8")], [
-      tab_button("last_month", "Siste Måned", "active bg-gray-300"),
-      tab_button("this_year", "Dette Året Så Langt", ""),
-    ]),
-    tab_content("last_month", "active block"),
-    tab_content("this_year", "hidden"),
+    tab_content("last_month", True),
+    tab_content("this_year", False),
   ])
 }
 
-fn tab_button(tab_id: String, text: String, active_class: String) -> Element(a) {
-  html.button(
+fn tab_button(tab_id: String, text: String, is_active: Bool) -> Element(a) {
+  let active_classes =
+    "bg-white inline-block py-2 px-4 text-blue-600 border-l border-t border-r rounded-t"
+  let inactive_classes =
+    "bg-gray-100 inline-block py-2 px-4 text-gray-500 hover:text-gray-600 hover:bg-gray-200 border-l border-t border-r rounded-t"
+
+  html.a(
     [
-      id(tab_id <> "-tab"),
-      class(
-        "px-6 py-3 text-lg font-medium rounded-t-lg focus:outline-none "
-        <> active_class
-        <> " hover:bg-gray-200",
-      ),
+      href("#"),
       attribute("data-tab", tab_id),
+      class(case is_active {
+        True -> active_classes
+        False -> inactive_classes
+      }),
     ],
     [html.text(text)],
   )
 }
 
-fn tab_content(tab_id: String, active_class: String) -> Element(a) {
+fn tab_content(tab_id: String, is_active: Bool) -> Element(a) {
   let overall_stats = get_overall_stats(tab_id)
   let blame_stats = get_blame_stats(tab_id)
 
-  let overall_chart_data = [
-    ChartData("På Tid", overall_stats.on_time, ""),
-    ChartData("Ikke På Tid", overall_stats.not_on_time, ""),
-  ]
   let blame_chart_data = [
     ChartData("BaneNor Ansvar", blame_stats.banenor, "/static/banenor_logo.png"),
     ChartData("GoAhead Ansvar", blame_stats.goahead, "/static/goahead_logo.png"),
     ChartData("Uforutsette Årsaker", blame_stats.unforeseen, ""),
     ChartData("Følgeforsinkelser", blame_stats.consequential_delays, ""),
   ]
+  let active_classes = "tab-content p-4 bg-white border"
+  let inactive_classes = "tab-content p-4 bg-white border hidden"
 
   html.div(
     [
       id(tab_id <> "-content"),
-      class("tab-content p-8 bg-white rounded-b-lg shadow-md " <> active_class),
+      class(case is_active {
+        True -> active_classes
+        False -> inactive_classes
+      }),
     ],
     [
-      html.div([class("grid grid-cols-2 gap-8 justify-items-center")], [
+      html.div([class("grid grid-cols-2 gap-4 justify-items-center")], [
+        html.div(
+          [
+            class(
+              "flex flex-col items-center justify-center text-center w-[500px] h-[300px]",
+            ),
+          ],
+          [
+            html.div([class("text-9xl font-extrabold text-red-700")], [
+              html.text(float.to_string(overall_stats.not_on_time) <> "%"),
+            ]),
+            html.p([class("text-xl text-gray-600 mt-4")], [
+              html.text("sjanse for å være forsinkett"),
+            ]),
+          ],
+        ),
         html.div([class("flex flex-col items-center")], [
-          html.h3([class("text-xl font-semibold text-gray-800 mb-4")], [
-            html.text("Overall Punktlighet"),
-          ]),
-          chart_container(
-            tab_id <> "-overall-chart",
-            overall_chart_data,
-            "overall",
-            "w-[500px] h-[500px]",
-          ),
-        ]),
-        html.div([class("flex flex-col items-center")], [
-          html.h3([class("text-xl font-semibold text-gray-800 mb-4")], [
-            html.text("Skyldfordeling"),
-          ]),
           chart_container(
             tab_id <> "-blame-chart",
             blame_chart_data,
             "blame",
-            "w-[500px] h-[500px]",
+            "w-[500px]",
           ),
         ]),
       ]),

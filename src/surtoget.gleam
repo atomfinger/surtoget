@@ -1,9 +1,11 @@
 import gleam/erlang/process
+import gleam/list
 import lustre/attribute.{attribute, class, href, rel, src}
 import lustre/element.{type Element}
 import lustre/element/html
 import mist
 import news
+import news_page
 import statistics
 import stories
 import wisp.{type Request, type Response}
@@ -31,8 +33,35 @@ pub fn handle_request(req: Request) -> Response {
 fn route_request(req: Request) -> Response {
   case wisp.path_segments(req) {
     [] | ["home"] | ["index"] -> render_index()
+    ["news"] -> render_news_page()
     _ -> wisp.not_found()
   }
+}
+
+fn render_news_page() -> Response {
+  let articles = news.get_news_articles()
+  let news_page_element: Element(msg) =
+    html.html([attribute("lang", "no")], [
+      html.head([], [
+        html.title([], "Nyheter - Surtoget"),
+        html.link([href("/css/tailwind.css"), rel("stylesheet")]),
+        html.meta([
+          attribute("content", "width=device-width, initial-scale=1.0"),
+          attribute.name("viewport"),
+        ]),
+      ]),
+      html.body([class("bg-gray-50 text-gray-800")], [
+        html.div([class("container mx-auto px-4")], [
+          header(),
+          news_page.render(articles),
+          footer(),
+        ]),
+      ]),
+    ])
+
+  news_page_element
+  |> element.to_string_tree()
+  |> wisp.html_response(200)
 }
 
 fn render_index() -> Response {
@@ -77,6 +106,7 @@ fn header() -> Element(msg) {
         html.nav([], [
           html.ul([class("flex items-center space-x-8 text-lg font-medium")], [
             li_nav_item("/", "Hjem"),
+            li_nav_item("/news", "Nyheter"),
             li_nav_item("/om", "Om Oss"),
             li_nav_item("/kontakt", "Kontakt"),
           ]),
@@ -101,10 +131,13 @@ fn li_nav_item(href_val: String, text_val: String) -> Element(msg) {
 }
 
 fn main_content() -> Element(msg) {
+  let articles = news.get_news_articles()
+  let latest_news = list.take(articles, 3)
+
   html.main([class("my-10 space-y-16")], [
     html.section([], [statistics.render()]),
     html.section([], [stories.render()]),
-    html.section([], [news.render()]),
+    html.section([], [news.render(latest_news)]),
   ])
 }
 

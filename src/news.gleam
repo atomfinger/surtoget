@@ -13,7 +13,7 @@ pub type NewsArticle {
   )
 }
 
-fn get_news_articles() -> List(NewsArticle) {
+pub fn get_news_articles() -> List(NewsArticle) {
   [
     NewsArticle(
       title: "Sørbanen: Nye forsinkelser skaper frustrasjon",
@@ -46,9 +46,7 @@ fn get_news_articles() -> List(NewsArticle) {
   ]
 }
 
-pub fn render() -> Element(a) {
-  let articles = get_news_articles()
-
+pub fn render(articles: List(NewsArticle)) -> Element(a) {
   html.div([class("p-4 bg-gray-100 rounded-lg")], [
     html.h2([class("text-2xl font-bold text-gray-800 mb-8 text-center")], [
       html.text("Nyhetsartikler om Sørbanen"),

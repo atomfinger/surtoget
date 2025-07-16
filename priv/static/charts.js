@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-  function createDonutChart(elementId, data, colors, chartWidth, chartHeight) {
+  function createDonutChart(elementId, data, colors, chartWidth, chartHeight, hasTitle) {
     const width = chartWidth;
     const height = chartHeight;
     const radius = Math.min(width, height) / 2 * 0.6; // Make donut smaller to leave more space
@@ -71,53 +71,21 @@ document.addEventListener('DOMContentLoaded', () => {
       .style("font-size", "14px")
       .text(d => `${d.data.value}%`);
 
-    // Add external labels (logos or text) for blame chart
-    const chartType = d3.select(`#${elementId}`).attr("data-charttype");
-    if (chartType === 'blame') {
-      arcs.each(function(d) {
-        const midAngle = d.startAngle + (d.endAngle - d.startAngle) / 2;
-        const pos = outerArc.centroid(d);
-        let angle = (midAngle * 180 / Math.PI); // Convert radians to degrees
-
-        // Rotate GoAhead logo by an additional 180 degrees
-        if (d.data.image_url === '/static/goahead_logo.png' || d.data.label === "Uforutsette Årsaker") {
-          angle += 180;
-        }
-
-        const imageSize = 80;
-        const textFontSize = "20px";
-
-        if (d.data.image_url && d.data.image_url !== '') {
-          d3.select(this).append("image")
-            .attr("xlink:href", d.data.image_url)
-            .attr("width", imageSize)
-            .attr("height", imageSize)
-            .attr("x", pos[0] - imageSize / 2) // Center the image
-            .attr("y", pos[1] - imageSize / 2)
-            .attr("transform", `rotate(${angle}, ${pos[0]}, ${pos[1]})`); // Rotate image
-        } else {
-          d3.select(this).append("text")
-            .attr("transform", `translate(${pos}) rotate(${angle})`)
-            .attr("text-anchor", "middle")
-            .attr("fill", "#333")
-            .style("font-size", textFontSize)
-            .text(d.data.label);
-        }
-      });
+    if (hasTitle) {
+      // Add a title to the center of the donut chart
+      svg.append("text")
+        .attr("text-anchor", "middle")
+        .attr("dy", "0.35em")
+        .style("font-size", "16px")
+        .text("Skyldfordeling");
     }
   }
 
   function renderChartsForTab(tabId) {
-    const overallDataElement = document.getElementById(`${tabId}-overall-chart`);
-    if (overallDataElement) {
-      const overallData = JSON.parse(overallDataElement.dataset.chartdata);
-      createDonutChart(`${tabId}-overall-chart`, overallData, ['#4CAF50', '#F44336'], 500, 500);
-    }
-
     const blameDataElement = document.getElementById(`${tabId}-blame-chart`);
     if (blameDataElement) {
       const blameData = JSON.parse(blameDataElement.dataset.chartdata);
-      createDonutChart(`${tabId}-blame-chart`, blameData, ['#2196F3', '#9C27B0', '#607D8B', '#FF5722'], 500, 500);
+      createDonutChart(`${tabId}-blame-chart`, blameData, ['#2196F3', '#9C27B0', '#607D8B', '#FF5722'], 500, 300, true);
     }
   }
 
@@ -128,13 +96,15 @@ document.addEventListener('DOMContentLoaded', () => {
     button.addEventListener('click', () => {
       const tabId = button.dataset.tab;
 
-      tabButtons.forEach(btn => btn.classList.remove('active', 'bg-gray-300'));
-      tabContents.forEach(content => content.classList.remove('active', 'block'));
+      tabButtons.forEach(btn => {
+        btn.classList.remove('bg-white', 'text-blue-600');
+        btn.classList.add('bg-gray-100', 'text-gray-500', 'hover:text-gray-600', 'hover:bg-gray-200');
+      });
       tabContents.forEach(content => content.classList.add('hidden'));
 
-      button.classList.add('active', 'bg-gray-300');
+      button.classList.remove('bg-gray-100', 'text-gray-500', 'hover:text-gray-600', 'hover:bg-gray-200');
+      button.classList.add('bg-white', 'text-blue-600');
       document.getElementById(`${tabId}-content`).classList.remove('hidden');
-      document.getElementById(`${tabId}-content`).classList.add('active', 'block');
 
       renderChartsForTab(tabId);
     });
