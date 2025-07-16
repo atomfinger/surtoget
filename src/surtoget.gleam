@@ -93,10 +93,9 @@ fn render_index() -> Response {
 }
 
 fn header() -> Element(msg) {
-  html.header([class("py-6 border-b border-gray-200 bg-white shadow-sm")], [
-    html.div(
-      [class("container mx-auto px-4 flex items-center justify-between")],
-      [
+  html.header([class("py-4 bg-white shadow-md")], [
+    html.div([class("container mx-auto px-4")], [
+      html.div([class("flex justify-center")], [
         html.a([href("/")], [
           html.img([
             src("/static/surtoget_logo.png"),
@@ -104,16 +103,16 @@ fn header() -> Element(msg) {
             class("h-24 w-auto"),
           ]),
         ]),
-        html.nav([], [
-          html.ul([class("flex items-center space-x-8 text-lg font-medium")], [
-            li_nav_item("/", "Hjem"),
-            li_nav_item("/news", "Nyheter"),
-            li_nav_item("/om", "Om Oss"),
-            li_nav_item("/kontakt", "Kontakt"),
-          ]),
+      ]),
+      html.nav([class("mt-2")], [
+        html.ul([class("flex justify-center space-x-6 text-base font-medium")], [
+          li_nav_item("/", "Hjem"),
+          li_nav_item("/news", "Nyheter"),
+          li_nav_item("/om", "Om Oss"),
+          li_nav_item("/kontakt", "Kontakt"),
         ]),
-      ],
-    ),
+      ]),
+    ]),
   ])
 }
 
