@@ -96,13 +96,15 @@ document.addEventListener('DOMContentLoaded', () => {
     button.addEventListener('click', () => {
       const tabId = button.dataset.tab;
 
-      tabButtons.forEach(btn => btn.classList.remove('active', 'bg-gray-300'));
-      tabContents.forEach(content => content.classList.remove('active', 'block'));
+      tabButtons.forEach(btn => {
+        btn.classList.remove('bg-white', 'text-blue-600');
+        btn.classList.add('bg-gray-100', 'text-gray-500', 'hover:text-gray-600', 'hover:bg-gray-200');
+      });
       tabContents.forEach(content => content.classList.add('hidden'));
 
-      button.classList.add('active', 'bg-gray-300');
+      button.classList.remove('bg-gray-100', 'text-gray-500', 'hover:text-gray-600', 'hover:bg-gray-200');
+      button.classList.add('bg-white', 'text-blue-600');
       document.getElementById(`${tabId}-content`).classList.remove('hidden');
-      document.getElementById(`${tabId}-content`).classList.add('active', 'block');
 
       renderChartsForTab(tabId);
     });
