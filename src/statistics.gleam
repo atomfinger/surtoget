@@ -147,18 +147,16 @@ fn tab_content(tab_id: String, is_active: Bool) -> Element(a) {
                 [html.text(float.to_string(overall_stats.not_on_time) <> "%")],
               ),
               html.p([class("text-lg text-gray-700 mt-4 font-medium")], [
-                html.text("sjanse for å være forsinket"),
+                html.text("sjanse for forsinkelse"),
               ]),
             ],
           ),
-          html.div([class("flex flex-col items-center w-full")], [
-            chart_container(
-              tab_id <> "-blame-chart",
-              blame_chart_data,
-              "blame",
-              "w-full h-full",
-            ),
-          ]),
+          chart_container(
+            tab_id <> "-blame-chart",
+            blame_chart_data,
+            "blame",
+            "w-full h-full flex items-center justify-center",
+          ),
         ],
       ),
     ],

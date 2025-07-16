@@ -7,15 +7,24 @@ document.addEventListener("DOMContentLoaded", () => {
     chartHeight,
     hasTitle,
   ) {
-    const width = chartWidth;
-    const height = chartHeight;
-    const radius = (Math.min(width, height) / 2) * 0.6; // Make donut smaller to leave more space
+    const container = d3.select(`#${elementId}`);
+    // Clear any existing content to prevent multiplication
+    container.html("");
 
-    // Clear any existing SVG to prevent multiplication
-    d3.select(`#${elementId}`).select("svg").remove();
+    const chartWrapper = container.append("div");
 
-    const svg = d3
-      .select(`#${elementId}`)
+    const legendWrapper = container
+      .append("div")
+      .style("display", "flex")
+      .style("flex-direction", "column")
+      .style("justify-content", "center")
+      .style("margin-left", "-60px");
+
+    const width = chartWidth * 0.7;
+    const height = chartHeight * 0.7;
+    const radius = (Math.min(width, height) / 2) * 0.8;
+
+    const svg = chartWrapper
       .append("svg")
       .attr("width", width)
       .attr("height", height)
@@ -33,12 +42,6 @@ document.addEventListener("DOMContentLoaded", () => {
       .innerRadius(radius * 0.6)
       .outerRadius(radius);
 
-    const outerArc = d3
-      .arc()
-      .innerRadius(radius * 1.1) // Brought even closer to the chart
-      .outerRadius(radius * 1.1); // Brought even closer to the chart
-
-    // Tooltip setup
     const tooltip = d3
       .select("body")
       .append("div")
@@ -50,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .style("border-width", "1px")
       .style("border-radius", "5px")
       .style("padding", "10px")
-      .style("pointer-events", "none"); // Important for mouse events to pass through
+      .style("pointer-events", "none");
 
     const arcs = svg
       .selectAll("arc")
@@ -78,7 +81,6 @@ document.addEventListener("DOMContentLoaded", () => {
         d3.select(this).style("stroke", "none").style("opacity", 1);
       });
 
-    // Always display percentage text on segments
     arcs
       .append("text")
       .attr("transform", (d) => `translate(${arc.centroid(d)})`)
@@ -88,7 +90,6 @@ document.addEventListener("DOMContentLoaded", () => {
       .text((d) => `${d.data.value}%`);
 
     if (hasTitle) {
-      // Add a title to the center of the donut chart
       svg
         .append("text")
         .attr("text-anchor", "middle")
@@ -96,6 +97,45 @@ document.addEventListener("DOMContentLoaded", () => {
         .style("font-size", "16px")
         .text("Skyldfordeling");
     }
+
+    // Legend
+    const legend = legendWrapper
+      .selectAll(".legend-item")
+      .data(data)
+      .enter()
+      .append("div")
+      .attr("class", "legend-item")
+      .style("display", "flex")
+      .style("align-items", "center")
+      .style("margin-bottom", "10px");
+
+    legend
+      .append("div")
+      .style("width", "20px")
+      .style("height", "20px")
+      .style("background-color", (d, i) => colors[i % colors.length])
+      .style("border-radius", "50%")
+      .style("margin-right", "10px");
+
+    const textAndImage = legend
+      .append("div")
+      .style("display", "flex")
+      .style("align-items", "center");
+
+    textAndImage
+      .append("span")
+      .style("font-size", "14px")
+      .style("color", "#333")
+      .text((d) => (d.image_url ? "" : d.label));
+
+    textAndImage
+      .filter((d) => d.image_url) // Only add image if image_url is not empty
+      .append("img")
+      .attr("src", (d) => d.image_url)
+      .attr("alt", (d) => d.label)
+      .style("width", "80px")
+      .style("height", "auto")
+      .style("margin-left", "10px");
   }
 
   function renderChartsForTab(tabId) {
@@ -166,4 +206,3 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }, 100);
 });
-
