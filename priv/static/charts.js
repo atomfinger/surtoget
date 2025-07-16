@@ -7,14 +7,24 @@ document.addEventListener("DOMContentLoaded", () => {
     chartHeight,
     hasTitle,
   ) {
-    const width = chartWidth;
-    const height = chartHeight;
-    const radius = (Math.min(width, height) / 2) * 0.6;
+    const container = d3.select(`#${elementId}`);
+    // Clear any existing content to prevent multiplication
+    container.html("");
 
-    d3.select(`#${elementId}`).select("svg").remove();
+    const chartWrapper = container.append("div");
 
-    const svg = d3
-      .select(`#${elementId}`)
+    const legendWrapper = container
+      .append("div")
+      .style("display", "flex")
+      .style("flex-direction", "column")
+      .style("justify-content", "center")
+      .style("margin-left", "-60px");
+
+    const width = chartWidth * 0.7;
+    const height = chartHeight * 0.7;
+    const radius = (Math.min(width, height) / 2) * 0.8;
+
+    const svg = chartWrapper
       .append("svg")
       .attr("width", width)
       .attr("height", height)
@@ -87,65 +97,112 @@ document.addEventListener("DOMContentLoaded", () => {
         .style("font-size", "16px")
         .text("Skyldfordeling");
     }
+
+    // Legend
+    const legend = legendWrapper
+      .selectAll(".legend-item")
+      .data(data)
+      .enter()
+      .append("div")
+      .attr("class", "legend-item")
+      .style("display", "flex")
+      .style("align-items", "center")
+      .style("margin-bottom", "10px");
+
+    legend
+      .append("div")
+      .style("width", "20px")
+      .style("height", "20px")
+      .style("background-color", (d, i) => colors[i % colors.length])
+      .style("border-radius", "50%")
+      .style("margin-right", "10px");
+
+    const textAndImage = legend
+      .append("div")
+      .style("display", "flex")
+      .style("align-items", "center");
+
+    textAndImage
+      .append("span")
+      .style("font-size", "14px")
+      .style("color", "#333")
+      .text((d) => (d.image_url ? "" : d.label));
+
+    textAndImage
+      .filter((d) => d.image_url) // Only add image if image_url is not empty
+      .append("img")
+      .attr("src", (d) => d.image_url)
+      .attr("alt", (d) => d.label)
+      .style("width", "80px")
+      .style("height", "auto")
+      .style("margin-left", "10px");
   }
 
   function renderChartsForTab(tabId) {
     const blameDataElement = document.getElementById(`${tabId}-blame-chart`);
     if (blameDataElement) {
       const blameData = JSON.parse(blameDataElement.dataset.chartdata);
+      const width = 500;
+      const height = 300;
       createDonutChart(
         `${tabId}-blame-chart`,
         blameData,
         ["#2196F3", "#9C27B0", "#607D8B", "#FF5722"],
-        500,
-        300,
+        width,
+        height,
         true,
       );
     }
   }
 
   const tabButtons = document.querySelectorAll("[data-tab]");
-  const underline = document.getElementById("underline");
-
-  function updateUnderline(activeTab) {
-    underline.style.width = `${activeTab.offsetWidth}px`;
-    underline.style.left = `${activeTab.offsetLeft}px`;
-  }
-
-  function activateTab(tabButton) {
-    const tabId = tabButton.dataset.tab;
-
-    tabButtons.forEach((btn) => {
-      btn.classList.remove("text-yellow-600");
-      btn.classList.add("text-gray-500", "hover:text-yellow-600");
-      const tabContent = document.getElementById(`${btn.dataset.tab}-content`);
-      if (tabContent) {
-        tabContent.classList.add("hidden");
-      }
-    });
-
-    tabButton.classList.add("text-yellow-600");
-    tabButton.classList.remove("text-gray-500", "hover:text-yellow-600");
-
-    const activeContent = document.getElementById(`${tabId}-content`);
-    if (activeContent) {
-      activeContent.classList.remove("hidden");
-      renderChartsForTab(tabId);
-    }
-
-    updateUnderline(tabButton);
-  }
+  const tabContents = document.querySelectorAll(".tab-content");
 
   tabButtons.forEach((button) => {
     button.addEventListener("click", (e) => {
       e.preventDefault();
-      activateTab(button);
+      const tabId = button.dataset.tab;
+
+      // Deactivate all tabs
+      tabButtons.forEach((btn) => {
+        const tabId = btn.dataset.tab;
+        const tabContent = document.getElementById(`${tabId}-content`);
+        btn.classList.remove(
+          "text-yellow-600",
+          "border-yellow-600",
+          "font-bold",
+        );
+        btn.classList.add(
+          "text-gray-500",
+          "hover:text-yellow-600",
+          "hover:border-yellow-600",
+        );
+        if (tabContent) {
+          tabContent.classList.add("hidden");
+        }
+      });
+
+      // Activate the clicked tab
+      button.classList.add("text-yellow-600", "border-yellow-600", "font-bold");
+      button.classList.remove(
+        "text-gray-500",
+        "hover:text-yellow-600",
+        "hover:border-yellow-600",
+      );
+
+      const activeContent = document.getElementById(`${tabId}-content`);
+      if (activeContent) {
+        activeContent.classList.remove("hidden");
+        renderChartsForTab(tabId);
+      }
     });
   });
 
   // Initial render for the active tab
-  const initialActiveTab = document.querySelector(".text-yellow-600");
-  if (initialActiveTab) {
-    activateTab(initialActiveTab);
-  }
+  setTimeout(() => {
+    const initialActiveTab = document.querySelector("[data-tab]");
+    if (initialActiveTab) {
+      initialActiveTab.click();
+    }
+  }, 100);
 });
