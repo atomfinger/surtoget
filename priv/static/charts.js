@@ -9,9 +9,8 @@ document.addEventListener("DOMContentLoaded", () => {
   ) {
     const width = chartWidth;
     const height = chartHeight;
-    const radius = (Math.min(width, height) / 2) * 0.6; // Make donut smaller to leave more space
+    const radius = (Math.min(width, height) / 2) * 0.6;
 
-    // Clear any existing SVG to prevent multiplication
     d3.select(`#${elementId}`).select("svg").remove();
 
     const svg = d3
@@ -33,12 +32,6 @@ document.addEventListener("DOMContentLoaded", () => {
       .innerRadius(radius * 0.6)
       .outerRadius(radius);
 
-    const outerArc = d3
-      .arc()
-      .innerRadius(radius * 1.1) // Brought even closer to the chart
-      .outerRadius(radius * 1.1); // Brought even closer to the chart
-
-    // Tooltip setup
     const tooltip = d3
       .select("body")
       .append("div")
@@ -50,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .style("border-width", "1px")
       .style("border-radius", "5px")
       .style("padding", "10px")
-      .style("pointer-events", "none"); // Important for mouse events to pass through
+      .style("pointer-events", "none");
 
     const arcs = svg
       .selectAll("arc")
@@ -78,7 +71,6 @@ document.addEventListener("DOMContentLoaded", () => {
         d3.select(this).style("stroke", "none").style("opacity", 1);
       });
 
-    // Always display percentage text on segments
     arcs
       .append("text")
       .attr("transform", (d) => `translate(${arc.centroid(d)})`)
@@ -88,7 +80,6 @@ document.addEventListener("DOMContentLoaded", () => {
       .text((d) => `${d.data.value}%`);
 
     if (hasTitle) {
-      // Add a title to the center of the donut chart
       svg
         .append("text")
         .attr("text-anchor", "middle")
@@ -102,68 +93,59 @@ document.addEventListener("DOMContentLoaded", () => {
     const blameDataElement = document.getElementById(`${tabId}-blame-chart`);
     if (blameDataElement) {
       const blameData = JSON.parse(blameDataElement.dataset.chartdata);
-      const width = 500;
-      const height = 300;
       createDonutChart(
         `${tabId}-blame-chart`,
         blameData,
         ["#2196F3", "#9C27B0", "#607D8B", "#FF5722"],
-        width,
-        height,
+        500,
+        300,
         true,
       );
     }
   }
 
   const tabButtons = document.querySelectorAll("[data-tab]");
-  const tabContents = document.querySelectorAll(".tab-content");
+  const underline = document.getElementById("underline");
+
+  function updateUnderline(activeTab) {
+    underline.style.width = `${activeTab.offsetWidth}px`;
+    underline.style.left = `${activeTab.offsetLeft}px`;
+  }
+
+  function activateTab(tabButton) {
+    const tabId = tabButton.dataset.tab;
+
+    tabButtons.forEach((btn) => {
+      btn.classList.remove("text-yellow-600");
+      btn.classList.add("text-gray-500", "hover:text-yellow-600");
+      const tabContent = document.getElementById(`${btn.dataset.tab}-content`);
+      if (tabContent) {
+        tabContent.classList.add("hidden");
+      }
+    });
+
+    tabButton.classList.add("text-yellow-600");
+    tabButton.classList.remove("text-gray-500", "hover:text-yellow-600");
+
+    const activeContent = document.getElementById(`${tabId}-content`);
+    if (activeContent) {
+      activeContent.classList.remove("hidden");
+      renderChartsForTab(tabId);
+    }
+
+    updateUnderline(tabButton);
+  }
 
   tabButtons.forEach((button) => {
     button.addEventListener("click", (e) => {
       e.preventDefault();
-      const tabId = button.dataset.tab;
-
-      // Deactivate all tabs
-      tabButtons.forEach((btn) => {
-        const tabId = btn.dataset.tab;
-        const tabContent = document.getElementById(`${tabId}-content`);
-        btn.classList.remove(
-          "text-yellow-600",
-          "border-yellow-600",
-          "font-bold",
-        );
-        btn.classList.add(
-          "text-gray-500",
-          "hover:text-yellow-600",
-          "hover:border-yellow-600",
-        );
-        if (tabContent) {
-          tabContent.classList.add("hidden");
-        }
-      });
-
-      // Activate the clicked tab
-      button.classList.add("text-yellow-600", "border-yellow-600", "font-bold");
-      button.classList.remove(
-        "text-gray-500",
-        "hover:text-yellow-600",
-        "hover:border-yellow-600",
-      );
-
-      const activeContent = document.getElementById(`${tabId}-content`);
-      if (activeContent) {
-        activeContent.classList.remove("hidden");
-        renderChartsForTab(tabId);
-      }
+      activateTab(button);
     });
   });
 
   // Initial render for the active tab
-  setTimeout(() => {
-    const initialActiveTab = document.querySelector("[data-tab]");
-    if (initialActiveTab) {
-      initialActiveTab.click();
-    }
-  }, 100);
+  const initialActiveTab = document.querySelector(".text-yellow-600");
+  if (initialActiveTab) {
+    activateTab(initialActiveTab);
+  }
 });
-

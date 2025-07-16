@@ -65,11 +65,20 @@ fn chart_data_encoder(data: ChartData) -> json.Json {
 
 pub fn render() -> Element(a) {
   html.div([class("rounded-lg")], [
-    html.div([class("border-b border-gray-200")], [
-      html.nav([attribute("-mx-1", ""), class("flex space-x-1")], [
+    html.div([class("relative border-b border-gray-200")], [
+      html.nav([class("flex space-x-4")], [
         tab_button("last_month", "Siste måned", True),
         tab_button("this_year", "Dette året så langt", False),
       ]),
+      html.div(
+        [
+          id("underline"),
+          class(
+            "absolute bottom-0 h-0.5 bg-yellow-600 transition-all duration-300",
+          ),
+        ],
+        [],
+      ),
     ]),
     tab_content("last_month", True),
     tab_content("this_year", False),
@@ -77,17 +86,15 @@ pub fn render() -> Element(a) {
 }
 
 fn tab_button(tab_id: String, text: String, is_active: Bool) -> Element(a) {
-  let active_classes =
-    "inline-block py-2 px-4 text-yellow-600 border-b-2 border-yellow-600 font-bold"
-  let inactive_classes =
-    "inline-block py-2 px-4 text-gray-500 hover:text-yellow-600 hover:border-yellow-600"
+  let active_classes = "text-yellow-600"
+  let inactive_classes = "text-gray-500 hover:text-yellow-600"
 
   html.a(
     [
       href("#"),
       attribute("data-tab", tab_id),
       class(
-        "transition-colors duration-300 "
+        "py-2 px-4 transition-colors duration-300 "
         <> case is_active {
           True -> active_classes
           False -> inactive_classes
