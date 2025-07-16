@@ -1,78 +1,72 @@
+import gleam/bit_array
 import gleam/list
 import lustre/attribute.{alt, class, href, rel, src, target}
 import lustre/element.{type Element}
 import lustre/element/html
 
+import gleam/crypto
+import gleam/int
+import gleam/result
+import gleam/string
+
 pub type NewsArticle {
   NewsArticle(
     title: String,
     description: String,
-    image_url: String,
     external_url: String,
     date: String,
   )
 }
 
 import gleam/dict
-import gleam/int
-import gleam/result
-import gleam/string
 
 pub fn get_news_articles() -> List(NewsArticle) {
   let articles = [
     NewsArticle(
       title: "Signalfeil får konsekvenser for Sørlandsbanen",
       description: "En signalfeil i Oslo skaper forsinkelser og innstillinger for Sørlandsbanen, som går til og fra Oslo. Ingen tog kan passere Oslo på grunn av feilen.",
-      image_url: "/priv/static/news/signalfeil_sorlandsbanen.jpg",
       external_url: "https://www.nrk.no/sorlandet/signalfeil-far-konsekvenser-for-sorlandsbanen-1.17340909",
       date: "15. mars 2025",
     ),
     NewsArticle(
       title: "Store togproblemer på Sørlandsbanen",
       description: "Det er meldt om store problemer for tog mellom Marnardal og Audnedal. Mye rim på kjøretråden gir dårlig kontakt mellom tog og kjøretråd, noe som fører til strømproblemer.",
-      image_url: "/priv/static/news/togproblemer_sorlandsbanen.jpg",
       external_url: "https://www.nrk.no/sorlandet/store-togproblemer-pa-sorlandsbanen-1.17189263",
       date: "10. november 2024",
     ),
     NewsArticle(
       title: "Vy tar over Sørlandsbanen - Go-Ahead Nordic vrakes",
       description: "Den statseide togselskapet Vy tar over Sørlandsbanen, Arendalsbanen og Jærbanen fra Go-Ahead Nordic fra desember 2027.",
-      image_url: "/priv/static/news/vy_tar_over_sorlandsbanen.jpg",
       external_url: "https://www.nrk.no/sorlandet/vy-tar-over-sorlandsbanen-_-go-ahead-nordic-vrakes-1.17094076",
       date: "25. oktober 2024",
     ),
     NewsArticle(
       title: "Flere ordførere i Telemark kjemper for å få tilbake stopp på Sørlandsbanen",
       description: "Fire ordførere fra Telemark har sendt et brev til stortingspolitikerne der de kritiserer Bane Nor for å ha fjernet stopp på Sørlandsbanen, noe de mener har forverret punktligheten.",
-      image_url: "/priv/static/news/ordforere_telemark.jpg",
       external_url: "https://www.nrk.no/vestfoldogtelemark/flere-ordforere-i-telemark-kjemper-for-a-fa-tilbake-stopp-pa-sorlandsbanen-1.17092301",
       date: "28. oktober 2024",
     ),
     NewsArticle(
       title: "Fikk tre timer i Drangedal",
       description: "Reisende med toget fra Stavanger til Oslo søndag ettermiddag fikk anledning til å studere omgivelsene rundt stasjonen i Prestestranda i rundt tre timer før turen kunne gå videre.",
-      image_url: "/priv/static/news/drangedal_stop.jpg",
       external_url: "https://www.drangedalsposten.no/fikk-tre-timer-i-drangedal/s/5-164-34904",
       date: "16. juni 2025",
     ),
     NewsArticle(
       title: "Stor aktør på Jærbanen trekker seg: Frykter mer buss for tog",
       description: "Selskapet som vedlikeholder togene på Sørlandsbanen, terminerte kontrakten etter store økonomiske tap. Nå overtar Go-Ahead arbeidet selv.",
-      image_url: "/priv/static/news/jaerbanen_aktør_trekker_seg.jpg",
       external_url: "https://www.aftenbladet.no/lokalt/i/dRe2j1/stor-aktoer-paa-jaerbanen-trekker-seg-frykter-mer-buss-for-tog",
       date: "26. mai 2025",
     ),
     NewsArticle(
       title: "Buss for tog i sommar",
       description: "Sidan pendlarane har ferie og det er færre som tar tog, nyttar Bane Nor moglegheitene til vedlikehalds- og byggearbeid på togstrekningane.",
-      image_url: "/priv/static/news/buss_for_tog_sommar.jpg",
       external_url: "https://www.nrk.no/vestfoldogtelemark/buss-for-tog-i-sommar-1.17424797",
       date: "20. mai 2025",
     ),
     NewsArticle(
       title: "Sørlandsbanen: Har aldri vært verre",
       description: "Sørlandsbanen har lavest punktlighet – tiltakene gir liten effekt så langt.",
-      image_url: "/priv/static/news/sorlandsbanen_aldri_verre.jpg",
       external_url: "https://www.dalane-tidende.no/sorlandsbanen-har-aldri-vart-verre/s/5-101-741316",
       date: "19. januar 2025",
     ),
@@ -124,6 +118,21 @@ fn parse_date(date_string: String) -> Result(String, Nil) {
   }
 }
 
+pub fn get_image_id(article: NewsArticle) -> String {
+  crypto.hash(crypto.Sha1, bit_array.from_string(article.external_url))
+  |> bit_array.base16_encode()
+}
+
+pub fn get_image_url(article: NewsArticle) -> String {
+  "news/images/" <> get_image_id(article)
+}
+
+pub fn find_article_by_image_id(image_id: String) -> Result(NewsArticle, Nil) {
+  get_news_articles()
+  |> list.filter(fn(article) { get_image_id(article) == image_id })
+  |> list.first()
+}
+
 pub fn render(articles: List(NewsArticle)) -> Element(a) {
   html.div([class("py-12 bg-gray-50")], [
     html.div([class("max-w-7xl mx-auto px-4 sm:px-6 lg:px-8")], [
@@ -160,7 +169,7 @@ pub fn render(articles: List(NewsArticle)) -> Element(a) {
             [
               html.div([class("md:w-1/3")], [
                 html.img([
-                  src(article.image_url),
+                  src(get_image_url(article)),
                   alt(article.title),
                   class("w-full h-full object-cover"),
                 ]),

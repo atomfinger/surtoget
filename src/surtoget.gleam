@@ -1,5 +1,7 @@
 import gleam/erlang/process
+import gleam/http/response
 import gleam/list
+import image_cache
 import lustre/attribute.{attribute, class, href, rel, src}
 import lustre/element.{type Element}
 import lustre/element/html
@@ -15,9 +17,9 @@ import wisp/wisp_mist
 pub fn main() -> Nil {
   let secret_key_base = wisp.random_string(64)
   wisp.configure_logger()
-
+  let assert Ok(cache) = image_cache.start()
   let assert Ok(_) =
-    wisp_mist.handler(handle_request, secret_key_base)
+    wisp_mist.handler(handle_request(_, cache.data), secret_key_base)
     |> mist.new()
     |> mist.port(8000)
     |> mist.start()
@@ -25,17 +27,53 @@ pub fn main() -> Nil {
   process.sleep_forever()
 }
 
-pub fn handle_request(req: Request) -> Response {
+pub fn handle_request(
+  req: Request,
+  image_cache: process.Subject(image_cache.ImageCacheMessage),
+) -> Response {
   use <- wisp.serve_static(req, under: "/static", from: "priv/static")
   use <- wisp.serve_static(req, under: "/css", from: "priv/css")
-  route_request(req)
+  route_request(req, image_cache)
 }
 
-fn route_request(req: Request) -> Response {
+fn route_request(
+  req: Request,
+  image_cache: process.Subject(image_cache.ImageCacheMessage),
+) -> Response {
   case wisp.path_segments(req) {
     [] | ["home"] | ["index"] -> render_index()
     ["news"] -> render_news_page()
+    ["news", "images", image_id] ->
+      handle_news_image_request(image_id, image_cache)
     _ -> wisp.not_found()
+  }
+}
+
+fn handle_news_image_request(
+  image_id: String,
+  actor: process.Subject(image_cache.ImageCacheMessage),
+) -> response.Response(wisp.Body) {
+  case image_cache.get_cached_image(image_id, actor) {
+    Ok(image) ->
+      wisp.response(200)
+      |> wisp.file_download_from_memory(named: image_id, containing: image)
+
+    Error(_) -> {
+      case news.find_article_by_image_id(image_id) {
+        Ok(article) -> {
+          case image_cache.fetch_and_cache_image(article, actor) {
+            Ok(image) ->
+              wisp.response(200)
+              |> wisp.file_download_from_memory(
+                named: image_id,
+                containing: image,
+              )
+            Error(_) -> wisp.response(404)
+          }
+        }
+        Error(_) -> wisp.response(404)
+      }
+    }
   }
 }
 
