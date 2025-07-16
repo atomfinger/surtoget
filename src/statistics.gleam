@@ -78,18 +78,21 @@ pub fn render() -> Element(a) {
 
 fn tab_button(tab_id: String, text: String, is_active: Bool) -> Element(a) {
   let active_classes =
-    "bg-white inline-block py-2 px-4 text-blue-600 border-l border-t border-r rounded-t"
+    "inline-block py-2 px-4 text-yellow-600 border-b-2 border-yellow-600 font-bold"
   let inactive_classes =
-    "bg-gray-100 inline-block py-2 px-4 text-gray-500 hover:text-gray-600 hover:bg-gray-200 border-l border-t border-r rounded-t"
+    "inline-block py-2 px-4 text-gray-500 hover:text-yellow-600 hover:border-yellow-600"
 
   html.a(
     [
       href("#"),
       attribute("data-tab", tab_id),
-      class(case is_active {
-        True -> active_classes
-        False -> inactive_classes
-      }),
+      class(
+        "transition-colors duration-300 "
+        <> case is_active {
+          True -> active_classes
+          False -> inactive_classes
+        },
+      ),
     ],
     [html.text(text)],
   )
@@ -105,8 +108,8 @@ fn tab_content(tab_id: String, is_active: Bool) -> Element(a) {
     ChartData("Uforutsette Årsaker", blame_stats.unforeseen, ""),
     ChartData("Følgeforsinkelser", blame_stats.consequential_delays, ""),
   ]
-  let active_classes = "tab-content p-4 bg-white border"
-  let inactive_classes = "tab-content p-4 bg-white border hidden"
+  let active_classes = "tab-content p-4 bg-white shadow-lg rounded-lg"
+  let inactive_classes = "tab-content p-4 bg-white shadow-lg rounded-lg hidden"
 
   html.div(
     [
@@ -117,31 +120,39 @@ fn tab_content(tab_id: String, is_active: Bool) -> Element(a) {
       }),
     ],
     [
-      html.div([class("grid grid-cols-2 gap-4 justify-items-center")], [
-        html.div(
-          [
-            class(
-              "flex flex-col items-center justify-center text-center w-[500px] h-[300px]",
-            ),
-          ],
-          [
-            html.div([class("text-9xl font-extrabold text-red-700")], [
-              html.text(float.to_string(overall_stats.not_on_time) <> "%"),
-            ]),
-            html.p([class("text-xl text-gray-600 mt-4")], [
-              html.text("sjanse for å være forsinkett"),
-            ]),
-          ],
-        ),
-        html.div([class("flex flex-col items-center")], [
-          chart_container(
-            tab_id <> "-blame-chart",
-            blame_chart_data,
-            "blame",
-            "w-[500px]",
+      html.div(
+        [
+          class(
+            "grid grid-cols-1 md:grid-cols-2 gap-8 items-center justify-items-center",
           ),
-        ]),
-      ]),
+        ],
+        [
+          html.div(
+            [class("flex flex-col items-center justify-center text-center p-8")],
+            [
+              html.div(
+                [
+                  class(
+                    "text-8xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-400",
+                  ),
+                ],
+                [html.text(float.to_string(overall_stats.not_on_time) <> "%")],
+              ),
+              html.p([class("text-lg text-gray-700 mt-4 font-medium")], [
+                html.text("sjanse for å være forsinket"),
+              ]),
+            ],
+          ),
+          html.div([class("flex flex-col items-center w-full")], [
+            chart_container(
+              tab_id <> "-blame-chart",
+              blame_chart_data,
+              "blame",
+              "w-full h-full",
+            ),
+          ]),
+        ],
+      ),
     ],
   )
 }
