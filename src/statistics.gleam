@@ -103,8 +103,16 @@ fn tab_content(tab_id: String, is_active: Bool) -> Element(a) {
   let blame_stats = get_blame_stats(tab_id)
 
   let blame_chart_data = [
-    ChartData("BaneNor Ansvar", blame_stats.banenor, "/static/banenor_logo.png"),
-    ChartData("GoAhead Ansvar", blame_stats.goahead, "/static/goahead_logo.png"),
+    ChartData(
+      "BaneNor sin skyld",
+      blame_stats.banenor,
+      "/static/banenor_logo.png",
+    ),
+    ChartData(
+      "GoAhead sin skyld",
+      blame_stats.goahead,
+      "/static/goahead_logo.png",
+    ),
     ChartData("Uforutsette Årsaker", blame_stats.unforeseen, ""),
     ChartData("Følgeforsinkelser", blame_stats.consequential_delays, ""),
   ]

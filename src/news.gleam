@@ -47,40 +47,63 @@ pub fn get_news_articles() -> List(NewsArticle) {
 }
 
 pub fn render(articles: List(NewsArticle)) -> Element(a) {
-  html.div([class("p-4 bg-gray-100 rounded-lg")], [
-    html.h2([class("text-2xl font-bold text-gray-800 mb-8 text-center")], [
-      html.text("Nyhetsartikler om Sørbanen"),
-    ]),
-    html.div(
-      [class("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8")],
-      list.map(articles, fn(article: NewsArticle) {
-        html.a(
+  html.div([class("py-12 bg-gray-50")], [
+    html.div([class("max-w-7xl mx-auto px-4 sm:px-6 lg:px-8")], [
+      html.div([class("text-center")], [
+        html.h2(
           [
-            href(article.external_url),
-            target("_blank"),
-            rel("noopener noreferrer"),
             class(
-              "block bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden",
+              "text-base text-yellow-600 font-semibold tracking-wide uppercase",
             ),
           ],
+          [html.text("Siste Nytt")],
+        ),
+        html.p(
           [
-            html.img([
-              src(article.image_url),
-              alt(article.title),
-              class("w-full h-48 object-cover"),
-            ]),
-            html.div([class("p-6")], [
-              html.h3([class("text-xl font-semibold text-gray-900 mb-2")], [
-                html.text(article.title),
-              ]),
-              html.p([class("text-gray-700 text-base mb-2")], [
-                html.text(article.description),
-              ]),
-              html.p([class("text-gray-500 text-sm")], [html.text(article.date)]),
-            ]),
+            class(
+              "mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl",
+            ),
           ],
-        )
-      }),
-    ),
+          [html.text("Oppdateringer om Sørbanen")],
+        ),
+      ]),
+      html.div(
+        [class("mt-12 space-y-8")],
+        list.map(articles, fn(article) {
+          html.a(
+            [
+              href(article.external_url),
+              target("_blank"),
+              rel("noopener noreferrer"),
+              class(
+                "block md:flex bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden",
+              ),
+            ],
+            [
+              html.div([class("md:w-1/3")], [
+                html.img([
+                  src(article.image_url),
+                  alt(article.title),
+                  class("w-full h-full object-cover"),
+                ]),
+              ]),
+              html.div([class("md:w-2/3 p-6 flex flex-col justify-between")], [
+                html.div([], [
+                  html.h3([class("text-2xl font-bold text-gray-900 mb-2")], [
+                    html.text(article.title),
+                  ]),
+                  html.p([class("text-gray-700 text-base mb-4")], [
+                    html.text(article.description),
+                  ]),
+                ]),
+                html.p([class("text-gray-500 text-sm")], [
+                  html.text(article.date),
+                ]),
+              ]),
+            ],
+          )
+        }),
+      ),
+    ]),
   ])
 }
