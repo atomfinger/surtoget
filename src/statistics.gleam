@@ -64,10 +64,7 @@ fn chart_data_encoder(data: ChartData) -> json.Json {
 }
 
 pub fn render() -> Element(a) {
-  html.div([class("p-4 bg-gray-100 rounded-lg")], [
-    html.h2([class("text-2xl font-bold text-gray-800 mb-8 text-center")], [
-      html.text("Statistikk om punktlighet"),
-    ]),
+  html.div([class("rounded-lg")], [
     html.div([class("border-b border-gray-200")], [
       html.nav([attribute("-mx-1", ""), class("flex space-x-1")], [
         tab_button("last_month", "Siste måned", True),
