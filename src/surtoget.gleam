@@ -6,6 +6,7 @@ import lustre/element/html
 import mist
 import news
 import news_page
+import refund
 import statistics
 import stories
 import wisp.{type Request, type Response}
@@ -136,6 +137,7 @@ fn main_content() -> Element(msg) {
 
   html.main([class("my-10 space-y-16")], [
     html.section([], [statistics.render()]),
+    html.section([], [refund.render()]),
     html.section([], [stories.render()]),
     html.section([], [news.render(latest_news)]),
   ])
