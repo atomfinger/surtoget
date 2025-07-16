@@ -13,37 +13,115 @@ pub type NewsArticle {
   )
 }
 
+import gleam/dict
+import gleam/int
+import gleam/result
+import gleam/string
+
 pub fn get_news_articles() -> List(NewsArticle) {
-  [
+  let articles = [
     NewsArticle(
-      title: "Sørbanen: Nye forsinkelser skaper frustrasjon",
-      description: "Togtrafikken på Sørbanen er igjen rammet av forsinkelser, noe som vekker sterk misnøye blant pendlere.",
-      image_url: "https://via.placeholder.com/300x200?text=Togforsinkelse",
-      external_url: "https://www.example.com/news/forsinkelse1",
-      date: "10. juli 2025",
+      title: "Signalfeil får konsekvenser for Sørlandsbanen",
+      description: "En signalfeil i Oslo skaper forsinkelser og innstillinger for Sørlandsbanen, som går til og fra Oslo. Ingen tog kan passere Oslo på grunn av feilen.",
+      image_url: "/priv/static/news/signalfeil_sorlandsbanen.jpg",
+      external_url: "https://www.nrk.no/sorlandet/signalfeil-far-konsekvenser-for-sorlandsbanen-1.17340909",
+      date: "15. mars 2025",
     ),
     NewsArticle(
-      title: "Investeringer i jernbanen: Vil det hjelpe Sørbanen?",
-      description: "Regjeringen lover nye investeringer i jernbanen, men spørsmålet er om det vil løse problemene på Sørbanen.",
-      image_url: "https://via.placeholder.com/300x200?text=Jernbaneinvestering",
-      external_url: "https://www.example.com/news/investering",
-      date: "05. juli 2025",
+      title: "Store togproblemer på Sørlandsbanen",
+      description: "Det er meldt om store problemer for tog mellom Marnardal og Audnedal. Mye rim på kjøretråden gir dårlig kontakt mellom tog og kjøretråd, noe som fører til strømproblemer.",
+      image_url: "/priv/static/news/togproblemer_sorlandsbanen.jpg",
+      external_url: "https://www.nrk.no/sorlandet/store-togproblemer-pa-sorlandsbanen-1.17189263",
+      date: "10. november 2024",
     ),
     NewsArticle(
-      title: "Passasjerer krever bedre punktlighet på Sørbanen",
-      description: "En ny undersøkelse viser at passasjerer er lei av manglende punktlighet og krever handling.",
-      image_url: "https://via.placeholder.com/300x200?text=Passasjerkrav",
-      external_url: "https://www.example.com/news/punktlighet",
-      date: "01. juli 2025",
+      title: "Vy tar over Sørlandsbanen - Go-Ahead Nordic vrakes",
+      description: "Den statseide togselskapet Vy tar over Sørlandsbanen, Arendalsbanen og Jærbanen fra Go-Ahead Nordic fra desember 2027.",
+      image_url: "/priv/static/news/vy_tar_over_sorlandsbanen.jpg",
+      external_url: "https://www.nrk.no/sorlandet/vy-tar-over-sorlandsbanen-_-go-ahead-nordic-vrakes-1.17094076",
+      date: "25. oktober 2024",
     ),
     NewsArticle(
-      title: "Vinterkaos på Sørbanen: Snø og kulde skaper problemer",
-      description: "Vinterværet har ført til store utfordringer for togtrafikken på Sørbanen, med innstilte avganger og lange forsinkelser.",
-      image_url: "https://via.placeholder.com/300x200?text=Vinterkaos",
-      external_url: "https://www.example.com/news/vinterkaos",
-      date: "20. juni 2025",
+      title: "Flere ordførere i Telemark kjemper for å få tilbake stopp på Sørlandsbanen",
+      description: "Fire ordførere fra Telemark har sendt et brev til stortingspolitikerne der de kritiserer Bane Nor for å ha fjernet stopp på Sørlandsbanen, noe de mener har forverret punktligheten.",
+      image_url: "/priv/static/news/ordforere_telemark.jpg",
+      external_url: "https://www.nrk.no/vestfoldogtelemark/flere-ordforere-i-telemark-kjemper-for-a-fa-tilbake-stopp-pa-sorlandsbanen-1.17092301",
+      date: "28. oktober 2024",
+    ),
+    NewsArticle(
+      title: "Fikk tre timer i Drangedal",
+      description: "Reisende med toget fra Stavanger til Oslo søndag ettermiddag fikk anledning til å studere omgivelsene rundt stasjonen i Prestestranda i rundt tre timer før turen kunne gå videre.",
+      image_url: "/priv/static/news/drangedal_stop.jpg",
+      external_url: "https://www.drangedalsposten.no/fikk-tre-timer-i-drangedal/s/5-164-34904",
+      date: "16. juni 2025",
+    ),
+    NewsArticle(
+      title: "Stor aktør på Jærbanen trekker seg: Frykter mer buss for tog",
+      description: "Selskapet som vedlikeholder togene på Sørlandsbanen, terminerte kontrakten etter store økonomiske tap. Nå overtar Go-Ahead arbeidet selv.",
+      image_url: "/priv/static/news/jaerbanen_aktør_trekker_seg.jpg",
+      external_url: "https://www.aftenbladet.no/lokalt/i/dRe2j1/stor-aktoer-paa-jaerbanen-trekker-seg-frykter-mer-buss-for-tog",
+      date: "26. mai 2025",
+    ),
+    NewsArticle(
+      title: "Buss for tog i sommar",
+      description: "Sidan pendlarane har ferie og det er færre som tar tog, nyttar Bane Nor moglegheitene til vedlikehalds- og byggearbeid på togstrekningane.",
+      image_url: "/priv/static/news/buss_for_tog_sommar.jpg",
+      external_url: "https://www.nrk.no/vestfoldogtelemark/buss-for-tog-i-sommar-1.17424797",
+      date: "20. mai 2025",
+    ),
+    NewsArticle(
+      title: "Sørlandsbanen: Har aldri vært verre",
+      description: "Sørlandsbanen har lavest punktlighet – tiltakene gir liten effekt så langt.",
+      image_url: "/priv/static/news/sorlandsbanen_aldri_verre.jpg",
+      external_url: "https://www.dalane-tidende.no/sorlandsbanen-har-aldri-vart-verre/s/5-101-741316",
+      date: "19. januar 2025",
     ),
   ]
+  list.sort(articles, by: fn(a, b) {
+    case parse_date(a.date), parse_date(b.date) {
+      Ok(date_a), Ok(date_b) -> string.compare(date_b, date_a)
+      _, _ -> string.compare(a.date, b.date)
+      // Fallback to string comparison if parsing fails
+    }
+  })
+}
+
+fn parse_date(date_string: String) -> Result(String, Nil) {
+  let month_map =
+    dict.from_list([
+      #("januar", "01"),
+      #("februar", "02"),
+      #("mars", "03"),
+      #("april", "04"),
+      #("mai", "05"),
+      #("juni", "06"),
+      #("juli", "07"),
+      #("august", "08"),
+      #("september", "09"),
+      #("oktober", "10"),
+      #("november", "11"),
+      #("desember", "12"),
+    ])
+
+  let parts = string.split(date_string, " ")
+  case parts {
+    [day_str, month_name, year_str] -> {
+      let cleaned_day_str = case string.ends_with(day_str, ".") {
+        True -> string.slice(day_str, 0, string.length(day_str) - 1)
+        False -> day_str
+      }
+      use day <- result.try(int.parse(cleaned_day_str))
+      use _year <- result.try(int.parse(year_str))
+      use month_num <- result.try(dict.get(month_map, month_name))
+
+      let formatted_day = case day < 10 {
+        True -> "0" <> int.to_string(day)
+        False -> int.to_string(day)
+      }
+      Ok(year_str <> "-" <> month_num <> "-" <> formatted_day)
+    }
+    _ -> Error(Nil)
+  }
 }
 
 pub fn render(articles: List(NewsArticle)) -> Element(a) {
