@@ -4,8 +4,10 @@ import gleam/dict
 import gleam/erlang/process
 import gleam/int
 import gleam/otp/actor
+import gleam/result
 import gleam/string
 import news
+import snag
 
 pub type Image
 
@@ -15,6 +17,9 @@ fn to_bit_array_ffi(img: Image, format: String) -> bit_array
 @external(erlang, "Elixir.VixHelper", "fetch_image")
 fn fetch_image_ffi(url: String) -> Result(Image, String)
 
+@external(erlang, "Elixir.VixHelper", "read")
+fn read_ffi(from path: String) -> Result(Image, String)
+
 type ImageFormat {
   JPEG(quality: Int, keep_metadata: Bool)
   PNG
@@ -23,12 +28,12 @@ type ImageFormat {
 }
 
 pub type ImageCacheMessage {
-  GetCachedImage(String, process.Subject(Result(Image, Nil)))
-  PutCachedImage(String, Image)
+  GetCachedImage(String, process.Subject(Result(bytes_tree.BytesTree, Nil)))
+  PutCachedImage(String, bytes_tree.BytesTree)
 }
 
 type State {
-  State(cache: dict.Dict(String, Image))
+  State(cache: dict.Dict(String, bytes_tree.BytesTree))
 }
 
 fn to_bit_array(img: Image, format: ImageFormat) -> BitArray {
@@ -82,20 +87,12 @@ pub fn start() -> Result(
   |> actor.start()
 }
 
+// TODO: Need to parse URL to find image type, or it needs to be passed in somehow. 
 pub fn get_cached_image(
   id: String,
   actor: process.Subject(ImageCacheMessage),
 ) -> Result(bytes_tree.BytesTree, Nil) {
-  let image_type = JPEG(80, False)
-  case process.call(actor, 100, fn(reply_to) { GetCachedImage(id, reply_to) }) {
-    Ok(image) ->
-      Ok(
-        image
-        |> to_bit_array(image_type)
-        |> bytes_tree.from_bit_array(),
-      )
-    Error(_) -> Error(Nil)
-  }
+  process.call(actor, 100, fn(reply_to) { GetCachedImage(id, reply_to) })
 }
 
 pub fn fetch_and_cache_image(
@@ -103,11 +100,43 @@ pub fn fetch_and_cache_image(
   actor: process.Subject(ImageCacheMessage),
 ) -> Result(bytes_tree.BytesTree, Nil) {
   let image_id: String = news.get_image_id(article)
-  case fetch_image_ffi(article.external_url) {
+  //TODO: FIND IMAGE TYPE
+  case fetch_image_from_external_source(article.external_image_url) {
     Ok(image) -> {
-      process.send(actor, PutCachedImage(image_id, image))
+      let image_type = AVIF(80, False)
+      let image_bytes =
+        image
+        |> to_bit_array(image_type)
+        |> bytes_tree.from_bit_array()
+      process.send(actor, PutCachedImage(image_id, image_bytes))
       get_cached_image(image_id, actor)
     }
-    Error(_) -> Error(Nil)
+    Error(_) ->
+      case read("priv/static/train-placeholder.png") {
+        Ok(image) -> {
+          let image_type = PNG
+          let image_bytes =
+            image
+            |> to_bit_array(image_type)
+            |> bytes_tree.from_bit_array()
+          process.send(actor, PutCachedImage(image_id, image_bytes))
+          get_cached_image(image_id, actor)
+        }
+        Error(_) -> Error(Nil)
+      }
   }
+}
+
+// TODO: Need to validate URL
+fn fetch_image_from_external_source(url: String) -> Result(Image, String) {
+  case url {
+    "" -> Error("Invalid URL")
+    _ -> fetch_image_ffi(url)
+  }
+}
+
+fn read(from path: String) -> Result(Image, snag.Snag) {
+  read_ffi(path)
+  |> result.map_error(snag.new)
+  |> snag.context("Unable to read image from file")
 }

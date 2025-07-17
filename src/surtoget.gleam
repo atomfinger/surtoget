@@ -1,17 +1,24 @@
+import gleam/bytes_tree
 import gleam/erlang/process
+import gleam/http/request
 import gleam/http/response
 import gleam/list
+import gleam/result
+import gleam/string
 import image_cache
 import lustre/attribute.{attribute, class, href, rel, src}
 import lustre/element.{type Element}
 import lustre/element/html
+import marceau
 import mist
 import news
 import news_page
 import refund
+import simplifile
 import statistics
 import stories
 import wisp.{type Request, type Response}
+import wisp/internal
 import wisp/wisp_mist
 
 pub fn main() -> Nil {
@@ -42,21 +49,67 @@ fn route_request(
 ) -> Response {
   case wisp.path_segments(req) {
     [] | ["home"] | ["index"] -> render_index()
+    ["favicon.ico"] -> get_favicon(req)
     ["news"] -> render_news_page()
     ["news", "images", image_id] ->
-      handle_news_image_request(image_id, image_cache)
+      handle_news_image_request(image_id, req, image_cache)
     _ -> wisp.not_found()
   }
 }
 
+fn get_favicon(req: Request) {
+  serve_static_image(req, "static/favicon.ico")
+}
+
+fn serve_static_image(req: Request, image_path: String) -> Response {
+  let file_type =
+    image_path
+    |> string.split(on: ".")
+    |> list.last
+    |> result.unwrap("")
+  let mime_type = marceau.extension_to_mime_type(file_type)
+  let path = "priv/" <> image_path
+  case simplifile.file_info(path) {
+    Ok(file_info) ->
+      case simplifile.file_info_type(file_info) {
+        simplifile.File -> {
+          wisp.response(200)
+          |> response.set_header("content-type", mime_type)
+          |> response.set_body(wisp.File(path))
+          |> handle_etag(req, file_info.size)
+        }
+        _ -> wisp.not_found()
+      }
+    _ -> wisp.not_found()
+  }
+}
+
+// We should not store images that someone else has a license to. At
+// the same time we want to be able to show the actual article photo
+// on the site. To strike a balance we use a local in-memory cache.
+//
+// The reason we do not use direct links is because we want to be
+// good samaritans and avoid causing unwanted bandwith load due to 
+// direct hotlinking. Read more about it here:
+// https://mailchimp.com/resources/hotlinking/
+//
+// Using an in-memory cahce puts most of the bandwith burden onto
+// surtoget.no, while the traffic for external sources will be
+// negible regardless of traffic to our site.
+//
+// The current implementation is pretty simple and naive. We might
+// have to consider a proper CDN at some point, but this will get
+// the job done for now.
 fn handle_news_image_request(
   image_id: String,
+  req: Request,
   actor: process.Subject(image_cache.ImageCacheMessage),
 ) -> response.Response(wisp.Body) {
   case image_cache.get_cached_image(image_id, actor) {
     Ok(image) ->
       wisp.response(200)
       |> wisp.file_download_from_memory(named: image_id, containing: image)
+      |> handle_etag(req, bytes_tree.byte_size(image))
 
     Error(_) -> {
       case news.find_article_by_image_id(image_id) {
@@ -68,6 +121,7 @@ fn handle_news_image_request(
                 named: image_id,
                 containing: image,
               )
+              |> handle_etag(req, bytes_tree.byte_size(image))
             Error(_) -> wisp.response(404)
           }
         }
@@ -77,18 +131,40 @@ fn handle_news_image_request(
   }
 }
 
+fn handle_etag(resp: Response, req: Request, file_size: Int) -> Response {
+  let etag = internal.generate_etag(file_size, 0)
+  case request.get_header(req, "if-none-match") {
+    Ok(old_etag) if old_etag == etag -> wisp.response(304)
+    _ -> response.set_header(resp, "etag", etag)
+  }
+}
+
+fn render_head(
+  title_text: String,
+  extra_elements: List(Element(msg)),
+) -> Element(msg) {
+  let common_elements = [
+    html.title([], title_text),
+    html.link([href("/css/tailwind.css"), rel("stylesheet")]),
+    html.meta([
+      attribute("content", "width=device-width, initial-scale=1.0"),
+      attribute.name("viewport"),
+    ]),
+    html.link([
+      attribute.href("/favicon.ico"),
+      attribute.type_("image/x-icon"),
+      attribute.rel("icon"),
+    ]),
+  ]
+
+  html.head([], list.append(common_elements, extra_elements))
+}
+
 fn render_news_page() -> Response {
   let articles = news.get_news_articles()
   let news_page_element: Element(msg) =
     html.html([attribute("lang", "no")], [
-      html.head([], [
-        html.title([], "Nyheter - Surtoget"),
-        html.link([href("/css/tailwind.css"), rel("stylesheet")]),
-        html.meta([
-          attribute("content", "width=device-width, initial-scale=1.0"),
-          attribute.name("viewport"),
-        ]),
-      ]),
+      render_head("Nyheter - Surtoget", []),
       html.body([class("bg-gray-50 text-gray-800")], [
         html.div([class("container mx-auto px-4")], [
           header(),
@@ -106,14 +182,8 @@ fn render_news_page() -> Response {
 fn render_index() -> Response {
   let index_page: Element(msg) =
     html.html([attribute("lang", "no")], [
-      html.head([], [
-        html.title([], "Surtoget - Sørbanens sanne ansikt"),
+      render_head("Surtoget - Sørbanens sanne ansikt", [
         html.script([src("https://d3js.org/d3.v7.min.js")], ""),
-        html.link([href("/css/tailwind.css"), rel("stylesheet")]),
-        html.meta([
-          attribute("content", "width=device-width, initial-scale=1.0"),
-          attribute.name("viewport"),
-        ]),
       ]),
       html.body([class("bg-gray-50 text-gray-800")], [
         html.script([src("/static/charts.js"), attribute("defer", "")], ""),
