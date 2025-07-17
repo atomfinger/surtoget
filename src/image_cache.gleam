@@ -87,7 +87,7 @@ pub fn get_cached_image(
   id: String,
   actor: process.Subject(ImageCacheMessage),
 ) -> Result(bytes_tree.BytesTree, Nil) {
-  let image_type = JPEG(80, False)
+  let image_type = AVIF(80, False)
   case process.call(actor, 100, fn(reply_to) { GetCachedImage(id, reply_to) }) {
     Ok(image) ->
       Ok(

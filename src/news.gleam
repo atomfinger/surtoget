@@ -76,7 +76,7 @@ pub fn get_news_articles() -> List(NewsArticle) {
       title: "Buss for tog i sommar",
       description: "Sidan pendlarane har ferie og det er færre som tar tog, nyttar Bane Nor moglegheitene til vedlikehalds- og byggearbeid på togstrekningane.",
       external_url: "https://www.nrk.no/vestfoldogtelemark/buss-for-tog-i-sommar-1.17424797",
-      external_image_url: "",
+      external_image_url: "https://gfx.nrk.no/E1nhPRb6k7GReJkcTROcIg5Xo1p44-YoUgEFoTF7St0g",
       owner: "NRK",
       date: "20. mai 2025",
     ),
@@ -142,7 +142,7 @@ pub fn get_image_id(article: NewsArticle) -> String {
 }
 
 pub fn get_image_url(article: NewsArticle) -> String {
-  "news/images/" <> get_image_id(article)
+  "/news/images/" <> get_image_id(article)
 }
 
 pub fn find_article_by_image_id(image_id: String) -> Result(NewsArticle, Nil) {
