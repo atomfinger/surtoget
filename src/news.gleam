@@ -181,7 +181,7 @@ pub fn render(articles: List(NewsArticle)) -> Element(a) {
               target("_blank"),
               rel("noopener noreferrer"),
               class(
-                "block md:flex bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden",
+                "block md:flex bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden",
               ),
             ],
             [
