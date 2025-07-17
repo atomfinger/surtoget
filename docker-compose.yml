@@ -1,0 +1,11 @@
+services:
+  surtoget:
+    build: .
+    ports:
+      - "8080:8000"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health"]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 5s
