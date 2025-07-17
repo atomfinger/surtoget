@@ -322,7 +322,15 @@ fn footer() -> Element(msg) {
     ],
     [
       html.p([], [
-        html.text("Laget med frustrasjon og Gleam av "),
+        html.text("Laget med frustrasjon og "),
+        html.a(
+          [
+            href("https://gleam.run"),
+            class("hover:text-yellow-600 transition-colors duration-200"),
+          ],
+          [html.text("Gleam")],
+        ),
+        html.text(" av "),
         html.a(
           [
             href("https://lindbakk.com"),
