@@ -1,5 +1,7 @@
 import gleam/float
+import gleam/int
 import gleam/json
+import gleam/list
 import lustre/attribute.{attribute, class, href, id}
 import lustre/element.{type Element}
 import lustre/element/html
@@ -21,10 +23,89 @@ pub type BlameStats {
   )
 }
 
+type MonthlyStats {
+  MonthlyStats(
+    month: String,
+    on_time: Float,
+    banenor: Float,
+    goahead: Float,
+    unforeseen: Float,
+    consequential_delays: Float,
+  )
+}
+
+fn get_monthly_stats() -> List(MonthlyStats) {
+  [
+    MonthlyStats(
+      month: "January",
+      on_time: 57.3,
+      banenor: 38.0,
+      goahead: 20.0,
+      unforeseen: 18.0,
+      consequential_delays: 24.0,
+    ),
+    MonthlyStats(
+      month: "February",
+      on_time: 65.6,
+      banenor: 28.0,
+      goahead: 42.0,
+      unforeseen: 5.0,
+      consequential_delays: 25.0,
+    ),
+    MonthlyStats(
+      month: "May",
+      on_time: 74.4,
+      banenor: 22.0,
+      goahead: 38.0,
+      unforeseen: 9.0,
+      consequential_delays: 32.0,
+    ),
+  ]
+}
+
+fn format_float(f: Float) -> Float {
+  let rounded = float.round(f *. 10.0)
+  let result = int.to_float(rounded) /. 10.0
+  result
+}
+
+fn get_yearly_average_stats() -> BlameStats {
+  let monthly_stats = get_monthly_stats()
+  let count = int.to_float(list.length(monthly_stats))
+  let total_banenor =
+    list.fold(monthly_stats, 0.0, fn(acc, stat) { acc +. stat.banenor })
+  let total_goahead =
+    list.fold(monthly_stats, 0.0, fn(acc, stat) { acc +. stat.goahead })
+  let total_unforeseen =
+    list.fold(monthly_stats, 0.0, fn(acc, stat) { acc +. stat.unforeseen })
+  let total_consequential_delays =
+    list.fold(monthly_stats, 0.0, fn(acc, stat) {
+      acc +. stat.consequential_delays
+    })
+
+  BlameStats(
+    banenor: format_float(total_banenor /. count),
+    goahead: format_float(total_goahead /. count),
+    unforeseen: format_float(total_unforeseen /. count),
+    consequential_delays: format_float(total_consequential_delays /. count),
+  )
+}
+
+fn get_yearly_average_on_time() -> Float {
+  let monthly_stats = get_monthly_stats()
+  let count = int.to_float(list.length(monthly_stats))
+  let total_on_time =
+    list.fold(monthly_stats, 0.0, fn(acc, stat) { acc +. stat.on_time })
+  format_float(total_on_time /. count)
+}
+
 fn get_overall_stats(period: String) -> OverallStats {
   case period {
     "last_month" -> OverallStats(on_time: 74.4, not_on_time: 25.6)
-    "this_year" -> OverallStats(on_time: 70.0, not_on_time: 30.0)
+    "this_year" -> {
+      let on_time = get_yearly_average_on_time()
+      OverallStats(on_time: on_time, not_on_time: 100.0 -. on_time)
+    }
     _ -> OverallStats(on_time: 0.0, not_on_time: 0.0)
   }
 }
@@ -38,13 +119,7 @@ fn get_blame_stats(period: String) -> BlameStats {
         unforeseen: 8.0,
         consequential_delays: 32.0,
       )
-    "this_year" ->
-      BlameStats(
-        banenor: 40.0,
-        goahead: 25.0,
-        unforeseen: 35.0,
-        consequential_delays: 0.0,
-      )
+    "this_year" -> get_yearly_average_stats()
     _ ->
       BlameStats(
         banenor: 0.0,
@@ -76,7 +151,7 @@ pub fn render() -> Element(a) {
           [html.text("Statistikk")],
         ),
         html.nav([attribute("-mx-1", ""), class("flex space-x-1")], [
-          tab_button("last_month", "Siste måned", True),
+          tab_button("last_month", "Siste rapport (Mai)", True),
           tab_button("this_year", "Dette året så langt", False),
         ]),
       ]),
@@ -123,7 +198,7 @@ fn tab_content(tab_id: String, is_first: Bool) -> Element(a) {
       blame_stats.goahead,
       "/static/goahead_logo.png",
     ),
-    ChartData("Uforutsette Årsaker", blame_stats.unforeseen, ""),
+    ChartData("Uforutsette årsaker", blame_stats.unforeseen, ""),
     ChartData("Følgeforsinkelser", blame_stats.consequential_delays, ""),
   ]
   let content_classes = "tab-content p-4 bg-white shadow-lg rounded-lg"
@@ -154,7 +229,12 @@ fn tab_content(tab_id: String, is_first: Bool) -> Element(a) {
                     "text-8xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-400",
                   ),
                 ],
-                [html.text(float.to_string(overall_stats.not_on_time) <> "%")],
+                [
+                  html.text(
+                    float.to_string(format_float(overall_stats.not_on_time))
+                    <> "%",
+                  ),
+                ],
               ),
               html.p([class("text-lg text-gray-700 mt-4 font-medium")], [
                 html.text("sjanse for forsinkelse"),

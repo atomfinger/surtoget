@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const width = chartWidth * 0.7;
     const height = chartHeight * 0.7;
-    const radius = (Math.min(width, height) / 2) * 0.8;
+    const radius = (Math.min(width, height) / 2) * 0.9;
 
     const svg = chartWrapper
       .append("svg")
@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .append("text")
         .attr("text-anchor", "middle")
         .attr("dy", "0.35em")
-        .style("font-size", "16px")
+        .style("font-size", "14px")
         .text("Skyldfordeling");
     }
 
