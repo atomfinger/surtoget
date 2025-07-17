@@ -26,7 +26,7 @@ pub fn render(articles: List(NewsArticle)) -> Element(a) {
             html.img([
               attribute.src(news.get_image_url(article)),
               attribute.alt(article.title),
-              attribute.class("w-full h-48 object-cover"),
+              attribute.class("w-full h-48 max-h-48 object-cover"),
             ]),
             html.div([attribute.class("p-6")], [
               html.h3(
