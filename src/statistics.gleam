@@ -218,12 +218,16 @@ fn tab_content(tab_id: String, is_first: Bool) -> Element(a) {
       html.div(
         [
           class(
-            "grid grid-cols-1 md:grid-cols-2 gap-8 items-center justify-items-center",
+            "grid grid-cols-1 lg:grid-cols-2 lg:gap-4 items-center justify-items-center",
           ),
         ],
         [
           html.div(
-            [class("flex flex-col items-center justify-center text-center p-8")],
+            [
+              class(
+                "flex flex-col items-center justify-center text-center p-4 lg:p-8",
+              ),
+            ],
             [
               html.div(
                 [
@@ -247,7 +251,7 @@ fn tab_content(tab_id: String, is_first: Bool) -> Element(a) {
             tab_id <> "-blame-chart",
             blame_chart_data,
             "blame",
-            "w-full h-full flex items-center justify-center",
+            "w-full h-full flex flex-col items-center justify-center",
           ),
         ],
       ),

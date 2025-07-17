@@ -16,9 +16,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const legendWrapper = container
       .append("div")
       .style("display", "flex")
-      .style("flex-direction", "column")
       .style("justify-content", "center")
-      .style("margin-left", "-60px");
+      .style("align-items", "center")
+      .style("flex-wrap", "wrap");
+
+    function updateLegendLayout() {
+      if (window.innerWidth < 768) {
+        legendWrapper
+          .style("flex-direction", "column")
+          .style("align-items", "flex-start");
+      } else {
+        legendWrapper
+          .style("flex-direction", "row")
+          .style("align-items", "center");
+      }
+    }
 
     const width = chartWidth * 0.7;
     const height = chartHeight * 0.7;
@@ -107,26 +119,41 @@ document.addEventListener("DOMContentLoaded", () => {
       .attr("class", "legend-item")
       .style("display", "flex")
       .style("align-items", "center")
-      .style("margin-bottom", "10px");
+      .style("margin-bottom", "10px")
+      .style("margin-right", "20px");
 
-    legend
+    const legendCircle = legend
       .append("div")
-      .style("width", "20px")
-      .style("height", "20px")
       .style("background-color", (d, i) => colors[i % colors.length])
       .style("border-radius", "50%")
       .style("margin-right", "10px");
+
+    function updateLegendCircleSize() {
+      if (window.innerWidth < 768) {
+        legendCircle.style("width", "15px").style("height", "15px");
+      } else {
+        legendCircle.style("width", "20px").style("height", "20px");
+      }
+    }
 
     const textAndImage = legend
       .append("div")
       .style("display", "flex")
       .style("align-items", "center");
 
-    textAndImage
+    const legendText = textAndImage
       .append("span")
-      .style("font-size", "14px")
       .style("color", "#333")
+      .style("white-space", "nowrap")
       .text((d) => (d.image_url ? "" : d.label));
+
+    function updateLegendFontSize() {
+      if (window.innerWidth < 768) {
+        legendText.style("font-size", "12px");
+      } else {
+        legendText.style("font-size", "14px");
+      }
+    }
 
     textAndImage
       .filter((d) => d.image_url) // Only add image if image_url is not empty
@@ -136,6 +163,15 @@ document.addEventListener("DOMContentLoaded", () => {
       .style("width", "80px")
       .style("height", "auto")
       .style("margin-left", "10px");
+
+    updateLegendLayout();
+    updateLegendFontSize();
+    updateLegendCircleSize();
+    window.addEventListener("resize", () => {
+      updateLegendLayout();
+      updateLegendFontSize();
+      updateLegendCircleSize();
+    });
   }
 
   function createLineChart(elementId, data, width, height) {
@@ -310,4 +346,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const tabId = initialActiveTab.id.replace("-content", "");
     renderChartsForTab(tabId);
   }
+
+  window.addEventListener("resize", () => {
+    const activeTab = document.querySelector(".tab-content:not(.hidden)");
+    if (activeTab) {
+      const tabId = activeTab.id.replace("-content", "");
+      renderChartsForTab(tabId);
+    }
+  });
 });
