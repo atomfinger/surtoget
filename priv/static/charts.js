@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .append("text")
         .attr("text-anchor", "middle")
         .attr("dy", "0.35em")
-        .style("font-size", "16px")
+        .style("font-size", "14px")
         .text("Skyldfordeling");
     }
 
