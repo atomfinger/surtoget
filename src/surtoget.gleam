@@ -139,23 +139,32 @@ fn handle_etag(resp: Response, req: Request, file_size: Int) -> Response {
   }
 }
 
+fn render_head(
+  title_text: String,
+  extra_elements: List(Element(msg)),
+) -> Element(msg) {
+  let common_elements = [
+    html.title([], title_text),
+    html.link([href("/css/tailwind.css"), rel("stylesheet")]),
+    html.meta([
+      attribute("content", "width=device-width, initial-scale=1.0"),
+      attribute.name("viewport"),
+    ]),
+    html.link([
+      attribute.href("/favicon.ico"),
+      attribute.type_("image/x-icon"),
+      attribute.rel("icon"),
+    ]),
+  ]
+
+  html.head([], list.append(common_elements, extra_elements))
+}
+
 fn render_news_page() -> Response {
   let articles = news.get_news_articles()
   let news_page_element: Element(msg) =
     html.html([attribute("lang", "no")], [
-      html.head([], [
-        html.title([], "Nyheter - Surtoget"),
-        html.link([href("/css/tailwind.css"), rel("stylesheet")]),
-        html.meta([
-          attribute("content", "width=device-width, initial-scale=1.0"),
-          attribute.name("viewport"),
-        ]),
-        html.link([
-          attribute.href("/favicon.ico"),
-          attribute.type_("image/x-icon"),
-          attribute.rel("icon"),
-        ]),
-      ]),
+      render_head("Nyheter - Surtoget", []),
       html.body([class("bg-gray-50 text-gray-800")], [
         html.div([class("container mx-auto px-4")], [
           header(),
@@ -173,19 +182,8 @@ fn render_news_page() -> Response {
 fn render_index() -> Response {
   let index_page: Element(msg) =
     html.html([attribute("lang", "no")], [
-      html.head([], [
-        html.title([], "Surtoget - Sørbanens sanne ansikt"),
+      render_head("Surtoget - Sørbanens sanne ansikt", [
         html.script([src("https://d3js.org/d3.v7.min.js")], ""),
-        html.link([href("/css/tailwind.css"), rel("stylesheet")]),
-        html.meta([
-          attribute("content", "width=device-width, initial-scale=1.0"),
-          attribute.name("viewport"),
-        ]),
-        html.link([
-          attribute.href("/favicon.ico"),
-          attribute.type_("image/x-icon"),
-          attribute.rel("icon"),
-        ]),
       ]),
       html.body([class("bg-gray-50 text-gray-800")], [
         html.script([src("/static/charts.js"), attribute("defer", "")], ""),

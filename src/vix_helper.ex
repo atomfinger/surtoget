@@ -20,8 +20,6 @@ defmodule VixHelper do
   end
 
   def fetch_image(url) when is_binary(url) do
-    IO.inspect(url, label: "Fetching image from URL")
-
     try do
       response = Req.get!(url)
 
