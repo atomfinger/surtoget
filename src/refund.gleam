@@ -42,12 +42,16 @@ fn no_claim_icon() -> Element(a) {
 }
 
 pub fn render() -> Element(a) {
-  html.div([class("p-6 bg-white rounded-lg shadow-md")], [
+  html.div([class("p-6 bg-white rounded-lg shadow-lg")], [
     html.h2(
-      [class("text-base font-semibold text-yellow-500 uppercase tracking-wide")],
+      [
+        class(
+          "text-base font-semibold text-yellow-500 uppercase tracking-wide text-center",
+        ),
+      ],
       [html.text("Penger tilbake ved forsinkelse")],
     ),
-    html.h3([class("text-2xl font-bold text-gray-800 mt-2 mb-4")], [
+    html.h3([class("text-2xl font-bold text-gray-800 mt-2 mb-4 text-center")], [
       html.text("Sur fordi toget er forsinket? Slik får du penger tilbake!"),
     ]),
     html.p([class("mb-6 text-gray-700")], [

@@ -35,7 +35,7 @@ fn get_stories() -> List(Story) {
 pub fn render() -> Element(a) {
   let stories = list.take(get_stories(), 3)
 
-  html.div([class("py-12 bg-white")], [
+  html.div([class("p-6 bg-white rounded-lg shadow-lg")], [
     html.div([class("max-w-7xl mx-auto px-4 sm:px-6 lg:px-8")], [
       html.div([class("text-center")], [
         html.h2(
@@ -65,11 +65,7 @@ pub fn render() -> Element(a) {
           list.map(stories, fn(story: Story) {
             html.div([class("relative")], [
               html.div(
-                [
-                  class(
-                    "p-6 bg-gray-50 rounded-lg border border-gray-200 shadow-sm",
-                  ),
-                ],
+                [class("p-6 bg-gray-50 rounded-lg border border-gray-200")],
                 [
                   html.p([class("text-lg text-gray-600")], [
                     html.text("“" <> story.quote <> "”"),
