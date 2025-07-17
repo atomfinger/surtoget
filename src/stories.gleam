@@ -26,6 +26,7 @@ fn get_stories() -> List(Story) {
       author: "Anonym",
     ),
   ]
+  |> list.shuffle()
 }
 
 pub fn render() -> Element(a) {
