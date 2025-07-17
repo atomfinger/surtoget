@@ -30,6 +30,7 @@ pub fn main() -> Nil {
   let assert Ok(_) =
     wisp_mist.handler(handle_request(_, cache.data), secret_key_base)
     |> mist.new()
+    |> mist.bind("0.0.0.0")
     |> mist.port(8000)
     |> mist.start()
 
@@ -53,6 +54,7 @@ fn route_request(
     [] | ["home"] | ["index"] -> render_index()
     ["om-surtoget"] -> render_about_page()
     ["faq"] -> render_faq_page()
+    ["health"] -> wisp.ok()
     ["favicon.ico"] -> get_favicon(req)
     ["news"] -> render_news_page()
     ["news", "images", image_id] ->
