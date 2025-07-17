@@ -138,6 +138,91 @@ document.addEventListener("DOMContentLoaded", () => {
       .style("margin-left", "10px");
   }
 
+  function createLineChart(elementId, data, width, height) {
+    const container = d3.select(`#${elementId}`);
+    container.html("");
+
+    const margin = { top: 20, right: 20, bottom: 30, left: 40 };
+    const chartWidth = width - margin.left - margin.right;
+    const chartHeight = height - margin.top - margin.bottom;
+
+    const svg = container
+      .append("svg")
+      .attr("width", width)
+      .attr("height", height)
+      .append("g")
+      .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    const x = d3
+      .scaleBand()
+      .range([0, chartWidth])
+      .padding(0.1)
+      .domain(data.map((d) => d.label));
+
+    const y = d3.scaleLinear().range([chartHeight, 0]).domain([0, 100]);
+
+    svg
+      .append("g")
+      .attr("transform", `translate(0,${chartHeight})`)
+      .call(d3.axisBottom(x));
+
+    svg.append("g").call(d3.axisLeft(y));
+
+    // Add Y axis label
+    svg
+      .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - margin.left)
+      .attr("x", 0 - chartHeight / 2)
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Punktlighet (%)");
+
+    // Add X axis label
+    svg
+      .append("text")
+      .attr(
+        "transform",
+        `translate(${chartWidth / 2},${chartHeight + margin.top + 10})`,
+      )
+      .style("text-anchor", "middle")
+      .text("År");
+
+    const line = d3
+      .line()
+      .x((d) => x(d.label) + x.bandwidth() / 2)
+      .y((d) => y(d.value));
+
+    svg
+      .append("path")
+      .datum(data)
+      .attr("fill", "none")
+      .attr("stroke", "#F59E0B")
+      .attr("stroke-width", 3)
+      .attr("d", line);
+
+    svg
+      .selectAll(".dot")
+      .data(data)
+      .enter()
+      .append("circle")
+      .attr("class", "dot")
+      .attr("cx", (d) => x(d.label) + x.bandwidth() / 2)
+      .attr("cy", (d) => y(d.value))
+      .attr("r", 5)
+      .attr("fill", "#F59E0B");
+
+    svg
+      .selectAll(".text")
+      .data(data)
+      .enter()
+      .append("text")
+      .attr("x", (d) => x(d.label) + x.bandwidth() / 2)
+      .attr("y", (d) => y(d.value) - 10)
+      .attr("text-anchor", "middle")
+      .text((d) => `${d.value}%`);
+  }
+
   function renderChartsForTab(tabId) {
     const blameDataElement = document.getElementById(`${tabId}-blame-chart`);
     if (blameDataElement) {
@@ -151,6 +236,21 @@ document.addEventListener("DOMContentLoaded", () => {
         width,
         height,
         true,
+      );
+    }
+
+    const lineChartElement = document.getElementById(
+      "punctuality_over_time-chart",
+    );
+    if (lineChartElement && tabId === "punctuality_over_time") {
+      const lineChartData = JSON.parse(lineChartElement.dataset.chartdata);
+      const width = 500;
+      const height = 300;
+      createLineChart(
+        "punctuality_over_time-chart",
+        lineChartData,
+        width,
+        height,
       );
     }
   }

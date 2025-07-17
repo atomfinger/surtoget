@@ -153,11 +153,13 @@ pub fn render() -> Element(a) {
         html.nav([attribute("-mx-1", ""), class("flex space-x-1")], [
           tab_button("last_month", "Siste rapport (Mai)", True),
           tab_button("this_year", "Dette året så langt", False),
+          tab_button("punctuality_over_time", "Punktlighet over tid", False),
         ]),
       ]),
     ]),
     tab_content("last_month", True),
     tab_content("this_year", False),
+    punctuality_over_time_content(False),
   ])
 }
 
@@ -267,4 +269,39 @@ fn chart_container(
     class(size_class),
   ]
   html.div(chart_attributes, [])
+}
+
+fn get_punctuality_over_time_data() -> List(ChartData) {
+  let historical_data = [
+    ChartData(label: "2021", value: 73.1, image_url: ""),
+    ChartData(label: "2022", value: 73.9, image_url: ""),
+    ChartData(label: "2023", value: 65.0, image_url: ""),
+    ChartData(label: "2024", value: 60.6, image_url: ""),
+  ]
+  let total_punctuality = get_yearly_average_on_time()
+  let current_year_data =
+    ChartData(label: "2025", value: total_punctuality, image_url: "")
+
+  list.append(historical_data, [current_year_data])
+}
+
+fn punctuality_over_time_content(is_first: Bool) -> Element(a) {
+  let chart_data = get_punctuality_over_time_data()
+  let content_classes = "tab-content p-4 bg-white shadow-lg rounded-lg"
+  let hidden_classes = " hidden"
+
+  html.div(
+    [
+      id("punctuality_over_time-content"),
+      class(case is_first {
+        True -> content_classes
+        False -> content_classes <> hidden_classes
+      }),
+    ],
+    [
+      html.div([class("flex justify-center")], [
+        chart_container("punctuality_over_time-chart", chart_data, "line", ""),
+      ]),
+    ],
+  )
 }
