@@ -64,23 +64,36 @@ fn chart_data_encoder(data: ChartData) -> json.Json {
 }
 
 pub fn render() -> Element(a) {
-  html.div([class("rounded-lg")], [
-    html.div([class("border-b border-gray-200")], [
-      html.nav([attribute("-mx-1", ""), class("flex space-x-1")], [
-        tab_button("last_month", "Siste måned", True),
-        tab_button("this_year", "Dette året så langt", False),
-      ]),
-    ]),
+  html.div([class("p-6 bg-white rounded-lg shadow-md")], [
+    html.div(
+      [class("flex items-center justify-between border-b border-gray-200")],
+      [
+        html.div([class("flex items-center")], [
+          html.h2(
+            [
+              class(
+                "text-base font-semibold text-yellow-500 uppercase tracking-wide mr-4",
+              ),
+            ],
+            [html.text("Statistikk")],
+          ),
+          html.nav([attribute("-mx-1", ""), class("flex space-x-1")], [
+            tab_button("last_month", "Siste måned", True),
+            tab_button("this_year", "Dette året så langt", False),
+          ]),
+        ]),
+      ],
+    ),
     tab_content("last_month", True),
     tab_content("this_year", False),
   ])
 }
 
-fn tab_button(tab_id: String, text: String, is_active: Bool) -> Element(a) {
+fn tab_button(tab_id: String, text: String, is_first: Bool) -> Element(a) {
+  let initial_classes =
+    "inline-block py-2 px-4 text-gray-500 hover:text-yellow-600 hover:border-yellow-600"
   let active_classes =
     "inline-block py-2 px-4 text-yellow-600 border-b-2 border-yellow-600 font-bold"
-  let inactive_classes =
-    "inline-block py-2 px-4 text-gray-500 hover:text-yellow-600 hover:border-yellow-600"
 
   html.a(
     [
@@ -88,9 +101,9 @@ fn tab_button(tab_id: String, text: String, is_active: Bool) -> Element(a) {
       attribute("data-tab", tab_id),
       class(
         "transition-colors duration-300 "
-        <> case is_active {
+        <> case is_first {
           True -> active_classes
-          False -> inactive_classes
+          False -> initial_classes
         },
       ),
     ],
@@ -98,7 +111,7 @@ fn tab_button(tab_id: String, text: String, is_active: Bool) -> Element(a) {
   )
 }
 
-fn tab_content(tab_id: String, is_active: Bool) -> Element(a) {
+fn tab_content(tab_id: String, is_first: Bool) -> Element(a) {
   let overall_stats = get_overall_stats(tab_id)
   let blame_stats = get_blame_stats(tab_id)
 
@@ -116,15 +129,15 @@ fn tab_content(tab_id: String, is_active: Bool) -> Element(a) {
     ChartData("Uforutsette Årsaker", blame_stats.unforeseen, ""),
     ChartData("Følgeforsinkelser", blame_stats.consequential_delays, ""),
   ]
-  let active_classes = "tab-content p-4 bg-white shadow-lg rounded-lg"
-  let inactive_classes = "tab-content p-4 bg-white shadow-lg rounded-lg hidden"
+  let content_classes = "tab-content p-4 bg-white shadow-lg rounded-lg"
+  let hidden_classes = " hidden"
 
   html.div(
     [
       id(tab_id <> "-content"),
-      class(case is_active {
-        True -> active_classes
-        False -> inactive_classes
+      class(case is_first {
+        True -> content_classes
+        False -> content_classes <> hidden_classes
       }),
     ],
     [
