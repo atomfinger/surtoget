@@ -74,7 +74,7 @@ pub fn render() -> Element(msg) {
     html.div([class("text-center mt-12")], [
       html.p([class("text-lg text-gray-600")], [
         html.text(
-          "Finner du ikke svaret på det du lurer på? Send oss en e-post på ",
+          "Finner du ikke svaret på det du lurer på eller har du noen innspill? Send oss en e-post på ",
         ),
         html.a(
           [
