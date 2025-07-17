@@ -1,4 +1,6 @@
+import gleam/bytes_tree
 import gleam/erlang/process
+import gleam/http/request
 import gleam/http/response
 import gleam/list
 import image_cache
@@ -12,6 +14,7 @@ import refund
 import statistics
 import stories
 import wisp.{type Request, type Response}
+import wisp/internal
 import wisp/wisp_mist
 
 pub fn main() -> Nil {
@@ -44,7 +47,7 @@ fn route_request(
     [] | ["home"] | ["index"] -> render_index()
     ["news"] -> render_news_page()
     ["news", "images", image_id] ->
-      handle_news_image_request(image_id, image_cache)
+      handle_news_image_request(image_id, req, image_cache)
     _ -> wisp.not_found()
   }
 }
@@ -67,12 +70,14 @@ fn route_request(
 // the job done for now.
 fn handle_news_image_request(
   image_id: String,
+  req: Request,
   actor: process.Subject(image_cache.ImageCacheMessage),
 ) -> response.Response(wisp.Body) {
   case image_cache.get_cached_image(image_id, actor) {
     Ok(image) ->
       wisp.response(200)
       |> wisp.file_download_from_memory(named: image_id, containing: image)
+      |> handle_etag(req, image)
 
     Error(_) -> {
       case news.find_article_by_image_id(image_id) {
@@ -84,12 +89,27 @@ fn handle_news_image_request(
                 named: image_id,
                 containing: image,
               )
+              |> handle_etag(req, image)
             Error(_) -> wisp.response(404)
           }
         }
         Error(_) -> wisp.response(404)
       }
     }
+  }
+}
+
+fn handle_etag(
+  resp: Response,
+  req: Request,
+  image: bytes_tree.BytesTree,
+) -> Response {
+  let size = bytes_tree.byte_size(image)
+  let etag = internal.generate_etag(size, 0)
+
+  case request.get_header(req, "if-none-match") {
+    Ok(old_etag) if old_etag == etag -> wisp.response(304)
+    _ -> response.set_header(resp, "etag", etag)
   }
 }
 
