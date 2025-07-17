@@ -23,12 +23,12 @@ type ImageFormat {
 }
 
 pub type ImageCacheMessage {
-  GetCachedImage(String, process.Subject(Result(Image, Nil)))
-  PutCachedImage(String, Image)
+  GetCachedImage(String, process.Subject(Result(bytes_tree.BytesTree, Nil)))
+  PutCachedImage(String, bytes_tree.BytesTree)
 }
 
 type State {
-  State(cache: dict.Dict(String, Image))
+  State(cache: dict.Dict(String, bytes_tree.BytesTree))
 }
 
 fn to_bit_array(img: Image, format: ImageFormat) -> BitArray {
@@ -87,16 +87,7 @@ pub fn get_cached_image(
   id: String,
   actor: process.Subject(ImageCacheMessage),
 ) -> Result(bytes_tree.BytesTree, Nil) {
-  let image_type = AVIF(80, False)
-  case process.call(actor, 100, fn(reply_to) { GetCachedImage(id, reply_to) }) {
-    Ok(image) ->
-      Ok(
-        image
-        |> to_bit_array(image_type)
-        |> bytes_tree.from_bit_array(),
-      )
-    Error(_) -> Error(Nil)
-  }
+  process.call(actor, 100, fn(reply_to) { GetCachedImage(id, reply_to) })
 }
 
 pub fn fetch_and_cache_image(
@@ -104,9 +95,15 @@ pub fn fetch_and_cache_image(
   actor: process.Subject(ImageCacheMessage),
 ) -> Result(bytes_tree.BytesTree, Nil) {
   let image_id: String = news.get_image_id(article)
+  //TODO: FIND IMAGE TYPE
+  let image_type = AVIF(80, False)
   case fetch_image_from_external_source(article.external_image_url) {
     Ok(image) -> {
-      process.send(actor, PutCachedImage(image_id, image))
+      let image_bytes =
+        image
+        |> to_bit_array(image_type)
+        |> bytes_tree.from_bit_array()
+      process.send(actor, PutCachedImage(image_id, image_bytes))
       get_cached_image(image_id, actor)
     }
     Error(_) -> Error(Nil)
