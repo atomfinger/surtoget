@@ -10,26 +10,23 @@ pub type Story {
 fn get_stories() -> List(Story) {
   [
     Story(
-      quote: "Jeg mistet et viktig møte fordi toget var 2 timer forsinket. Utrolig frustrerende!",
-      author: "Test",
+      quote: "Jeg tok toget på Sørlandsbanen en vinterdag, men det stoppet midt på strekningen på grunn av for mye snø. Vi ble sendt ut på en liten stasjon uten oppvarming, og jeg hadde ikke klær for kulda. Ingen alternativ transport ble satt opp, og vi ble stående der og fryse uten at noe form for kommunikasjon kom. Det føltes som vi ble glemt.",
+      author: "Anonym",
     ),
     Story(
-      quote: "Barna mine ble stående og vente i en time på stasjonen i går. Ikke første gang.",
-      author: "Test",
+      quote: "Jeg prøver å besøke sønnen min jevnlig, men det har blitt stadig vanskeligere. Sørlandsbanen er så lite til å stole på og det er alltid noe. Ofte er det buss for tog, og reisen tar mye lenger tid enn den burde. Det gjør det stressende å planlegge, og jeg ender ofte opp med å vurdere om det i det hele tatt er verdt turen.",
+      author: "Anonym",
     ),
     Story(
-      quote: "Jeg har gitt opp å ta toget til jobb. Nå kjører jeg bil i stedet, selv om det er dyrere og dårligere for miljøet.",
-      author: "Test",
+      quote: "Jeg har mye familie i Telemark, men det har blitt krevende å besøke dem. Når jeg skal rekke noe viktig – som en konfirmasjon eller bursdag – må jeg ofte reise med toget dagen i forveien, bare for å være sikker på å komme frem i tide. Sørlandsbanen er rett og slett for treg og upålitelig. Det tar tid fra både jobb og privatliv, og jeg kjenner det tærer på motivasjonen til å dra i det hele tatt.",
+      author: "John M. Lindbakk",
     ),
     Story(
-      quote: "Hver dag er et nytt eventyr med Sørbanen. Man vet aldri om man kommer frem i tide.",
-      author: "Test",
-    ),
-    Story(
-      quote: "Jeg har begynt å ta fly for å reise mellom Oslo og Stavanger. Det er dyrere, men i det minste kommer jeg frem.",
-      author: "Test",
+      quote: "Jeg skulle ta fly, men endte opp med å miste det fordi Sørlandsbanen ble forsinket av signalfeil. Jeg hadde god margin da jeg dro hjemmefra, men det hjelper lite når toget står stille uten forklaring.",
+      author: "Anonym",
     ),
   ]
+  |> list.shuffle()
 }
 
 pub fn render() -> Element(a) {
