@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const width = chartWidth * 0.7;
     const height = chartHeight * 0.7;
-    const radius = (Math.min(width, height) / 2) * 0.8;
+    const radius = (Math.min(width, height) / 2) * 0.9;
 
     const svg = chartWrapper
       .append("svg")
