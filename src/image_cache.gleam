@@ -4,8 +4,10 @@ import gleam/dict
 import gleam/erlang/process
 import gleam/int
 import gleam/otp/actor
+import gleam/result
 import gleam/string
 import news
+import snag
 
 pub type Image
 
@@ -14,6 +16,9 @@ fn to_bit_array_ffi(img: Image, format: String) -> bit_array
 
 @external(erlang, "Elixir.VixHelper", "fetch_image")
 fn fetch_image_ffi(url: String) -> Result(Image, String)
+
+@external(erlang, "Elixir.VixHelper", "read")
+fn read_ffi(from path: String) -> Result(Image, String)
 
 type ImageFormat {
   JPEG(quality: Int, keep_metadata: Bool)
@@ -96,9 +101,9 @@ pub fn fetch_and_cache_image(
 ) -> Result(bytes_tree.BytesTree, Nil) {
   let image_id: String = news.get_image_id(article)
   //TODO: FIND IMAGE TYPE
-  let image_type = AVIF(80, False)
   case fetch_image_from_external_source(article.external_image_url) {
     Ok(image) -> {
+      let image_type = AVIF(80, False)
       let image_bytes =
         image
         |> to_bit_array(image_type)
@@ -106,7 +111,19 @@ pub fn fetch_and_cache_image(
       process.send(actor, PutCachedImage(image_id, image_bytes))
       get_cached_image(image_id, actor)
     }
-    Error(_) -> Error(Nil)
+    Error(_) ->
+      case read("priv/static/train-placeholder.png") {
+        Ok(image) -> {
+          let image_type = PNG
+          let image_bytes =
+            image
+            |> to_bit_array(image_type)
+            |> bytes_tree.from_bit_array()
+          process.send(actor, PutCachedImage(image_id, image_bytes))
+          get_cached_image(image_id, actor)
+        }
+        Error(_) -> Error(Nil)
+      }
   }
 }
 
@@ -116,4 +133,10 @@ fn fetch_image_from_external_source(url: String) -> Result(Image, String) {
     "" -> Error("Invalid URL")
     _ -> fetch_image_ffi(url)
   }
+}
+
+fn read(from path: String) -> Result(Image, snag.Snag) {
+  read_ffi(path)
+  |> result.map_error(snag.new)
+  |> snag.context("Unable to read image from file")
 }
