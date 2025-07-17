@@ -82,6 +82,7 @@ pub fn start() -> Result(
   |> actor.start()
 }
 
+// TODO: Need to parse URL to find image type, or it needs to be passed in somehow. 
 pub fn get_cached_image(
   id: String,
   actor: process.Subject(ImageCacheMessage),
@@ -103,11 +104,19 @@ pub fn fetch_and_cache_image(
   actor: process.Subject(ImageCacheMessage),
 ) -> Result(bytes_tree.BytesTree, Nil) {
   let image_id: String = news.get_image_id(article)
-  case fetch_image_ffi(article.external_url) {
+  case fetch_image_from_external_source(article.external_image_url) {
     Ok(image) -> {
       process.send(actor, PutCachedImage(image_id, image))
       get_cached_image(image_id, actor)
     }
     Error(_) -> Error(Nil)
+  }
+}
+
+// TODO: Need to validate URL
+fn fetch_image_from_external_source(url: String) -> Result(Image, String) {
+  case url {
+    "" -> Error("Invalid URL")
+    _ -> fetch_image_ffi(url)
   }
 }

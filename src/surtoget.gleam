@@ -49,6 +49,22 @@ fn route_request(
   }
 }
 
+// We should not store images that someone else has a license to. At
+// the same time we want to be able to show the actual article photo
+// on the site. To strike a balance we use a local in-memory cache.
+//
+// The reason we do not use direct links is because we want to be
+// good samaritans and avoid causing unwanted bandwith load due to 
+// direct hotlinking. Read more about it here:
+// https://mailchimp.com/resources/hotlinking/
+//
+// Using an in-memory cahce puts most of the bandwith burden onto
+// surtoget.no, while the traffic for external sources will be
+// negible regardless of traffic to our site.
+//
+// The current implementation is pretty simple and naive. We might
+// have to consider a proper CDN at some point, but this will get
+// the job done for now.
 fn handle_news_image_request(
   image_id: String,
   actor: process.Subject(image_cache.ImageCacheMessage),

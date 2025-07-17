@@ -31,7 +31,7 @@ pub fn render(articles: List(NewsArticle)) -> Element(a) {
             html.div([attribute.class("p-6")], [
               html.h3(
                 [attribute.class("text-xl font-semibold text-gray-900 mb-2")],
-                [html.text(article.title)],
+                [html.text(article.title <> " [" <> article.owner <> "]")],
               ),
               html.p([attribute.class("text-gray-700 text-base mb-2")], [
                 html.text(article.description),
