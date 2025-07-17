@@ -1,25 +1,29 @@
+# fly.toml app configuration file generated for surtoget on 2025-07-17T19:33:04+02:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
 app = 'surtoget'
 primary_region = 'arn'
 
 [build]
 
 [http_service]
-internal_port = 8000
-force_https = true
-auto_stop_machines = 'suspend'
-auto_start_machines = true
-min_machines_running = 0
-processes = ['app']
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = 'suspend'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+  [[http_service.checks]]
+    interval = '30s'
+    timeout = '5s'
+    grace_period = '5s'
+    method = 'GET'
+    path = '/health'
 
 [[vm]]
-memory = '512mb'
-cpu_kind = 'shared'
-cpus = 1
-memory_mb = 512
-
-[[http_service.checks]]
-grace_period = "5s"
-interval = "30s"
-method = "GET"
-timeout = "5s"
-path = "/health"
+  memory = '512mb'
+  cpu_kind = 'shared'
+  cpus = 1
