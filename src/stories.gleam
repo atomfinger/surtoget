@@ -1,5 +1,5 @@
 import gleam/list
-import lustre/attribute.{class}
+import lustre/attribute.{class, href}
 import lustre/element.{type Element}
 import lustre/element/html
 
@@ -82,6 +82,18 @@ pub fn render() -> Element(a) {
             ])
           }),
         ),
+      ]),
+      html.div([class("mt-12 text-center")], [
+        html.p([class("text-gray-600")], [
+          html.text("Har du en egen historie du vil dele? Send den til "),
+          html.a(
+            [
+              href("mailto:kontakt@surtoget.no"),
+              class("text-yellow-600 hover:underline"),
+            ],
+            [html.text("kontakt@surtoget.no")],
+          ),
+        ]),
       ]),
     ]),
   ])
