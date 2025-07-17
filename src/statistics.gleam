@@ -276,15 +276,11 @@ fn get_punctuality_over_time_data() -> List(ChartData) {
     ChartData(label: "2021", value: 73.1, image_url: ""),
     ChartData(label: "2022", value: 73.9, image_url: ""),
     ChartData(label: "2023", value: 65.0, image_url: ""),
+    ChartData(label: "2024", value: 60.6, image_url: ""),
   ]
-  let total_punctuality =
-    list.fold(historical_data, 0.0, fn(acc, item) { acc +. item.value })
-  let average_punctuality =
-    format_float(
-      total_punctuality /. int.to_float(list.length(historical_data)),
-    )
+  let total_punctuality = get_yearly_average_on_time()
   let current_year_data =
-    ChartData(label: "2025", value: average_punctuality, image_url: "")
+    ChartData(label: "2025", value: total_punctuality, image_url: "")
 
   list.append(historical_data, [current_year_data])
 }

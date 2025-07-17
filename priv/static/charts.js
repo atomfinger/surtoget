@@ -197,8 +197,8 @@ document.addEventListener("DOMContentLoaded", () => {
       .append("path")
       .datum(data)
       .attr("fill", "none")
-      .attr("stroke", "#2196F3")
-      .attr("stroke-width", 2)
+      .attr("stroke", "#F59E0B")
+      .attr("stroke-width", 3)
       .attr("d", line);
 
     svg
@@ -210,7 +210,17 @@ document.addEventListener("DOMContentLoaded", () => {
       .attr("cx", (d) => x(d.label) + x.bandwidth() / 2)
       .attr("cy", (d) => y(d.value))
       .attr("r", 5)
-      .attr("fill", "#2196F3");
+      .attr("fill", "#F59E0B");
+
+    svg
+      .selectAll(".text")
+      .data(data)
+      .enter()
+      .append("text")
+      .attr("x", (d) => x(d.label) + x.bandwidth() / 2)
+      .attr("y", (d) => y(d.value) - 10)
+      .attr("text-anchor", "middle")
+      .text((d) => `${d.value}%`);
   }
 
   function renderChartsForTab(tabId) {
