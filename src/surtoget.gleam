@@ -3,14 +3,18 @@ import gleam/erlang/process
 import gleam/http/request
 import gleam/http/response
 import gleam/list
+import gleam/result
+import gleam/string
 import image_cache
 import lustre/attribute.{attribute, class, href, rel, src}
 import lustre/element.{type Element}
 import lustre/element/html
+import marceau
 import mist
 import news
 import news_page
 import refund
+import simplifile
 import statistics
 import stories
 import wisp.{type Request, type Response}
@@ -45,9 +49,37 @@ fn route_request(
 ) -> Response {
   case wisp.path_segments(req) {
     [] | ["home"] | ["index"] -> render_index()
+    ["favicon.ico"] -> get_favicon(req)
     ["news"] -> render_news_page()
     ["news", "images", image_id] ->
       handle_news_image_request(image_id, req, image_cache)
+    _ -> wisp.not_found()
+  }
+}
+
+fn get_favicon(req: Request) {
+  serve_static_image(req, "static/favicon.ico")
+}
+
+fn serve_static_image(req: Request, image_path: String) -> Response {
+  let file_type =
+    image_path
+    |> string.split(on: ".")
+    |> list.last
+    |> result.unwrap("")
+  let mime_type = marceau.extension_to_mime_type(file_type)
+  let path = "priv/" <> image_path
+  case simplifile.file_info(path) {
+    Ok(file_info) ->
+      case simplifile.file_info_type(file_info) {
+        simplifile.File -> {
+          wisp.response(200)
+          |> response.set_header("content-type", mime_type)
+          |> response.set_body(wisp.File(path))
+          |> handle_etag(req, file_info.size)
+        }
+        _ -> wisp.not_found()
+      }
     _ -> wisp.not_found()
   }
 }
@@ -77,7 +109,7 @@ fn handle_news_image_request(
     Ok(image) ->
       wisp.response(200)
       |> wisp.file_download_from_memory(named: image_id, containing: image)
-      |> handle_etag(req, image)
+      |> handle_etag(req, bytes_tree.byte_size(image))
 
     Error(_) -> {
       case news.find_article_by_image_id(image_id) {
@@ -89,7 +121,7 @@ fn handle_news_image_request(
                 named: image_id,
                 containing: image,
               )
-              |> handle_etag(req, image)
+              |> handle_etag(req, bytes_tree.byte_size(image))
             Error(_) -> wisp.response(404)
           }
         }
@@ -99,14 +131,8 @@ fn handle_news_image_request(
   }
 }
 
-fn handle_etag(
-  resp: Response,
-  req: Request,
-  image: bytes_tree.BytesTree,
-) -> Response {
-  let size = bytes_tree.byte_size(image)
-  let etag = internal.generate_etag(size, 0)
-
+fn handle_etag(resp: Response, req: Request, file_size: Int) -> Response {
+  let etag = internal.generate_etag(file_size, 0)
   case request.get_header(req, "if-none-match") {
     Ok(old_etag) if old_etag == etag -> wisp.response(304)
     _ -> response.set_header(resp, "etag", etag)
@@ -123,6 +149,11 @@ fn render_news_page() -> Response {
         html.meta([
           attribute("content", "width=device-width, initial-scale=1.0"),
           attribute.name("viewport"),
+        ]),
+        html.link([
+          attribute.href("/favicon.ico"),
+          attribute.type_("image/x-icon"),
+          attribute.rel("icon"),
         ]),
       ]),
       html.body([class("bg-gray-50 text-gray-800")], [
@@ -149,6 +180,11 @@ fn render_index() -> Response {
         html.meta([
           attribute("content", "width=device-width, initial-scale=1.0"),
           attribute.name("viewport"),
+        ]),
+        html.link([
+          attribute.href("/favicon.ico"),
+          attribute.type_("image/x-icon"),
+          attribute.rel("icon"),
         ]),
       ]),
       html.body([class("bg-gray-50 text-gray-800")], [
