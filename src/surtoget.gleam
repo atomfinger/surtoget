@@ -1,3 +1,5 @@
+import about
+import faq
 import gleam/bytes_tree
 import gleam/erlang/process
 import gleam/http/request
@@ -49,12 +51,50 @@ fn route_request(
 ) -> Response {
   case wisp.path_segments(req) {
     [] | ["home"] | ["index"] -> render_index()
+    ["om-surtoget"] -> render_about_page()
+    ["faq"] -> render_faq_page()
     ["favicon.ico"] -> get_favicon(req)
     ["news"] -> render_news_page()
     ["news", "images", image_id] ->
       handle_news_image_request(image_id, req, image_cache)
     _ -> wisp.not_found()
   }
+}
+
+fn render_faq_page() -> Response {
+  let faq_page: Element(msg) =
+    html.html([attribute("lang", "no")], [
+      render_head("Ofte Stilte Spørsmål - Surtoget", []),
+      html.body([class("bg-gray-50 text-gray-800")], [
+        html.div([class("container mx-auto px-4")], [
+          header(),
+          faq.render(),
+          footer(),
+        ]),
+      ]),
+    ])
+
+  faq_page
+  |> element.to_string_tree()
+  |> wisp.html_response(200)
+}
+
+fn render_about_page() -> Response {
+  let about_page: Element(msg) =
+    html.html([attribute("lang", "no")], [
+      render_head("Om Surtoget", []),
+      html.body([class("bg-gray-50 text-gray-800")], [
+        html.div([class("container mx-auto px-4")], [
+          header(),
+          about.render(),
+          footer(),
+        ]),
+      ]),
+    ])
+
+  about_page
+  |> element.to_string_tree()
+  |> wisp.html_response(200)
 }
 
 fn get_favicon(req: Request) {
@@ -216,8 +256,8 @@ fn header() -> Element(msg) {
         html.ul([class("flex justify-center space-x-6 text-base font-medium")], [
           li_nav_item("/", "Hjem"),
           li_nav_item("/news", "Nyheter"),
-          li_nav_item("/om", "Om Oss"),
-          li_nav_item("/kontakt", "Kontakt"),
+          li_nav_item("/om-surtoget", "Om Surtoget"),
+          li_nav_item("/faq", "Ofte stilte spørsmål"),
         ]),
       ]),
     ]),

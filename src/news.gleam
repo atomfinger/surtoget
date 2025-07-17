@@ -189,7 +189,7 @@ pub fn render(articles: List(NewsArticle)) -> Element(a) {
                 html.img([
                   src(get_image_url(article)),
                   alt(article.title),
-                  class("w-full h-full object-cover"),
+                  class("w-full h-full object-cover max-h-80 md:max-h-full"),
                 ]),
               ]),
               html.div([class("md:w-2/3 p-6 flex flex-col justify-between")], [

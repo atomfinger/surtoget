@@ -171,6 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
           "text-yellow-600",
           "border-yellow-600",
           "font-bold",
+          "border-b-2",
         );
         btn.classList.add(
           "text-gray-500",
@@ -183,7 +184,12 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       // Activate the clicked tab
-      button.classList.add("text-yellow-600", "border-yellow-600", "font-bold");
+      button.classList.add(
+        "text-yellow-600",
+        "border-yellow-600",
+        "font-bold",
+        "border-b-2",
+      );
       button.classList.remove(
         "text-gray-500",
         "hover:text-yellow-600",
@@ -199,10 +205,9 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Initial render for the active tab
-  setTimeout(() => {
-    const initialActiveTab = document.querySelector("[data-tab]");
-    if (initialActiveTab) {
-      initialActiveTab.click();
-    }
-  }, 100);
+  const initialActiveTab = document.querySelector(".tab-content:not(.hidden)");
+  if (initialActiveTab) {
+    const tabId = initialActiveTab.id.replace("-content", "");
+    renderChartsForTab(tabId);
+  }
 });
