@@ -7,9 +7,21 @@ import news.{type NewsArticle}
 pub fn render(articles: List(NewsArticle)) -> Element(a) {
   html.div([attribute.class("p-4 bg-gray-100 rounded-lg")], [
     html.h2(
-      [attribute.class("text-2xl font-bold text-gray-800 mb-8 text-center")],
+      [attribute.class("text-2xl font-bold text-gray-800 mb-4 text-center")],
       [html.text("Nyhetsartikler om Sørbanen")],
     ),
+    html.div([attribute.class("text-center mb-8")], [
+      html.p([attribute.class("text-gray-600")], [
+        html.text("Er det en sak vi mangler? Tips oss via epost: "),
+        html.a(
+          [
+            attribute.href("mailto:tips@surtoget.no"),
+            attribute.class("text-yellow-600 hover:underline"),
+          ],
+          [html.text("tips@surtoget.no")],
+        ),
+      ]),
+    ]),
     html.div(
       [attribute.class("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8")],
       list.map(articles, fn(article: NewsArticle) {

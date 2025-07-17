@@ -64,26 +64,23 @@ fn chart_data_encoder(data: ChartData) -> json.Json {
 }
 
 pub fn render() -> Element(a) {
-  html.div([class("p-6 bg-white rounded-lg shadow-md")], [
-    html.div(
-      [class("flex items-center justify-between border-b border-gray-200")],
-      [
-        html.div([class("flex items-center")], [
-          html.h2(
-            [
-              class(
-                "text-base font-semibold text-yellow-500 uppercase tracking-wide mr-4",
-              ),
-            ],
-            [html.text("Statistikk")],
-          ),
-          html.nav([attribute("-mx-1", ""), class("flex space-x-1")], [
-            tab_button("last_month", "Siste måned", True),
-            tab_button("this_year", "Dette året så langt", False),
-          ]),
+  html.div([], [
+    html.div([class("flex items-center justify-between")], [
+      html.div([class("flex items-center")], [
+        html.h2(
+          [
+            class(
+              "text-base font-semibold text-yellow-500 uppercase tracking-wide mr-4",
+            ),
+          ],
+          [html.text("Statistikk")],
+        ),
+        html.nav([attribute("-mx-1", ""), class("flex space-x-1")], [
+          tab_button("last_month", "Siste måned", True),
+          tab_button("this_year", "Dette året så langt", False),
         ]),
-      ],
-    ),
+      ]),
+    ]),
     tab_content("last_month", True),
     tab_content("this_year", False),
   ])

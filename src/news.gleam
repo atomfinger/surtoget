@@ -209,6 +209,18 @@ pub fn render(articles: List(NewsArticle)) -> Element(a) {
           )
         }),
       ),
+      html.div([class("mt-12 text-center")], [
+        html.p([class("text-gray-600")], [
+          html.text("Mangler vi en sak? Send den til "),
+          html.a(
+            [
+              href("mailto:tips@surtoget.no"),
+              class("text-yellow-600 hover:underline"),
+            ],
+            [html.text("tips@surtoget.no")],
+          ),
+        ]),
+      ]),
     ]),
   ])
 }
