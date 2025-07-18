@@ -38,6 +38,22 @@ pub fn render() -> Element(msg) {
       [],
     ),
     Question(
+      "Hvorfor bare Sørlandsbanen?",
+      [
+        "Fordi det er Sørlandsbanen som frustrerer meg personlig 🤷🏻‍♂️",
+        "Når det er sagt så tror jeg at Sørlandsbanen trekker den generelle punktlighetsstatistikken ganske langt ned, så da er Sørlandsbanen kanskje et OK fokus og ha.",
+      ],
+      [],
+    ),
+    Question(
+      "Hvem har skylda for at Sørlandsbanen er så dårlig?!",
+      [
+        "Det skulle jeg også gjerne visst. Jeg er dessverre ikke noe ekspert på dette, men jeg håper å få lagt inn mer informasjon om hvorfor ting har blitt som de har blitt.",
+        "Om jeg må komme med en teori så ville jeg pekt på en kombinasjon av privatisering, uvillighet til å modernisere infrastruktur, mangel på togsett, tvilsomme kjøpt av tog uten snøplog og nedprioritering i budsjetter. Alle disse tingene har nok hatt en påvirkning og gjort jernbanenorge dårligere.",
+      ],
+      [],
+    ),
+    Question(
       "Hvilke teknologier brukes?",
       [
         "Surtoget er bygget med følgende teknologier:",
