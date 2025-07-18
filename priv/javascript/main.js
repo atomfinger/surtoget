@@ -295,7 +295,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const blameDataElement = document.getElementById(`${tabId}-blame-chart`);
     if (blameDataElement) {
       const blameData = JSON.parse(blameDataElement.dataset.chartdata);
-      const width = 500;
+      const container = d3.select(`#${tabId}-blame-chart`);
+      const width = parseInt(container.style("width"));
       const height = 300;
       createDonutChart(
         `${tabId}-blame-chart`,

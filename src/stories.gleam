@@ -41,7 +41,7 @@ pub fn render() -> Element(a) {
               "text-base text-yellow-600 font-semibold tracking-wide uppercase",
             ),
           ],
-          [html.text("Personlige Historier")],
+          [html.text("Folkets meninger")],
         ),
         html.p(
           [
@@ -49,7 +49,7 @@ pub fn render() -> Element(a) {
               "mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl",
             ),
           ],
-          [html.text("Hva folk sier om Sørbanen")],
+          [html.text("Hva folk sier om Sørlandsbanen")],
         ),
       ]),
       html.div([class("mt-10")], [
