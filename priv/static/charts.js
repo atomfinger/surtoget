@@ -152,11 +152,13 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener("resize", updateLegend);
   }
 
-  function createLineChart(elementId, data, width, height) {
+  function createLineChart(elementId, data) {
     const container = d3.select(`#${elementId}`);
-    container.html("");
+    container.html(""); // Clear previous chart
 
-    const margin = { top: 20, right: 20, bottom: 30, left: 40 };
+    const width = parseInt(container.style("width"));
+    const height = 300;
+    const margin = { top: 20, right: 20, bottom: 40, left: 40 };
     const chartWidth = width - margin.left - margin.right;
     const chartHeight = height - margin.top - margin.bottom;
 
@@ -258,14 +260,7 @@ document.addEventListener("DOMContentLoaded", () => {
     );
     if (lineChartElement && tabId === "punctuality_over_time") {
       const lineChartData = JSON.parse(lineChartElement.dataset.chartdata);
-      const width = 500;
-      const height = 300;
-      createLineChart(
-        "punctuality_over_time-chart",
-        lineChartData,
-        width,
-        height,
-      );
+      createLineChart("punctuality_over_time-chart", lineChartData);
     }
   }
 
@@ -330,6 +325,17 @@ document.addEventListener("DOMContentLoaded", () => {
     if (activeTab) {
       const tabId = activeTab.id.replace("-content", "");
       renderChartsForTab(tabId);
+    }
+  });
+
+  // Re-render the chart on window resize
+  window.addEventListener("resize", () => {
+    const activeTab = document.querySelector(".tab-content:not(.hidden)");
+    if (activeTab) {
+      const tabId = activeTab.id.replace("-content", "");
+      if (tabId === "punctuality_over_time") {
+        renderChartsForTab(tabId);
+      }
     }
   });
 });

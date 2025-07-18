@@ -303,8 +303,13 @@ fn punctuality_over_time_content(is_first: Bool) -> Element(a) {
       }),
     ],
     [
-      html.div([class("flex justify-center")], [
-        chart_container("punctuality_over_time-chart", chart_data, "line", ""),
+      html.div([class("flex justify-center w-full")], [
+        chart_container(
+          "punctuality_over_time-chart",
+          chart_data,
+          "line",
+          "w-full h-full",
+        ),
       ]),
     ],
   )
