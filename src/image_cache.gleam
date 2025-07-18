@@ -3,14 +3,12 @@ import gleam/bytes_tree
 import gleam/dict
 import gleam/erlang/process
 import gleam/int
-import gleam/io
 import gleam/list
 import gleam/otp/actor
 import gleam/result
 import gleam/string
 import news
 import snag
-import wisp
 
 pub type Image
 
@@ -23,6 +21,12 @@ fn fetch_image_ffi(url: String) -> Result(Image, String)
 @external(erlang, "Elixir.VixHelper", "read")
 fn read_ffi(from path: String) -> Result(Image, String)
 
+@external(erlang, "Elixir.Vix.Vips.Operation", "resize")
+fn resize_ffi(img: Image, scale: Float) -> Result(Image, String)
+
+@external(erlang, "Elixir.Vix.Vips.Image", "width")
+fn get_width(image: Image) -> Int
+
 type ImageFormat {
   JPEG(quality: Int, keep_metadata: Bool)
   PNG
@@ -32,10 +36,10 @@ type ImageFormat {
 
 pub type ImageCacheMessage {
   GetCachedImage(String, process.Subject(Result(bytes_tree.BytesTree, Nil)))
-  CacheImages
+  SetCache(State)
 }
 
-type State {
+pub type State {
   State(cache: dict.Dict(String, bytes_tree.BytesTree))
 }
 
@@ -69,29 +73,10 @@ fn handle_message(
 ) -> actor.Next(State, ImageCacheMessage) {
   case message {
     GetCachedImage(id, reply_to) -> {
-      wisp.log_debug("Testing")
-      io.println("Getting " <> id)
       process.send(reply_to, dict.get(state.cache, id))
-      io.println("Having returned it!")
       actor.continue(state)
     }
-    CacheImages -> {
-      let new_state: State =
-        news.get_news_articles()
-        |> list.map(with: fn(article) {
-          #(
-            news.get_image_id(article),
-            cache_image(article) |> result.unwrap(bytes_tree.new()),
-          )
-        })
-        |> list.filter(keeping: fn(pair) {
-          let #(_, bytes) = pair
-          bytes_tree.byte_size(bytes) != 0
-        })
-        |> dict.from_list()
-        |> State()
-      actor.continue(new_state)
-    }
+    SetCache(cache) -> actor.continue(cache)
   }
 }
 
@@ -99,33 +84,68 @@ pub fn start() -> Result(
   actor.Started(process.Subject(ImageCacheMessage)),
   actor.StartError,
 ) {
-  actor.new(State(dict.new()))
-  |> actor.on_message(handle_message)
-  |> actor.start()
+  let pid_actor =
+    actor.new(State(dict.new()))
+    |> actor.on_message(handle_message)
+    |> actor.start()
+
+  // Ensuring that we're loading images async while also avoiding blocking
+  // request going to the site.
+  let _ = case pid_actor {
+    Ok(pid) ->
+      process.spawn(fn() { load_cache(pid.data) })
+      |> Ok()
+    Error(_) -> Error(Nil)
+  }
+  pid_actor
 }
 
 pub fn get_cached_image(
   id: String,
   actor: process.Subject(ImageCacheMessage),
 ) -> Result(bytes_tree.BytesTree, Nil) {
-  io.println("Asking for the damn results!")
   let cache_result: Result(bytes_tree.BytesTree, Nil) =
     process.call(actor, 100, fn(reply_to) { GetCachedImage(id, reply_to) })
-  io.println("Got those darn results")
   case cache_result {
     Ok(image) -> Ok(image)
     Error(_) -> load_default_image()
   }
 }
 
+fn load_cache(actor: process.Subject(ImageCacheMessage)) {
+  let new_state: State =
+    news.get_news_articles()
+    |> list.map(with: fn(article) {
+      #(
+        news.get_image_id(article),
+        cache_image(article) |> result.unwrap(bytes_tree.new()),
+      )
+    })
+    |> list.filter(keeping: fn(pair) {
+      let #(_, bytes) = pair
+      bytes_tree.byte_size(bytes) != 0
+    })
+    |> dict.from_list()
+    |> State()
+  process.send(actor, SetCache(new_state))
+}
+
 fn cache_image(article: news.NewsArticle) -> Result(bytes_tree.BytesTree, Nil) {
   case fetch_image_from_external_source(article.external_image_url) {
     Ok(image) -> {
       let image_type = AVIF(80, False)
-      image
-      |> to_bit_array(image_type)
-      |> bytes_tree.from_bit_array()
-      |> Ok()
+      // Just defaulting to 600 as that is the max size an image will take up with our layout anyway.
+      let image_max_size = 600
+      let scale_ratio =
+        int.to_float(image_max_size) /. int.to_float(get_width(image))
+      case resize_ffi(image, scale_ratio) {
+        Ok(resized_image) -> {
+          to_bit_array(resized_image, image_type)
+          |> bytes_tree.from_bit_array()
+          |> Ok()
+        }
+        Error(_) -> load_default_image()
+      }
     }
     Error(_) -> load_default_image()
   }
