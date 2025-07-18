@@ -22,9 +22,6 @@
     "build": "tailwindcss -i ./src/surtoget.gleam -o ./priv/css/tailwind.css --minify"
   },
   "dependencies": {
-    "tailwindcss": "^4.1.11"
-  },
-  "devDependencies": {
-    "@tailwindcss/cli": "^4.1.11"
+    "tailwindcss": "^3.4.0"
   }
 }
