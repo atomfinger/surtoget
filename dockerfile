@@ -9,11 +9,11 @@ RUN ./node_modules/.bin/tailwindcss -i ./src/styles.css -o ./priv/css/tailwind.c
 FROM ghcr.io/gleam-lang/gleam:v1.11.1-elixir-alpine
 RUN mix local.hex --force
 COPY . /build/
-COPY --from=tailwind-generation /src/priv/css/tailwind.css /build/priv/css/
 RUN cd /build && gleam export erlang-shipment
 RUN mv /build/build/erlang-shipment /app && rm -r /build
-RUN apk add --no-cache curl
+RUN apk add --no-cache 
 COPY ./priv /app/priv/
+COPY --from=tailwind-generation /src/priv/css/tailwind.css /app/priv/css/
 
 HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
   CMD curl --fail http://localhost:8000/health || exit 1
