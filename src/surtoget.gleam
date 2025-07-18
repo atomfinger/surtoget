@@ -79,7 +79,7 @@ fn render_faq_page() -> Response {
     ])
 
   faq_page
-  |> element.to_string_tree()
+  |> element.to_document_string_tree()
   |> wisp.html_response(200)
 }
 
@@ -97,7 +97,7 @@ fn render_about_page() -> Response {
     ])
 
   about_page
-  |> element.to_string_tree()
+  |> element.to_document_string_tree()
   |> wisp.html_response(200)
 }
 
@@ -221,14 +221,14 @@ fn render_news_page() -> Response {
     ])
 
   news_page_element
-  |> element.to_string_tree()
+  |> element.to_document_string_tree()
   |> wisp.html_response(200)
 }
 
 fn render_index() -> Response {
   let index_page: Element(msg) =
     html.html([attribute("lang", "no")], [
-      render_head("Surtoget - Sørbanens sanne ansikt", [
+      render_head("Surtoget - Sørlandsbanens sanne ansikt", [
         html.script([src("https://d3js.org/d3.v7.min.js")], ""),
       ]),
       html.body([class("bg-gray-50 text-gray-800")], [
@@ -241,7 +241,7 @@ fn render_index() -> Response {
     ])
 
   index_page
-  |> element.to_string_tree()
+  |> element.to_document_string_tree()
   |> wisp.html_response(200)
 }
 

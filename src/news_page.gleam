@@ -8,7 +8,7 @@ pub fn render(articles: List(NewsArticle)) -> Element(a) {
   html.div([attribute.class("p-4 bg-gray-100 rounded-lg")], [
     html.h2(
       [attribute.class("text-2xl font-bold text-gray-800 mb-4 text-center")],
-      [html.text("Nyhetsartikler om Sørbanen")],
+      [html.text("Nyhetsartikler om Sørlandsbanen")],
     ),
     html.div([attribute.class("text-center mb-8")], [
       html.p([attribute.class("text-gray-600")], [
