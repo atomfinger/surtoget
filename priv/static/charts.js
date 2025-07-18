@@ -63,32 +63,75 @@ document.addEventListener("DOMContentLoaded", () => {
       .append("g")
       .attr("class", "arc");
 
-    arcs
+    const path = arcs
       .append("path")
       .attr("d", arc)
-      .attr("fill", (d, i) => colors[i % colors.length])
-      .on("mouseover", function (event, d) {
-        tooltip.style("opacity", 1);
-        d3.select(this).style("stroke", "black").style("opacity", 0.8);
-      })
-      .on("mousemove", function (event, d) {
-        tooltip
-          .html(`${d.data.label}: ${d.data.value}%`)
-          .style("left", event.pageX + 10 + "px")
-          .style("top", event.pageY - 10 + "px");
-      })
-      .on("mouseout", function (event, d) {
-        tooltip.style("opacity", 0);
-        d3.select(this).style("stroke", "none").style("opacity", 1);
-      });
+      .attr("fill", (d, i) => colors[i % colors.length]);
 
-    arcs
+    const text = arcs
       .append("text")
       .attr("transform", (d) => `translate(${arc.centroid(d)})`)
       .attr("text-anchor", "middle")
       .attr("fill", "white")
       .style("font-size", "14px")
       .text((d) => `${d.data.value}%`);
+
+    function handleMouseOver(event, d) {
+      tooltip.style("opacity", 1);
+      d3.select(this).style("stroke", "black").style("opacity", 0.8);
+    }
+
+    function handleMouseMove(event, d) {
+      tooltip
+        .html(`${d.data.label}: ${d.data.value}%`)
+        .style("left", `${event.pageX + 10}px`)
+        .style("top", `${event.pageY - 10}px`);
+    }
+
+    function handleMouseOut(event, d) {
+      tooltip.style("opacity", 0);
+      d3.select(this).style("stroke", "none").style("opacity", 1);
+    }
+
+    function handleClick(event, d) {
+      // Always hide the tooltip before showing a new one
+      tooltip.style("opacity", 0);
+
+      // If the same element is clicked again, toggle the tooltip
+      if (this === window.lastClickedElement) {
+        window.lastClickedElement = null;
+        return;
+      }
+
+      tooltip
+        .style("opacity", 1)
+        .html(`${d.data.label}: ${d.data.value}%`)
+        .style("left", `${event.pageX + 10}px`)
+        .style("top", `${event.pageY - 10}px`);
+
+      window.lastClickedElement = this;
+      event.stopPropagation();
+    }
+
+    path
+      .on("mouseover", handleMouseOver)
+      .on("mousemove", handleMouseMove)
+      .on("mouseout", handleMouseOut)
+      .on("click", handleClick);
+
+    d3.select(window).on("resize", () => {
+      tooltip.style("opacity", 0);
+    });
+
+    d3.select("body").on("click", () => {
+      tooltip.style("opacity", 0);
+    });
+
+    text
+      .on("mouseover", handleMouseOver)
+      .on("mousemove", handleMouseMove)
+      .on("mouseout", handleMouseOut)
+      .on("click", handleClick);
 
     if (hasTitle) {
       svg
