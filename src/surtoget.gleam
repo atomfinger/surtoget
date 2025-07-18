@@ -8,9 +8,10 @@ import gleam/list
 import gleam/result
 import gleam/string
 import image_cache
-import lustre/attribute.{attribute, class, href, id, rel, src}
+import lustre/attribute.{attribute, class, href, rel, src}
 import lustre/element.{type Element}
 import lustre/element/html
+import lustre/element/svg
 import marceau
 import mist
 import news
@@ -197,6 +198,8 @@ fn render_head(
       attribute.type_("image/x-icon"),
       attribute.rel("icon"),
     ]),
+    html.script([src("/static/charts.js"), attribute("defer", "")], ""),
+    html.script([src("https://d3js.org/d3.v7.min.js")], ""),
   ]
 
   html.head([], list.append(common_elements, extra_elements))
@@ -228,10 +231,9 @@ fn render_index() -> Response {
         html.script([src("https://d3js.org/d3.v7.min.js")], ""),
       ]),
       html.body([class("bg-gray-50 text-gray-800")], [
-        html.script([src("/static/charts.js"), attribute("defer", "")], ""),
         html.div([class("container mx-auto px-4")], [
           header(),
-          html.div([id("main-content")], [main_content()]),
+          main_content(),
           footer(),
         ]),
       ]),
@@ -245,23 +247,83 @@ fn render_index() -> Response {
 fn header() -> Element(msg) {
   html.header([class("py-4 bg-white shadow-md")], [
     html.div([class("container mx-auto px-4")], [
-      html.div([class("flex justify-center")], [
-        html.a([href("/")], [
-          html.img([
-            src("/static/surtoget_logo.png"),
-            attribute("alt", "Surtoget Logo"),
-            class("h-24 w-auto"),
+      html.div([class("flex justify-between items-center")], [
+        html.div([class("md:hidden flex-shrink-0")], [
+          html.a([href("/")], [
+            html.img([
+              src("/static/surtoget_logo_train_only.png"),
+              attribute("alt", "Surtoget Logo"),
+              class("h-16 w-auto"),
+            ]),
           ]),
         ]),
-      ]),
-      html.nav([class("mt-2")], [
-        html.ul([class("flex justify-center space-x-6 text-base font-medium")], [
-          li_nav_item("/", "Hjem"),
-          li_nav_item("/news", "Nyheter"),
-          li_nav_item("/om-surtoget", "Om Surtoget"),
-          li_nav_item("/faq", "Ofte stilte spørsmål"),
+        html.div([class("flex-grow text-center md:hidden")], [
+          html.a([href("/"), class("text-2xl font-bold text-[#E3A804]")], [
+            html.text("Surtoget"),
+          ]),
+        ]),
+        html.div([class("hidden md:block flex-grow text-center")], [
+          html.a([href("/")], [
+            html.img([
+              src("/static/surtoget_logo.png"),
+              attribute("alt", "Surtoget Logo"),
+              class("h-24 w-auto mx-auto"),
+            ]),
+          ]),
+        ]),
+        html.div([class("md:hidden flex-shrink-0")], [
+          html.button(
+            [
+              attribute("id", "menu-button"),
+              attribute("type", "button"),
+              class(
+                "text-gray-500 hover:text-yellow-600 focus:outline-none focus:text-yellow-600",
+              ),
+            ],
+            [
+              svg.svg(
+                [
+                  class("h-8 w-8"),
+                  attribute("fill", "none"),
+                  attribute("viewBox", "0 0 24 24"),
+                  attribute("stroke", "currentColor"),
+                ],
+                [
+                  svg.path([
+                    attribute("stroke-linecap", "round"),
+                    attribute("stroke-linejoin", "round"),
+                    attribute("stroke-width", "2"),
+                    attribute("d", "M4 6h16M4 12h16M4 18h16"),
+                  ]),
+                ],
+              ),
+            ],
+          ),
         ]),
       ]),
+      html.nav(
+        [
+          attribute("id", "menu"),
+          class(
+            "hidden md:flex md:justify-center mt-2 transition-all duration-500 ease-in-out overflow-hidden",
+          ),
+        ],
+        [
+          html.ul(
+            [
+              class(
+                "flex flex-col text-center md:flex-row md:space-x-6 text-2xl md:text-base font-medium",
+              ),
+            ],
+            [
+              li_nav_item("/", "Hjem"),
+              li_nav_item("/news", "Nyheter"),
+              li_nav_item("/om-surtoget", "Om Surtoget"),
+              li_nav_item("/faq", "Ofte stilte spørsmål"),
+            ],
+          ),
+        ],
+      ),
     ]),
   ])
 }
