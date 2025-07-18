@@ -232,7 +232,7 @@ fn render_index() -> Response {
         html.script([src("https://d3js.org/d3.v7.min.js")], ""),
       ]),
       html.body([class("bg-gray-50 text-gray-800")], [
-        html.div([class("container mx-auto px-4")], [
+        html.div([class("container mx-auto px-4 min-w-[330px]")], [
           header(),
           main_content(),
           footer(),
@@ -357,7 +357,7 @@ fn main_content() -> Element(msg) {
 }
 
 fn blurb() -> Element(msg) {
-  html.section([class("my-10 flex items-center space-x-8")], [
+  html.section([class("my-10 flex flex-col md:flex-row items-center gap-8")], [
     html.img([
       src("/static/surtoget_logo.png"),
       attribute("alt", "Surtoget Logo"),
