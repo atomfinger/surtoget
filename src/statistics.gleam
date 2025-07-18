@@ -5,6 +5,7 @@ import gleam/list
 import lustre/attribute.{attribute, class, href, id}
 import lustre/element.{type Element}
 import lustre/element/html
+import lustre/element/svg
 
 pub type ChartData {
   ChartData(label: String, value: Float, image_url: String)
@@ -150,16 +151,57 @@ pub fn render() -> Element(a) {
           ],
           [html.text("Statistikk")],
         ),
-        html.nav([attribute("-mx-1", ""), class("flex space-x-1")], [
-          tab_button("last_month", "Siste rapport (Mai)", True),
-          tab_button("this_year", "Dette året så langt", False),
-          tab_button("punctuality_over_time", "Punktlighet over tid", False),
+        html.div([class("relative")], [
+          html.div([class("md:hidden")], [
+            html.button(
+              [
+                id("tabs-toggle"),
+                class(
+                  "p-2 rounded-md text-gray-500 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white",
+                ),
+              ],
+              [
+                html.span([class("sr-only")], [html.text("Open main menu")]),
+                svg.svg(
+                  [
+                    class("h-6 w-6"),
+                    attribute("stroke", "currentColor"),
+                    attribute("fill", "none"),
+                    attribute("viewBox", "0 0 24 24"),
+                  ],
+                  [
+                    svg.path([
+                      attribute("d", "M4 6h16M4 12h16m-7 6h7"),
+                      attribute("stroke-linecap", "round"),
+                      attribute("stroke-linejoin", "round"),
+                      attribute("stroke-width", "2"),
+                    ]),
+                  ],
+                ),
+              ],
+            ),
+          ]),
+          html.nav(
+            [
+              id("tabs-menu"),
+              class(
+                "hidden md:flex md:flex-row md:space-x-1 absolute md:relative w-48 md:w-auto bg-white md:bg-transparent shadow-lg md:shadow-none",
+              ),
+            ],
+            [
+              tab_button("last_month", "Siste rapport (Mai)", True),
+              tab_button("this_year", "Dette året så langt", False),
+              tab_button("punctuality_over_time", "Punktlighet over tid", False),
+            ],
+          ),
         ]),
       ]),
     ]),
-    tab_content("last_month", True),
-    tab_content("this_year", False),
-    punctuality_over_time_content(False),
+    html.div([class("mt-4")], [
+      tab_content("last_month", True),
+      tab_content("this_year", False),
+      punctuality_over_time_content(False),
+    ]),
   ])
 }
 

@@ -338,4 +338,25 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   });
+
+  const tabsToggle = document.getElementById("tabs-toggle");
+  const tabsMenu = document.getElementById("tabs-menu");
+
+  if (tabsToggle) {
+    tabsToggle.addEventListener("click", (event) => {
+      event.stopPropagation();
+      tabsMenu.classList.toggle("hidden");
+    });
+  }
+
+  document.addEventListener("click", (event) => {
+    if (
+      tabsMenu &&
+      !tabsMenu.classList.contains("hidden") &&
+      !tabsMenu.contains(event.target) &&
+      !tabsToggle.contains(event.target)
+    ) {
+      tabsMenu.classList.add("hidden");
+    }
+  });
 });

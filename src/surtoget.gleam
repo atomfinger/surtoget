@@ -8,7 +8,7 @@ import gleam/list
 import gleam/result
 import gleam/string
 import image_cache
-import lustre/attribute.{attribute, class, href, rel, src}
+import lustre/attribute.{attribute, class, href, id, rel, src}
 import lustre/element.{type Element}
 import lustre/element/html
 import marceau
@@ -231,7 +231,7 @@ fn render_index() -> Response {
         html.script([src("/static/charts.js"), attribute("defer", "")], ""),
         html.div([class("container mx-auto px-4")], [
           header(),
-          main_content(),
+          html.div([id("main-content")], [main_content()]),
           footer(),
         ]),
       ]),
