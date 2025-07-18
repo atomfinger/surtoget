@@ -360,7 +360,7 @@ fn blurb() -> Element(msg) {
     html.img([
       src("/static/surtoget_logo.png"),
       attribute("alt", "Surtoget Logo"),
-      class("h-32 w-auto"),
+      class("h-32 w-auto hidden md:block"),
     ]),
     html.div([class("text-lg text-gray-700")], [
       html.p([], [
