@@ -154,23 +154,8 @@ fn handle_news_image_request(
       wisp.response(200)
       |> wisp.file_download_from_memory(named: image_id, containing: image)
       |> handle_etag(req, bytes_tree.byte_size(image))
-
     Error(_) -> {
-      case news.find_article_by_image_id(image_id) {
-        Ok(article) -> {
-          case image_cache.fetch_and_cache_image(article, actor) {
-            Ok(image) ->
-              wisp.response(200)
-              |> wisp.file_download_from_memory(
-                named: image_id,
-                containing: image,
-              )
-              |> handle_etag(req, bytes_tree.byte_size(image))
-            Error(_) -> wisp.response(404)
-          }
-        }
-        Error(_) -> wisp.response(404)
-      }
+      serve_static_image(req, "static/train-placeholder.png")
     }
   }
 }
