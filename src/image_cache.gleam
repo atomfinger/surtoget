@@ -3,11 +3,14 @@ import gleam/bytes_tree
 import gleam/dict
 import gleam/erlang/process
 import gleam/int
+import gleam/io
+import gleam/list
 import gleam/otp/actor
 import gleam/result
 import gleam/string
 import news
 import snag
+import wisp
 
 pub type Image
 
@@ -29,7 +32,7 @@ type ImageFormat {
 
 pub type ImageCacheMessage {
   GetCachedImage(String, process.Subject(Result(bytes_tree.BytesTree, Nil)))
-  PutCachedImage(String, bytes_tree.BytesTree)
+  CacheImages
 }
 
 type State {
@@ -64,16 +67,30 @@ fn handle_message(
   state: State,
   message: ImageCacheMessage,
 ) -> actor.Next(State, ImageCacheMessage) {
-  let State(cache) = state
-
   case message {
     GetCachedImage(id, reply_to) -> {
-      process.send(reply_to, dict.get(cache, id))
+      wisp.log_debug("Testing")
+      io.println("Getting " <> id)
+      process.send(reply_to, dict.get(state.cache, id))
+      io.println("Having returned it!")
       actor.continue(state)
     }
-    PutCachedImage(id, image) -> {
-      let new_cache = dict.insert(cache, id, image)
-      actor.continue(State(new_cache))
+    CacheImages -> {
+      let new_state: State =
+        news.get_news_articles()
+        |> list.map(with: fn(article) {
+          #(
+            news.get_image_id(article),
+            cache_image(article) |> result.unwrap(bytes_tree.new()),
+          )
+        })
+        |> list.filter(keeping: fn(pair) {
+          let #(_, bytes) = pair
+          bytes_tree.byte_size(bytes) != 0
+        })
+        |> dict.from_list()
+        |> State()
+      actor.continue(new_state)
     }
   }
 }
@@ -87,43 +104,43 @@ pub fn start() -> Result(
   |> actor.start()
 }
 
-// TODO: Need to parse URL to find image type, or it needs to be passed in somehow. 
 pub fn get_cached_image(
   id: String,
   actor: process.Subject(ImageCacheMessage),
 ) -> Result(bytes_tree.BytesTree, Nil) {
-  process.call(actor, 100, fn(reply_to) { GetCachedImage(id, reply_to) })
+  io.println("Asking for the damn results!")
+  let cache_result: Result(bytes_tree.BytesTree, Nil) =
+    process.call(actor, 100, fn(reply_to) { GetCachedImage(id, reply_to) })
+  io.println("Got those darn results")
+  case cache_result {
+    Ok(image) -> Ok(image)
+    Error(_) -> load_default_image()
+  }
 }
 
-pub fn fetch_and_cache_image(
-  article: news.NewsArticle,
-  actor: process.Subject(ImageCacheMessage),
-) -> Result(bytes_tree.BytesTree, Nil) {
-  let image_id: String = news.get_image_id(article)
-  //TODO: FIND IMAGE TYPE
+fn cache_image(article: news.NewsArticle) -> Result(bytes_tree.BytesTree, Nil) {
   case fetch_image_from_external_source(article.external_image_url) {
     Ok(image) -> {
       let image_type = AVIF(80, False)
-      let image_bytes =
-        image
-        |> to_bit_array(image_type)
-        |> bytes_tree.from_bit_array()
-      process.send(actor, PutCachedImage(image_id, image_bytes))
-      get_cached_image(image_id, actor)
+      image
+      |> to_bit_array(image_type)
+      |> bytes_tree.from_bit_array()
+      |> Ok()
     }
-    Error(_) ->
-      case read("priv/static/train-placeholder.png") {
-        Ok(image) -> {
-          let image_type = PNG
-          let image_bytes =
-            image
-            |> to_bit_array(image_type)
-            |> bytes_tree.from_bit_array()
-          process.send(actor, PutCachedImage(image_id, image_bytes))
-          get_cached_image(image_id, actor)
-        }
-        Error(_) -> Error(Nil)
-      }
+    Error(_) -> load_default_image()
+  }
+}
+
+fn load_default_image() -> Result(bytes_tree.BytesTree, Nil) {
+  case read("priv/static/train-placeholder.png") {
+    Ok(image) -> {
+      let image_type = PNG
+      image
+      |> to_bit_array(image_type)
+      |> bytes_tree.from_bit_array()
+      |> Ok()
+    }
+    Error(_) -> Error(Nil)
   }
 }
 
