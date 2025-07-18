@@ -2,6 +2,15 @@
   <img src="./priv/static/surtoget_logo.png" alt="surtoget logo" width="200px">
 </p>
 
+Ah, Sørlandsbanen. The train line that makes you question your life choices.
+If you've ever found yourself stranded in the middle of nowhere, wondering why
+you didn't just take the bus, this project is for you.
+
+Surtoget is a place to share your pain, laugh at the absurdity of it all,
+and maybe, just maybe, find some solidarity in our shared suffering.
+
+Feel free to check out the website here: [surtoget.no](https://surtoget.no)
+
 ## Prerequisites
 
 To run this project, you need:

@@ -29,7 +29,7 @@ pub fn render() -> Element(msg) {
       ]),
       html.p([], [
         html.text(
-          "Surtoget.no er et forsøk på å belyse problemet. For det kan da umulig være bare jeg som har det sånn? Målet er å skape en plattform for informasjon, og forhåpentligvis, en arena for samtale. Eller i det minste, et sted å få ut litt frustrasjon.",
+          "Surtoget.no er et forsøk på å belyse problemet. For det kan da umulig være bare jeg som har det sånn? Målet er å skape en plattform for informasjon, og forhåpentligvis, kunne skape litt samtale rundt tilstanden til Sørlandsbanen. Eller i det minste, et sted å få ut litt frustrasjon.",
         ),
       ]),
     ]),
