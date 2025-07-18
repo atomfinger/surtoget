@@ -15,7 +15,6 @@ import lustre/element/svg
 import marceau
 import mist
 import news
-import news_page
 import refund
 import simplifile
 import statistics
@@ -53,52 +52,17 @@ fn route_request(
   image_cache: process.Subject(image_cache.ImageCacheMessage),
 ) -> Response {
   case wisp.path_segments(req) {
-    [] | ["home"] | ["index"] -> render_index()
-    ["om-surtoget"] -> render_about_page()
-    ["faq"] -> render_faq_page()
+    [] | ["home"] | ["index"] -> render_page(main_content())
+    ["om-surtoget"] -> render_page(about.render())
+    ["faq"] -> render_page(faq.render())
     ["health"] -> wisp.ok()
     ["favicon.ico"] -> get_favicon(req)
-    ["news"] -> render_news_page()
+    ["news"] ->
+      news.get_news_articles() |> list.take(3) |> news.render() |> render_page()
     ["news", "images", image_id] ->
       handle_news_image_request(image_id, req, image_cache)
     _ -> wisp.not_found()
   }
-}
-
-fn render_faq_page() -> Response {
-  let faq_page: Element(msg) =
-    html.html([attribute("lang", "no")], [
-      render_head("Ofte Stilte Spørsmål - Surtoget", []),
-      html.body([class("bg-gray-50 text-gray-800")], [
-        html.div([class("container mx-auto px-4")], [
-          header(),
-          faq.render(),
-          footer(),
-        ]),
-      ]),
-    ])
-
-  faq_page
-  |> element.to_document_string_tree()
-  |> wisp.html_response(200)
-}
-
-fn render_about_page() -> Response {
-  let about_page: Element(msg) =
-    html.html([attribute("lang", "no")], [
-      render_head("Om Surtoget", []),
-      html.body([class("bg-gray-50 text-gray-800")], [
-        html.div([class("container mx-auto px-4")], [
-          header(),
-          about.render(),
-          footer(),
-        ]),
-      ]),
-    ])
-
-  about_page
-  |> element.to_document_string_tree()
-  |> wisp.html_response(200)
 }
 
 fn get_favicon(req: Request) {
@@ -191,37 +155,17 @@ fn render_head(
   html.head([], list.append(common_elements, extra_elements))
 }
 
-fn render_news_page() -> Response {
-  let articles = news.get_news_articles()
-  let news_page_element: Element(msg) =
-    html.html([attribute("lang", "no")], [
-      render_head("Nyheter - Surtoget", []),
-      html.body([class("bg-gray-50 text-gray-800")], [
-        html.div([class("container mx-auto px-4")], [
-          header(),
-          news_page.render(articles),
-          footer(),
-        ]),
-      ]),
-    ])
-
-  news_page_element
-  |> element.to_document_string_tree()
-  |> wisp.html_response(200)
-}
-
-fn render_index() -> Response {
+fn render_page(content: Element(msg)) -> response.Response(wisp.Body) {
   let index_page: Element(msg) =
     html.html([attribute("lang", "no")], [
       render_head("Surtoget - Sørlandsbanens sanne ansikt", [
         html.script([src("https://d3js.org/d3.v7.min.js")], ""),
       ]),
       html.body([class("bg-gray-50 text-gray-800")], [
-        html.div([class("container mx-auto px-4 min-w-[330px]")], [
-          header(),
-          main_content(),
-          footer(),
-        ]),
+        html.div(
+          [class("container mx-auto px-4 min-w-[330px] max-w-[1024px]")],
+          [header(), content, footer()],
+        ),
       ]),
     ])
 
