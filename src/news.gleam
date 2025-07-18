@@ -25,6 +25,14 @@ import gleam/dict
 pub fn get_news_articles() -> List(NewsArticle) {
   let articles = [
     NewsArticle(
+      title: "Tog mellom Stavanger og Kongsberg i dag innstilt",
+      description: "Go-Ahead Nordic har kansellert et tog på grunn av et problem og råder passasjerer til å ta neste tog.",
+      external_url: "https://www.boblad.no/nyheit/tog-mellom-stavanger-og-kongsberg-i-dag-innstilt/360132",
+      external_image_url: "https://image.boblad.no/174848.webp?imageId=174848&width=2116&height=1208&format=avi1",
+      owner: "Bøblad",
+      date: "16. juli 2025",
+    ),
+    NewsArticle(
       title: "Signalfeil får konsekvenser for Sørlandsbanen",
       description: "En signalfeil i Oslo skaper forsinkelser og innstillinger for Sørlandsbanen, som går til og fra Oslo. Ingen tog kan passere Oslo på grunn av feilen.",
       external_url: "https://www.nrk.no/stor-oslo/full-stans-i-togtrafikken-pa-ostlandet-1.17340830",
