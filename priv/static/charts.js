@@ -95,41 +95,38 @@ document.addEventListener("DOMContentLoaded", () => {
       .innerRadius(radius * 0.7)
       .outerRadius(radius * 0.7);
 
-    arcs
-      .append("text")
-      .each(function (d) {
-        if (!d.data.image_url) {
-          d3.select(this)
-            .attr("transform", function (d) {
-              const pos = outerArc.centroid(d);
-              const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2;
-              pos[0] = radius * 1.1 * (midangle < Math.PI ? 1 : -1);
-              return `translate(${pos})`;
-            })
-            .text(d.data.label)
-            .each(function (d) {
-              const text = d3.select(this);
-              const words = d.data.label.split("\n");
-              text.text("");
-              for (let i = 0; i < words.length; i++) {
-                const tspan = text.append("tspan").text(words[i]);
-                if (i > 0) {
-                  tspan.attr("x", 0).attr("dy", "1.2em");
-                }
-              }
-            })
-            .style("text-anchor", function (d) {
-              const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2;
-              return midangle < Math.PI ? "start" : "end";
-            });
-        }
-      })
-      .attr("fill", "black")
-      .style("font-size", "14px");
+    const legendElements = arcs.append("g");
 
-    arcs.append("image").each(function (d) {
-      if (d.data.image_url) {
-        d3.select(this)
+    legendElements.each(function (d) {
+      const g = d3.select(this);
+      if (!d.data.image_url) {
+        g.append("text")
+          .attr("transform", function (d) {
+            const pos = outerArc.centroid(d);
+            const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2;
+            pos[0] = radius * 1.1 * (midangle < Math.PI ? 1 : -1);
+            return `translate(${pos})`;
+          })
+          .text(d.data.label)
+          .each(function (d) {
+            const text = d3.select(this);
+            const words = d.data.label.split("\n");
+            text.text("");
+            for (let i = 0; i < words.length; i++) {
+              const tspan = text.append("tspan").text(words[i]);
+              if (i > 0) {
+                tspan.attr("x", 0).attr("dy", "1.2em");
+              }
+            }
+          })
+          .style("text-anchor", function (d) {
+            const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2;
+            return midangle < Math.PI ? "start" : "end";
+          })
+          .attr("fill", "black")
+          .style("font-size", "14px");
+      } else {
+        g.append("image")
           .attr("xlink:href", d.data.image_url)
           .attr("transform", function (d) {
             const pos = outerArc.centroid(d);
@@ -142,6 +139,17 @@ document.addEventListener("DOMContentLoaded", () => {
           .attr("height", 80);
       }
     });
+
+    function updateLegend() {
+      if (window.innerWidth < 528) {
+        legendElements.style("display", "none");
+      } else {
+        legendElements.style("display", "block");
+      }
+    }
+
+    updateLegend();
+    window.addEventListener("resize", updateLegend);
   }
 
   function createLineChart(elementId, data, width, height) {
