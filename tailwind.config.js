@@ -3,7 +3,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'surtoget-yellow': '#E1A602',
+        "surtoget-yellow": "#E3A804",
       },
     },
   },

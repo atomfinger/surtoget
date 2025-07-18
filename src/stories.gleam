@@ -56,7 +56,7 @@ pub fn render() -> Element(a) {
         html.div(
           [
             class(
-              "space-y-10 md:space-y-0 md:grid md:grid-cols-3 md:gap-x-8 md:gap-y-10",
+              "space-y-10 lg:space-y-0 lg:grid lg:grid-cols-3 lg:gap-x-8 lg:gap-y-10",
             ),
           ],
           list.map(stories, fn(story: Story) {

@@ -1,4 +1,13 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const menuButton = document.getElementById("menu-button");
+  const menu = document.getElementById("menu");
+
+  if (menuButton && menu) {
+    menuButton.addEventListener("click", () => {
+      menu.classList.toggle("hidden");
+    });
+  }
+
   function createDonutChart(
     elementId,
     data,
@@ -13,22 +22,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const chartWrapper = container.append("div");
 
-    const legendWrapper = container
-      .append("div")
-      .style("display", "flex")
-      .style("flex-direction", "column")
-      .style("justify-content", "center")
-      .style("margin-left", "-60px");
-
-    const width = chartWidth * 0.7;
-    const height = chartHeight * 0.7;
-    const radius = (Math.min(width, height) / 2) * 0.9;
+    const width = chartWidth;
+    const height = chartHeight;
+    const radius = Math.min(width, height) / 2.5;
 
     const svg = chartWrapper
       .append("svg")
       .attr("width", width)
       .attr("height", height)
-      .attr("viewBox", `0 0 ${width} ${height}`)
       .append("g")
       .attr("transform", `translate(${width / 2}, ${height / 2})`);
 
@@ -62,32 +63,75 @@ document.addEventListener("DOMContentLoaded", () => {
       .append("g")
       .attr("class", "arc");
 
-    arcs
+    const path = arcs
       .append("path")
       .attr("d", arc)
-      .attr("fill", (d, i) => colors[i % colors.length])
-      .on("mouseover", function (event, d) {
-        tooltip.style("opacity", 1);
-        d3.select(this).style("stroke", "black").style("opacity", 0.8);
-      })
-      .on("mousemove", function (event, d) {
-        tooltip
-          .html(`${d.data.label}: ${d.data.value}%`)
-          .style("left", event.pageX + 10 + "px")
-          .style("top", event.pageY - 10 + "px");
-      })
-      .on("mouseout", function (event, d) {
-        tooltip.style("opacity", 0);
-        d3.select(this).style("stroke", "none").style("opacity", 1);
-      });
+      .attr("fill", (d, i) => colors[i % colors.length]);
 
-    arcs
+    const text = arcs
       .append("text")
       .attr("transform", (d) => `translate(${arc.centroid(d)})`)
       .attr("text-anchor", "middle")
       .attr("fill", "white")
       .style("font-size", "14px")
       .text((d) => `${d.data.value}%`);
+
+    function handleMouseOver(event, d) {
+      tooltip.style("opacity", 1);
+      d3.select(this).style("stroke", "black").style("opacity", 0.8);
+    }
+
+    function handleMouseMove(event, d) {
+      tooltip
+        .html(`${d.data.label}: ${d.data.value}%`)
+        .style("left", `${event.pageX + 10}px`)
+        .style("top", `${event.pageY - 10}px`);
+    }
+
+    function handleMouseOut(event, d) {
+      tooltip.style("opacity", 0);
+      d3.select(this).style("stroke", "none").style("opacity", 1);
+    }
+
+    function handleClick(event, d) {
+      // Always hide the tooltip before showing a new one
+      tooltip.style("opacity", 0);
+
+      // If the same element is clicked again, toggle the tooltip
+      if (this === window.lastClickedElement) {
+        window.lastClickedElement = null;
+        return;
+      }
+
+      tooltip
+        .style("opacity", 1)
+        .html(`${d.data.label}: ${d.data.value}%`)
+        .style("left", `${event.pageX + 10}px`)
+        .style("top", `${event.pageY - 10}px`);
+
+      window.lastClickedElement = this;
+      event.stopPropagation();
+    }
+
+    path
+      .on("mouseover", handleMouseOver)
+      .on("mousemove", handleMouseMove)
+      .on("mouseout", handleMouseOut)
+      .on("click", handleClick);
+
+    d3.select(window).on("resize", () => {
+      tooltip.style("opacity", 0);
+    });
+
+    d3.select("body").on("click", () => {
+      tooltip.style("opacity", 0);
+    });
+
+    text
+      .on("mouseover", handleMouseOver)
+      .on("mousemove", handleMouseMove)
+      .on("mouseout", handleMouseOut)
+      .on("click", handleClick);
 
     if (hasTitle) {
       svg
@@ -98,51 +142,75 @@ document.addEventListener("DOMContentLoaded", () => {
         .text("Skyldfordeling");
     }
 
-    // Legend
-    const legend = legendWrapper
-      .selectAll(".legend-item")
-      .data(data)
-      .enter()
-      .append("div")
-      .attr("class", "legend-item")
-      .style("display", "flex")
-      .style("align-items", "center")
-      .style("margin-bottom", "10px");
+    const outerArc = d3
+      .arc()
+      .innerRadius(radius * 0.7)
+      .outerRadius(radius * 0.7);
 
-    legend
-      .append("div")
-      .style("width", "20px")
-      .style("height", "20px")
-      .style("background-color", (d, i) => colors[i % colors.length])
-      .style("border-radius", "50%")
-      .style("margin-right", "10px");
+    const legendElements = arcs.append("g");
 
-    const textAndImage = legend
-      .append("div")
-      .style("display", "flex")
-      .style("align-items", "center");
+    legendElements.each(function (d) {
+      const g = d3.select(this);
+      if (!d.data.image_url) {
+        g.append("text")
+          .attr("transform", function (d) {
+            const pos = outerArc.centroid(d);
+            const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2;
+            pos[0] = radius * 1.1 * (midangle < Math.PI ? 1 : -1);
+            return `translate(${pos})`;
+          })
+          .text(d.data.label)
+          .each(function (d) {
+            const text = d3.select(this);
+            const words = d.data.label.split("\n");
+            text.text("");
+            for (let i = 0; i < words.length; i++) {
+              const tspan = text.append("tspan").text(words[i]);
+              if (i > 0) {
+                tspan.attr("x", 0).attr("dy", "1.2em");
+              }
+            }
+          })
+          .style("text-anchor", function (d) {
+            const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2;
+            return midangle < Math.PI ? "start" : "end";
+          })
+          .attr("fill", "black")
+          .style("font-size", "14px");
+      } else {
+        g.append("image")
+          .attr("xlink:href", d.data.image_url)
+          .attr("transform", function (d) {
+            const pos = outerArc.centroid(d);
+            const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2;
+            pos[0] = radius * 1.1 * (midangle < Math.PI ? 1 : -1);
+            pos[1] -= 40;
+            return `translate(${pos})`;
+          })
+          .attr("width", 80)
+          .attr("height", 80);
+      }
+    });
 
-    textAndImage
-      .append("span")
-      .style("font-size", "14px")
-      .style("color", "#333")
-      .text((d) => (d.image_url ? "" : d.label));
+    function updateLegend() {
+      if (window.innerWidth < 528) {
+        legendElements.style("display", "none");
+      } else {
+        legendElements.style("display", "block");
+      }
+    }
 
-    textAndImage
-      .filter((d) => d.image_url) // Only add image if image_url is not empty
-      .append("img")
-      .attr("src", (d) => d.image_url)
-      .attr("alt", (d) => d.label)
-      .style("width", "80px")
-      .style("height", "auto")
-      .style("margin-left", "10px");
+    updateLegend();
+    window.addEventListener("resize", updateLegend);
   }
 
-  function createLineChart(elementId, data, width, height) {
+  function createLineChart(elementId, data) {
     const container = d3.select(`#${elementId}`);
-    container.html("");
+    container.html(""); // Clear previous chart
 
-    const margin = { top: 20, right: 20, bottom: 30, left: 40 };
+    const width = parseInt(container.style("width"));
+    const height = 300;
+    const margin = { top: 20, right: 20, bottom: 40, left: 40 };
     const chartWidth = width - margin.left - margin.right;
     const chartHeight = height - margin.top - margin.bottom;
 
@@ -244,14 +312,7 @@ document.addEventListener("DOMContentLoaded", () => {
     );
     if (lineChartElement && tabId === "punctuality_over_time") {
       const lineChartData = JSON.parse(lineChartElement.dataset.chartdata);
-      const width = 500;
-      const height = 300;
-      createLineChart(
-        "punctuality_over_time-chart",
-        lineChartData,
-        width,
-        height,
-      );
+      createLineChart("punctuality_over_time-chart", lineChartData);
     }
   }
 
@@ -310,4 +371,44 @@ document.addEventListener("DOMContentLoaded", () => {
     const tabId = initialActiveTab.id.replace("-content", "");
     renderChartsForTab(tabId);
   }
+
+  window.addEventListener("resize", () => {
+    const activeTab = document.querySelector(".tab-content:not(.hidden)");
+    if (activeTab) {
+      const tabId = activeTab.id.replace("-content", "");
+      renderChartsForTab(tabId);
+    }
+  });
+
+  // Re-render the chart on window resize
+  window.addEventListener("resize", () => {
+    const activeTab = document.querySelector(".tab-content:not(.hidden)");
+    if (activeTab) {
+      const tabId = activeTab.id.replace("-content", "");
+      if (tabId === "punctuality_over_time") {
+        renderChartsForTab(tabId);
+      }
+    }
+  });
+
+  const tabsToggle = document.getElementById("tabs-toggle");
+  const tabsMenu = document.getElementById("tabs-menu");
+
+  if (tabsToggle) {
+    tabsToggle.addEventListener("click", (event) => {
+      event.stopPropagation();
+      tabsMenu.classList.toggle("hidden");
+    });
+  }
+
+  document.addEventListener("click", (event) => {
+    if (
+      tabsMenu &&
+      !tabsMenu.classList.contains("hidden") &&
+      !tabsMenu.contains(event.target) &&
+      !tabsToggle.contains(event.target)
+    ) {
+      tabsMenu.classList.add("hidden");
+    }
+  });
 });

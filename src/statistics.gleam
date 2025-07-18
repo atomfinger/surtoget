@@ -5,6 +5,7 @@ import gleam/list
 import lustre/attribute.{attribute, class, href, id}
 import lustre/element.{type Element}
 import lustre/element/html
+import lustre/element/svg
 
 pub type ChartData {
   ChartData(label: String, value: Float, image_url: String)
@@ -150,16 +151,57 @@ pub fn render() -> Element(a) {
           ],
           [html.text("Statistikk")],
         ),
-        html.nav([attribute("-mx-1", ""), class("flex space-x-1")], [
-          tab_button("last_month", "Siste rapport (Mai)", True),
-          tab_button("this_year", "Dette året så langt", False),
-          tab_button("punctuality_over_time", "Punktlighet over tid", False),
+        html.div([class("relative")], [
+          html.div([class("md:hidden")], [
+            html.button(
+              [
+                id("tabs-toggle"),
+                class(
+                  "p-2 rounded-md text-gray-500 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white",
+                ),
+              ],
+              [
+                html.span([class("sr-only")], [html.text("Open main menu")]),
+                svg.svg(
+                  [
+                    class("h-6 w-6"),
+                    attribute("stroke", "currentColor"),
+                    attribute("fill", "none"),
+                    attribute("viewBox", "0 0 24 24"),
+                  ],
+                  [
+                    svg.path([
+                      attribute("d", "M4 6h16M4 12h16m-7 6h7"),
+                      attribute("stroke-linecap", "round"),
+                      attribute("stroke-linejoin", "round"),
+                      attribute("stroke-width", "2"),
+                    ]),
+                  ],
+                ),
+              ],
+            ),
+          ]),
+          html.nav(
+            [
+              id("tabs-menu"),
+              class(
+                "hidden md:flex md:flex-row md:space-x-1 absolute md:relative w-48 md:w-auto bg-white md:bg-transparent shadow-lg md:shadow-none",
+              ),
+            ],
+            [
+              tab_button("last_month", "Siste rapport (Mai)", True),
+              tab_button("this_year", "Dette året så langt", False),
+              tab_button("punctuality_over_time", "Punktlighet over tid", False),
+            ],
+          ),
         ]),
       ]),
     ]),
-    tab_content("last_month", True),
-    tab_content("this_year", False),
-    punctuality_over_time_content(False),
+    html.div([class("mt-4")], [
+      tab_content("last_month", True),
+      tab_content("this_year", False),
+      punctuality_over_time_content(False),
+    ]),
   ])
 }
 
@@ -200,7 +242,7 @@ fn tab_content(tab_id: String, is_first: Bool) -> Element(a) {
       blame_stats.goahead,
       "/static/goahead_logo.png",
     ),
-    ChartData("Uforutsette årsaker", blame_stats.unforeseen, ""),
+    ChartData("Uforutsette\nårsaker", blame_stats.unforeseen, ""),
     ChartData("Følgeforsinkelser", blame_stats.consequential_delays, ""),
   ]
   let content_classes = "tab-content p-4 bg-white shadow-lg rounded-lg"
@@ -218,12 +260,16 @@ fn tab_content(tab_id: String, is_first: Bool) -> Element(a) {
       html.div(
         [
           class(
-            "grid grid-cols-1 md:grid-cols-2 gap-8 items-center justify-items-center",
+            "grid grid-cols-1 lg:grid-cols-2 lg:gap-4 items-center justify-items-center",
           ),
         ],
         [
           html.div(
-            [class("flex flex-col items-center justify-center text-center p-8")],
+            [
+              class(
+                "flex flex-col items-center justify-center text-center p-4 lg:p-8",
+              ),
+            ],
             [
               html.div(
                 [
@@ -247,7 +293,7 @@ fn tab_content(tab_id: String, is_first: Bool) -> Element(a) {
             tab_id <> "-blame-chart",
             blame_chart_data,
             "blame",
-            "w-full h-full flex items-center justify-center",
+            "w-full h-full flex flex-col items-center justify-center",
           ),
         ],
       ),
@@ -299,8 +345,13 @@ fn punctuality_over_time_content(is_first: Bool) -> Element(a) {
       }),
     ],
     [
-      html.div([class("flex justify-center")], [
-        chart_container("punctuality_over_time-chart", chart_data, "line", ""),
+      html.div([class("flex justify-center w-full")], [
+        chart_container(
+          "punctuality_over_time-chart",
+          chart_data,
+          "line",
+          "w-full h-full",
+        ),
       ]),
     ],
   )
