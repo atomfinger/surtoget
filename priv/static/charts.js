@@ -13,34 +13,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const chartWrapper = container.append("div");
 
-    const legendWrapper = container
-      .append("div")
-      .style("display", "flex")
-      .style("justify-content", "center")
-      .style("align-items", "center")
-      .style("flex-wrap", "wrap");
-
-    function updateLegendLayout() {
-      if (window.innerWidth < 768) {
-        legendWrapper
-          .style("flex-direction", "column")
-          .style("align-items", "flex-start");
-      } else {
-        legendWrapper
-          .style("flex-direction", "row")
-          .style("align-items", "center");
-      }
-    }
-
-    const width = chartWidth * 0.7;
-    const height = chartHeight * 0.7;
-    const radius = (Math.min(width, height) / 2) * 0.9;
+    const width = chartWidth;
+    const height = chartHeight;
+    const radius = Math.min(width, height) / 2.5;
 
     const svg = chartWrapper
       .append("svg")
       .attr("width", width)
       .attr("height", height)
-      .attr("viewBox", `0 0 ${width} ${height}`)
       .append("g")
       .attr("transform", `translate(${width / 2}, ${height / 2})`);
 
@@ -110,67 +90,57 @@ document.addEventListener("DOMContentLoaded", () => {
         .text("Skyldfordeling");
     }
 
-    // Legend
-    const legend = legendWrapper
-      .selectAll(".legend-item")
-      .data(data)
-      .enter()
-      .append("div")
-      .attr("class", "legend-item")
-      .style("display", "flex")
-      .style("align-items", "center")
-      .style("margin-bottom", "10px")
-      .style("margin-right", "20px");
+    const outerArc = d3
+      .arc()
+      .innerRadius(radius * 0.7)
+      .outerRadius(radius * 0.7);
 
-    const legendCircle = legend
-      .append("div")
-      .style("background-color", (d, i) => colors[i % colors.length])
-      .style("border-radius", "50%")
-      .style("margin-right", "10px");
+    arcs
+      .append("text")
+      .each(function (d) {
+        if (!d.data.image_url) {
+          d3.select(this)
+            .attr("transform", function (d) {
+              const pos = outerArc.centroid(d);
+              const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2;
+              pos[0] = radius * 1.1 * (midangle < Math.PI ? 1 : -1);
+              return `translate(${pos})`;
+            })
+            .text(d.data.label)
+            .each(function (d) {
+              const text = d3.select(this);
+              const words = d.data.label.split("\n");
+              text.text("");
+              for (let i = 0; i < words.length; i++) {
+                const tspan = text.append("tspan").text(words[i]);
+                if (i > 0) {
+                  tspan.attr("x", 0).attr("dy", "1.2em");
+                }
+              }
+            })
+            .style("text-anchor", function (d) {
+              const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2;
+              return midangle < Math.PI ? "start" : "end";
+            });
+        }
+      })
+      .attr("fill", "black")
+      .style("font-size", "14px");
 
-    function updateLegendCircleSize() {
-      if (window.innerWidth < 768) {
-        legendCircle.style("width", "15px").style("height", "15px");
-      } else {
-        legendCircle.style("width", "20px").style("height", "20px");
+    arcs.append("image").each(function (d) {
+      if (d.data.image_url) {
+        d3.select(this)
+          .attr("xlink:href", d.data.image_url)
+          .attr("transform", function (d) {
+            const pos = outerArc.centroid(d);
+            const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2;
+            pos[0] = radius * 1.1 * (midangle < Math.PI ? 1 : -1);
+            pos[1] -= 40;
+            return `translate(${pos})`;
+          })
+          .attr("width", 80)
+          .attr("height", 80);
       }
-    }
-
-    const textAndImage = legend
-      .append("div")
-      .style("display", "flex")
-      .style("align-items", "center");
-
-    const legendText = textAndImage
-      .append("span")
-      .style("color", "#333")
-      .style("white-space", "nowrap")
-      .text((d) => (d.image_url ? "" : d.label));
-
-    function updateLegendFontSize() {
-      if (window.innerWidth < 768) {
-        legendText.style("font-size", "12px");
-      } else {
-        legendText.style("font-size", "14px");
-      }
-    }
-
-    textAndImage
-      .filter((d) => d.image_url) // Only add image if image_url is not empty
-      .append("img")
-      .attr("src", (d) => d.image_url)
-      .attr("alt", (d) => d.label)
-      .style("width", "80px")
-      .style("height", "auto")
-      .style("margin-left", "10px");
-
-    updateLegendLayout();
-    updateLegendFontSize();
-    updateLegendCircleSize();
-    window.addEventListener("resize", () => {
-      updateLegendLayout();
-      updateLegendFontSize();
-      updateLegendCircleSize();
     });
   }
 

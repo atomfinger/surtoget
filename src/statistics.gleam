@@ -200,7 +200,7 @@ fn tab_content(tab_id: String, is_first: Bool) -> Element(a) {
       blame_stats.goahead,
       "/static/goahead_logo.png",
     ),
-    ChartData("Uforutsette årsaker", blame_stats.unforeseen, ""),
+    ChartData("Uforutsette\nårsaker", blame_stats.unforeseen, ""),
     ChartData("Følgeforsinkelser", blame_stats.consequential_delays, ""),
   ]
   let content_classes = "tab-content p-4 bg-white shadow-lg rounded-lg"
