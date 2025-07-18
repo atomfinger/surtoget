@@ -44,6 +44,7 @@ pub fn handle_request(
 ) -> Response {
   use <- wisp.serve_static(req, under: "/static", from: "priv/static")
   use <- wisp.serve_static(req, under: "/css", from: "priv/css")
+  use <- wisp.serve_static(req, under: "/javascript", from: "priv/javascript")
   route_request(req, image_cache)
 }
 
@@ -198,7 +199,7 @@ fn render_head(
       attribute.type_("image/x-icon"),
       attribute.rel("icon"),
     ]),
-    html.script([src("/static/charts.js"), attribute("defer", "")], ""),
+    html.script([src("/javascript/main.js"), attribute("defer", "")], ""),
     html.script([src("https://d3js.org/d3.v7.min.js")], ""),
   ]
 
