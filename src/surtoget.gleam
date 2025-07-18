@@ -57,8 +57,7 @@ fn route_request(
     ["faq"] -> render_page(faq.render())
     ["health"] -> wisp.ok()
     ["favicon.ico"] -> get_favicon(req)
-    ["news"] ->
-      news.get_news_articles() |> list.take(3) |> news.render() |> render_page()
+    ["news"] -> news.get_news_articles() |> news.render() |> render_page()
     ["news", "images", image_id] ->
       handle_news_image_request(image_id, req, image_cache)
     _ -> wisp.not_found()
