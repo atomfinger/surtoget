@@ -156,7 +156,7 @@ document.addEventListener("DOMContentLoaded", () => {
           .attr("transform", function (d) {
             const pos = outerArc.centroid(d);
             const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2;
-            pos[0] = radius * 1.1 * (midangle < Math.PI ? 1 : -1);
+            pos[0] = radius * (midangle < Math.PI ? 1 : -1);
             return `translate(${pos})`;
           })
           .text(d.data.label)
