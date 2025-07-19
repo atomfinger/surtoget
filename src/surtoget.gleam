@@ -164,9 +164,7 @@ fn render_head(
 fn render_page(content: Element(msg)) -> response.Response(wisp.Body) {
   let index_page: Element(msg) =
     html.html([attribute("lang", "no")], [
-      render_head("Surtoget - Sørlandsbanens sanne ansikt", [
-        html.script([src("https://d3js.org/d3.v7.min.js")], ""),
-      ]),
+      render_head("Surtoget - Sørlandsbanens sanne ansikt", []),
       html.body([class("bg-gray-50 text-gray-800")], [
         html.div(
           [class("container mx-auto px-4 min-w-[330px] max-w-[1024px]")],
