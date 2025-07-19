@@ -86,7 +86,7 @@ pub fn get_news_articles() -> List(NewsArticle) {
       external_url: "https://www.boblad.no/nyheit/skal-ha-nytt-mote-med-bane-nor-er-ikkje-fornogde/357587",
       external_image_url: "https://image.boblad.no/357616.webp?imageId=357616&width=2116&height=1208&format=avi1",
       owner: "Bøblad",
-      date: "10. juli 2025",
+      date: "30. juni 2025",
     ),
     NewsArticle(
       title: "Tog mellom Stavanger og Kongsberg i dag innstilt",
