@@ -62,7 +62,7 @@ pub fn get_news_articles() -> List(NewsArticle) {
       external_url: "https://www.nrk.no/sorlandet/togtrobbel-skyldes-slitte-hjul-1.17443405",
       external_image_url: "https://gfx.nrk.no/FLUplHUikquKhdgPCOAtZg6eJGjwKHV-nbChZdoNum8Q.jpg",
       owner: "NRK",
-      date: "19. juli 2025",
+      date: "04. juni 2025",
     ),
     NewsArticle(
       title: "Får ikke togstopp tilbake",
