@@ -207,17 +207,15 @@ document.addEventListener("DOMContentLoaded", () => {
       const legendContainer = d3.select(`#${container.node().id}-legend`);
       legendContainer.html(""); // Clear existing legend
 
-      const legend = legendContainer
-        .append("div")
-        .attr(
-          "class",
-          "flex flex-wrap justify-center items-center mt-4 space-x-4",
-        );
+      const outerDiv = legendContainer.append("div");
+      const innerDiv = outerDiv.append("div");
 
       data.forEach((d, i) => {
-        const legendItem = legend
+        const legendItem = innerDiv
           .append("div")
-          .attr("class", "flex items-center");
+          .style("display", "flex")
+          .style("align-items", "center")
+          .style("margin-bottom", "0.5rem");
 
         legendItem
           .append("div")
@@ -225,13 +223,45 @@ document.addEventListener("DOMContentLoaded", () => {
           .style("height", "12px")
           .style("background-color", colors[i % colors.length]);
 
-        legendItem.append("span").attr("class", "ml-2 text-sm").text(d.label);
+        legendItem
+          .append("span")
+          .style("margin-left", "0.5rem")
+          .style("font-size", "14px")
+          .text(d.label);
       });
+    }
+
+    function handleLegendLayout() {
+      const legendContainer = d3.select(`#${container.node().id}-legend`);
+      if (!legendContainer.node()) return;
+
+      const outerDiv = legendContainer.select("div");
+      const innerDiv = outerDiv.select("div");
+
+      if (window.innerWidth < 405) {
+        outerDiv.style("display", "flex");
+        outerDiv.style("justify-content", "center");
+        innerDiv.style("display", "flex");
+        innerDiv.style("flex-direction", "column");
+        innerDiv.style("align-items", "flex-start");
+      } else {
+        outerDiv.style("display", "block");
+        innerDiv.style("display", "flex");
+        innerDiv.style("flex-direction", "row");
+        innerDiv.style("flex-wrap", "wrap");
+        innerDiv.style("justify-content", "center");
+        innerDiv.style("align-items", "center");
+        innerDiv.selectAll("div").style("margin-right", "1rem");
+      }
     }
 
     createMobileLegend(data, colors);
     updateLegend();
-    window.addEventListener("resize", updateLegend);
+    window.addEventListener("resize", () => {
+      updateLegend();
+      handleLegendLayout();
+    });
+    handleLegendLayout();
   }
 
   function createLineChart(elementId, data) {

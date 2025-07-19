@@ -297,7 +297,13 @@ fn tab_content(tab_id: String, is_first: Bool) -> Element(a) {
           ),
         ],
       ),
-      html.div([id(tab_id <> "-blame-chart-legend")], []),
+      html.div(
+        [
+          id(tab_id <> "-blame-chart-legend"),
+          class("flex flex-wrap justify-center items-center mt-4 space-x-4"),
+        ],
+        [],
+      ),
     ],
   )
 }
