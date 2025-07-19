@@ -60,6 +60,8 @@ pub fn render() -> Element(msg) {
         "- Gleam: Et moderne og brukervennlig programmeringsspråk for backenden.",
         "- Lustre: Et webrammeverk for Gleam.",
         "- Tailwind CSS: For design og styling.",
+        "- Simpleanalytics: For statistikk på besøkende på siden",
+        "- fly.io: Der nettsiden kjøres",
         "Kildekoden er åpen og tilgjengelig på GitHub.",
       ],
       [
@@ -67,6 +69,8 @@ pub fn render() -> Element(msg) {
           "https://github.com/atomfinger/surtoget",
           "https://github.com/atomfinger/surtoget",
         ),
+        #("fly.io/legal/privacy-policy.", "fly.io privacy policy"),
+        #("https://docs.simpleanalytics.com/privacy", "Simpleanalytics"),
       ],
     ),
     Question(

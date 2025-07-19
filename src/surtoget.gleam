@@ -149,6 +149,13 @@ fn render_head(
     ]),
     html.script([src("/javascript/main.js"), attribute("defer", "")], ""),
     html.script([src("https://d3js.org/d3.v7.min.js")], ""),
+    html.script(
+      [
+        attribute.src("https://scripts.simpleanalyticscdn.com/latest.js"),
+        attribute("async", ""),
+      ],
+      "",
+    ),
   ]
 
   html.head([], list.append(common_elements, extra_elements))
