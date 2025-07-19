@@ -297,6 +297,7 @@ fn tab_content(tab_id: String, is_first: Bool) -> Element(a) {
           ),
         ],
       ),
+      html.div([id(tab_id <> "-blame-chart-legend")], []),
     ],
   )
 }

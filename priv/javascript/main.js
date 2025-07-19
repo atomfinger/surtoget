@@ -193,13 +193,43 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     function updateLegend() {
+      const mobileLegendContainer = d3.select(`#${container.node().id}-legend`);
       if (window.innerWidth < 528) {
         legendElements.style("display", "none");
+        mobileLegendContainer.style("display", "flex");
       } else {
         legendElements.style("display", "block");
+        mobileLegendContainer.style("display", "none");
       }
     }
 
+    function createMobileLegend(data, colors) {
+      const legendContainer = d3.select(`#${container.node().id}-legend`);
+      legendContainer.html(""); // Clear existing legend
+
+      const legend = legendContainer
+        .append("div")
+        .attr(
+          "class",
+          "flex flex-wrap justify-center items-center mt-4 space-x-4",
+        );
+
+      data.forEach((d, i) => {
+        const legendItem = legend
+          .append("div")
+          .attr("class", "flex items-center");
+
+        legendItem
+          .append("div")
+          .style("width", "12px")
+          .style("height", "12px")
+          .style("background-color", colors[i % colors.length]);
+
+        legendItem.append("span").attr("class", "ml-2 text-sm").text(d.label);
+      });
+    }
+
+    createMobileLegend(data, colors);
     updateLegend();
     window.addEventListener("resize", updateLegend);
   }
