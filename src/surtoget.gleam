@@ -1,4 +1,5 @@
 import about
+import delayed
 import faq
 import gleam/bytes_tree
 import gleam/erlang/process
@@ -23,12 +24,21 @@ import wisp.{type Request, type Response}
 import wisp/internal
 import wisp/wisp_mist
 
+pub type Context {
+  Context(
+    image_cache_subject: process.Subject(image_cache.ImageCacheMessage),
+    delayed_subject: process.Subject(delayed.DelayMessage),
+  )
+}
+
 pub fn main() -> Nil {
   let secret_key_base = wisp.random_string(64)
   wisp.configure_logger()
   let assert Ok(cache) = image_cache.start()
+  let assert Ok(delayed) = delayed.start()
+  let ctx = Context(cache.data, delayed.data)
   let assert Ok(_) =
-    wisp_mist.handler(handle_request(_, cache.data), secret_key_base)
+    wisp_mist.handler(handle_request(_, ctx), secret_key_base)
     |> mist.new()
     |> mist.bind("0.0.0.0")
     |> mist.port(8000)
@@ -37,20 +47,14 @@ pub fn main() -> Nil {
   process.sleep_forever()
 }
 
-pub fn handle_request(
-  req: Request,
-  image_cache: process.Subject(image_cache.ImageCacheMessage),
-) -> Response {
+pub fn handle_request(req: Request, ctx: Context) -> Response {
   use <- wisp.serve_static(req, under: "/static", from: "priv/static")
   use <- wisp.serve_static(req, under: "/css", from: "priv/css")
   use <- wisp.serve_static(req, under: "/javascript", from: "priv/javascript")
-  route_request(req, image_cache)
+  route_request(req, ctx)
 }
 
-fn route_request(
-  req: Request,
-  image_cache: process.Subject(image_cache.ImageCacheMessage),
-) -> Response {
+fn route_request(req: Request, ctx: Context) -> Response {
   case wisp.path_segments(req) {
     [] | ["home"] | ["index"] -> render_page(main_content())
     ["om-surtoget"] -> render_page(about.render())
@@ -59,7 +63,7 @@ fn route_request(
     ["favicon.ico"] -> get_favicon(req)
     ["news"] -> news.get_news_articles() |> news.render() |> render_page()
     ["news", "images", image_id] ->
-      handle_news_image_request(image_id, req, image_cache)
+      handle_news_image_request(image_id, req, ctx.image_cache_subject)
     _ -> wisp.not_found()
   }
 }
