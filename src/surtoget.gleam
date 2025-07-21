@@ -1,6 +1,7 @@
 import about
 import delayed
 import faq
+import footer
 import gleam/bytes_tree
 import gleam/erlang/process
 import gleam/http/request
@@ -8,18 +9,16 @@ import gleam/http/response
 import gleam/list
 import gleam/result
 import gleam/string
+import header
 import image_cache
+import index
 import lustre/attribute.{attribute, class, href, rel, src}
 import lustre/element.{type Element}
 import lustre/element/html
-import lustre/element/svg
 import marceau
 import mist
 import news
-import refund
 import simplifile
-import statistics
-import stories
 import wisp.{type Request, type Response}
 import wisp/internal
 import wisp/wisp_mist
@@ -68,7 +67,7 @@ pub fn handle_request(req: Request, ctx: Context) -> Response {
 
 fn route_request(req: Request, ctx: Context) -> Response {
   case wisp.path_segments(req) {
-    [] | ["home"] | ["index"] -> render_page(main_content(ctx.delayed_subject))
+    [] | ["home"] | ["index"] -> render_page(index.render(ctx.delayed_subject))
     ["om-surtoget"] -> ctx.about_page
     ["faq"] -> ctx.faq_page
     ["health"] -> wisp.ok()
@@ -184,7 +183,7 @@ fn render_page(content: Element(msg)) -> response.Response(wisp.Body) {
       html.body([class("bg-gray-50 text-gray-800")], [
         html.div(
           [class("container mx-auto px-4 min-w-[330px] max-w-[1024px]")],
-          [header(), content, footer()],
+          [header.render(), content, footer.render()],
         ),
       ]),
     ])
@@ -192,201 +191,4 @@ fn render_page(content: Element(msg)) -> response.Response(wisp.Body) {
   index_page
   |> element.to_document_string_tree()
   |> wisp.html_response(200)
-}
-
-fn header() -> Element(msg) {
-  html.header([class("py-4 bg-white shadow-md")], [
-    html.div([class("container mx-auto px-4")], [
-      html.div([class("flex justify-between items-center")], [
-        html.div([class("md:hidden flex-shrink-0")], [
-          html.a([href("/")], [
-            html.img([
-              src("/static/surtoget_logo_train_only.png"),
-              attribute("alt", "Surtoget Logo"),
-              class("h-16 w-auto"),
-            ]),
-          ]),
-        ]),
-        html.div([class("flex-grow text-center md:hidden")], [
-          html.a([href("/"), class("text-2xl font-bold text-[#E3A804]")], [
-            html.text("Surtoget"),
-          ]),
-        ]),
-        html.div([class("hidden md:block flex-grow text-center")], [
-          html.a([href("/")], [
-            html.img([
-              src("/static/surtoget_logo.png"),
-              attribute("alt", "Surtoget Logo"),
-              class("h-24 w-auto mx-auto"),
-            ]),
-          ]),
-        ]),
-        html.div([class("md:hidden flex-shrink-0")], [
-          html.button(
-            [
-              attribute("id", "menu-button"),
-              attribute("type", "button"),
-              class(
-                "text-gray-500 hover:text-yellow-600 focus:outline-none focus:text-yellow-600",
-              ),
-            ],
-            [
-              svg.svg(
-                [
-                  class("h-8 w-8"),
-                  attribute("fill", "none"),
-                  attribute("viewBox", "0 0 24 24"),
-                  attribute("stroke", "currentColor"),
-                ],
-                [
-                  svg.path([
-                    attribute("stroke-linecap", "round"),
-                    attribute("stroke-linejoin", "round"),
-                    attribute("stroke-width", "2"),
-                    attribute("d", "M4 6h16M4 12h16M4 18h16"),
-                  ]),
-                ],
-              ),
-            ],
-          ),
-        ]),
-      ]),
-      html.nav(
-        [
-          attribute("id", "menu"),
-          class(
-            "hidden md:flex md:justify-center mt-2 transition-all duration-500 ease-in-out overflow-hidden",
-          ),
-        ],
-        [
-          html.ul(
-            [
-              class(
-                "flex flex-col text-center md:flex-row md:space-x-6 text-2xl md:text-base font-medium",
-              ),
-            ],
-            [
-              li_nav_item("/", "Hjem"),
-              li_nav_item("/news", "Nyheter"),
-              li_nav_item("/om-surtoget", "Om Surtoget"),
-              li_nav_item("/faq", "Ofte stilte spørsmål"),
-            ],
-          ),
-        ],
-      ),
-    ]),
-  ])
-}
-
-fn li_nav_item(href_val: String, text_val: String) -> Element(msg) {
-  html.li([], [
-    html.a(
-      [
-        href(href_val),
-        class(
-          "text-gray-500 hover:text-yellow-600 transition-colors duration-200",
-        ),
-      ],
-      [html.text(text_val)],
-    ),
-  ])
-}
-
-fn main_content(
-  delayed_subject: process.Subject(delayed.DelayMessage),
-) -> Element(msg) {
-  let articles = news.get_news_articles()
-  let latest_news = list.take(articles, 3)
-
-  html.main([class("my-10 space-y-16")], [
-    blurb(),
-    render_delay_notice(delayed_subject),
-    html.section([], [statistics.render()]),
-    html.section([], [refund.render()]),
-    html.section([], [stories.render()]),
-    html.section([], [news.render(latest_news)]),
-  ])
-}
-
-fn render_delay_notice(
-  delayed_subject: process.Subject(delayed.DelayMessage),
-) -> Element(msg) {
-  case delayed.is_delayed(delayed_subject) {
-    True ->
-      html.div([class("my-10 p-4 bg-yellow-100 rounded-lg shadow-md")], [
-        html.p(
-          [class("text-lg font-semibold text-yellow-800 flex items-center")],
-          [
-            html.span([class("relative flex h-3 w-3 mr-3")], [
-              html.span(
-                [
-                  class(
-                    "animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75",
-                  ),
-                ],
-                [],
-              ),
-              html.span(
-                [class("relative inline-flex rounded-full h-3 w-3 bg-red-500")],
-                [],
-              ),
-            ]),
-            html.text("Akkurat nå: Sørlandsbanen er forsinket... Igjen 🙄"),
-          ],
-        ),
-      ])
-    False -> html.div([], [])
-  }
-}
-
-fn blurb() -> Element(msg) {
-  html.section([class("my-10 flex flex-col md:flex-row items-center gap-8")], [
-    html.img([
-      src("/static/surtoget_logo.png"),
-      attribute("alt", "Surtoget Logo"),
-      class("h-32 w-auto hidden md:block"),
-    ]),
-    html.div([class("text-lg text-gray-700")], [
-      html.p([], [
-        html.text(
-          "Velkommen til Surtoget! Kjenner du på den spesielle blandingen av håp og fortvilelse hver gang du setter deg på Sørlandsbanen?",
-        ),
-      ]),
-      html.p([class("mt-4")], [
-        html.text(
-          "Her deler vi historier fra virkeligheten, belyser problemene og gir deg verktøyene du trenger for å takle en hverdag med en av Norges mest utilregnelige toglinjer.",
-        ),
-      ]),
-    ]),
-  ])
-}
-
-fn footer() -> Element(msg) {
-  html.footer(
-    [
-      class(
-        "py-8 mt-10 border-t border-gray-200 text-center text-gray-500 text-sm",
-      ),
-    ],
-    [
-      html.p([], [
-        html.text("Laget med frustrasjon og "),
-        html.a(
-          [
-            href("https://gleam.run"),
-            class("hover:text-yellow-600 transition-colors duration-200"),
-          ],
-          [html.text("Gleam")],
-        ),
-        html.text(" av "),
-        html.a(
-          [
-            href("https://lindbakk.com"),
-            class("hover:text-yellow-600 transition-colors duration-200"),
-          ],
-          [html.text("John Mikael Lindbakk")],
-        ),
-      ]),
-    ],
-  )
 }
