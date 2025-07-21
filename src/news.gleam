@@ -25,6 +25,14 @@ import gleam/dict
 pub fn get_news_articles() -> List(NewsArticle) {
   let articles = [
     NewsArticle(
+      title: "Go-Ahead melder om togtrøbbel i dag, tysdag",
+      description: "Togselskapet Go-Ahead melder om togtrøbbel på Sørlandsbanen tirsdag. Avgangen fra Stavanger klokka 4.20 mot Oslo er innstilt. Det blir satt opp buss for tog på strekningen mellom Stavanger og Kongsberg.",
+      external_url: "https://www.boblad.no/nyheit/go-ahead-melder-om-togtrobbel-i-dag-tysdag/360802",
+      external_image_url: "https://image.boblad.no/305005.webp?imageId=305005&width=2116&height=1208&format=avi1",
+      owner: "Bøblad",
+      date: "21. juli 2025",
+    ),
+    NewsArticle(
       title: "Rim tvang tog til å snu i motbakke – mener Bane Nor kunne løst problemet raskere",
       description: "Rim på kontaktledningen på Sørlandsbanen førte til at tog måtte snu i en motbakke, noe som skapte forsinkelser. Go Ahead Nordic kritiserer Bane NOR for treg problemløsning.",
       external_url: "https://www.tu.no/artikler/rim-tvang-tog-til-a-snu-i-motbakke-mener-bane-nor-kunne-lost-problemet-raskere-br/554340",
