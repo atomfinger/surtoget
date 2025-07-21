@@ -6,7 +6,6 @@
 
 import entur_client
 import gleam/erlang/process
-import gleam/io
 import gleam/option
 import gleam/otp/actor
 
@@ -36,9 +35,7 @@ pub fn is_delayed(subject: process.Subject(DelayMessage)) -> Bool {
 }
 
 fn scheduler(subject: process.Subject(DelayMessage)) {
-  io.println("Updating")
   update(subject)
-  io.println("Updated - Waiting until next schedule")
   process.sleep(wait_time_ms)
   scheduler(subject)
 }
