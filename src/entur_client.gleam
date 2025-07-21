@@ -1,4 +1,4 @@
-import gleam/dynamic/decode
+import entur_decoder.{type Data, type EstimatedCall, type ServiceJourney}
 import gleam/hackney
 import gleam/int
 import gleam/list
@@ -12,16 +12,21 @@ import tempo/datetime
 import tempo/duration
 import tempo/error
 
+const api_host = "api.entur.io"
+
+const path = "/journey-planner/v3/graphql"
+
 pub fn check_for_dealays() -> option.Option(Bool) {
   let query = query(date.current_local())
   let result: Result(option.Option(Data), gleamql.GraphQLError) =
     gleamql.new()
     |> gleamql.set_query(query)
-    |> gleamql.set_host("https://api.entur.io/journey-planner/v3")
-    |> gleamql.set_path("/graphql")
+    |> gleamql.set_host(api_host)
+    |> gleamql.set_path(path)
     |> gleamql.set_default_content_type_header()
-    |> gleamql.set_decoder(data_decoder())
+    |> gleamql.set_decoder(entur_decoder.data_decoder())
     |> gleamql.send(hackney.send)
+
   case result {
     Ok(data_option) ->
       case data_option {
@@ -104,7 +109,7 @@ fn is_delayed(
 }
 
 fn query(date: Date) -> String {
-  "{
+  "query {
   lines(publicCode: \"F5\") {
     id
     serviceJourneys {
@@ -121,92 +126,4 @@ fn query(date: Date) -> String {
   }
 }
 "
-}
-
-pub fn data_decoder() -> decode.Decoder(Data) {
-  let decoder = {
-    use lines <- decode.field("lines", decode.list(line_decoder()))
-    decode.success(Data(lines))
-  }
-  decoder
-}
-
-fn line_decoder() -> decode.Decoder(Line) {
-  let decoder = {
-    use id <- decode.field("id", decode.string)
-    use service_journeys <- decode.field(
-      "serviceJourneys",
-      decode.list(service_journey_decoder()),
-    )
-    decode.success(Line(id, service_journeys))
-  }
-  decoder
-}
-
-fn service_journey_decoder() -> decode.Decoder(ServiceJourney) {
-  let decoder = {
-    use id <- decode.field("id", decode.int)
-    use estimated_calls <- decode.field(
-      "estimatedCalls",
-      decode.list(estimated_call_decoder()),
-    )
-    decode.success(ServiceJourney(id, estimated_calls))
-  }
-  decoder
-}
-
-fn estimated_call_decoder() -> decode.Decoder(EstimatedCall) {
-  let decoder = {
-    use aimed_arrival_time <- decode.field("aimedArrivalTime", decode.string)
-    use cancellation <- decode.field("cancellation", decode.bool)
-    use date <- decode.field("date", decode.string)
-    use expected_arrival_time <- decode.field(
-      "expectedArrivalTime",
-      decode.string,
-    )
-    use realtime <- decode.field("realtime", decode.bool)
-    use realtime_state <- decode.field("realtimeState", decode.string)
-    use actual_arrival_time <- decode.optional_field(
-      "actualArrivalTime",
-      "",
-      decode.string,
-    )
-    decode.success(EstimatedCall(
-      aimed_arrival_time,
-      cancellation,
-      date,
-      expected_arrival_time,
-      realtime,
-      realtime_state,
-      actual_arrival_time,
-    ))
-  }
-  decoder
-}
-
-pub type Data {
-  Data(lines: List(Line))
-}
-
-pub type Line {
-  Line(id: String, service_journeys: List(ServiceJourney))
-}
-
-pub type ServiceJourney {
-  ServiceJourney(id: Int, estimated_calls: List(EstimatedCall))
-}
-
-pub type EstimatedCall {
-  EstimatedCall(
-    aimed_arrival_time: String,
-    // ISO 8601 string (or DateTime type if parsed)
-    cancellation: Bool,
-    date: String,
-    // just the YYYY-MM-DD part
-    expected_arrival_time: String,
-    realtime: Bool,
-    realtime_state: String,
-    actual_arrival_time: String,
-    // null becomes Option type
-  )
 }
