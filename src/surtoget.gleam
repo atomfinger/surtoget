@@ -28,6 +28,11 @@ pub type Context {
   Context(
     image_cache_subject: process.Subject(image_cache.ImageCacheMessage),
     delayed_subject: process.Subject(delayed.DelayMessage),
+    // Some pages are fully static, so we might as well pre-render them on startup
+    // just to avoid doing extra processing (despite it being pretty fast anyway)
+    about_page: response.Response(wisp.Body),
+    faq_page: response.Response(wisp.Body),
+    news_page: response.Response(wisp.Body),
   )
 }
 
@@ -36,7 +41,14 @@ pub fn main() -> Nil {
   wisp.configure_logger()
   let assert Ok(cache) = image_cache.start()
   let assert Ok(delayed) = delayed.start()
-  let ctx = Context(cache.data, delayed.data)
+  let ctx =
+    Context(
+      image_cache_subject: cache.data,
+      delayed_subject: delayed.data,
+      about_page: render_page(about.render()),
+      faq_page: render_page(faq.render()),
+      news_page: news.get_news_articles() |> news.render() |> render_page(),
+    )
   let assert Ok(_) =
     wisp_mist.handler(handle_request(_, ctx), secret_key_base)
     |> mist.new()
@@ -57,11 +69,11 @@ pub fn handle_request(req: Request, ctx: Context) -> Response {
 fn route_request(req: Request, ctx: Context) -> Response {
   case wisp.path_segments(req) {
     [] | ["home"] | ["index"] -> render_page(main_content(ctx.delayed_subject))
-    ["om-surtoget"] -> render_page(about.render())
-    ["faq"] -> render_page(faq.render())
+    ["om-surtoget"] -> ctx.about_page
+    ["faq"] -> ctx.faq_page
     ["health"] -> wisp.ok()
     ["favicon.ico"] -> get_favicon(req)
-    ["news"] -> news.get_news_articles() |> news.render() |> render_page()
+    ["news"] -> ctx.news_page
     ["news", "images", image_id] ->
       handle_news_image_request(image_id, req, ctx.image_cache_subject)
     _ -> wisp.not_found()
