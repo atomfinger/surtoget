@@ -1,8 +1,9 @@
 import gleam/dynamic/decode
+import gleam/option
 
 pub fn data_decoder() -> decode.Decoder(Data) {
   let decoder = {
-    use lines <- decode.subfield(["data", "lines"], decode.list(line_decoder()))
+    use lines <- decode.field("lines", decode.list(line_decoder()))
     decode.success(Data(lines))
   }
   decoder
@@ -44,8 +45,8 @@ fn estimated_call_decoder() -> decode.Decoder(EstimatedCall) {
     use realtime_state <- decode.field("realtimeState", decode.string)
     use actual_arrival_time <- decode.optional_field(
       "actualArrivalTime",
-      "",
-      decode.string,
+      option.None,
+      decode.optional(decode.string),
     )
     decode.success(EstimatedCall(
       aimed_arrival_time,
@@ -80,6 +81,6 @@ pub type EstimatedCall {
     expected_arrival_time: String,
     realtime: Bool,
     realtime_state: String,
-    actual_arrival_time: String,
+    actual_arrival_time: option.Option(String),
   )
 }
