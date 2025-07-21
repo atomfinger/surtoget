@@ -1,10 +1,10 @@
 import entur_decoder.{type Data, type EstimatedCall, type ServiceJourney}
 import gleam/hackney
 import gleam/int
+import gleam/io
 import gleam/list
 import gleam/option
 import gleam/result
-import gleam/string
 import gleamql
 import tempo.{type Date, ISO8601Date, ISO8601Seconds}
 import tempo/date
@@ -65,7 +65,7 @@ fn any_estimated_calls_delayed(estimated_calls: List(EstimatedCall)) -> Bool {
     estimated_calls
     |> list.filter(fn(estimated_call) { estimated_call.realtime })
     |> list.filter(fn(estimated_call) {
-      estimated_call.actual_arrival_time |> string.is_empty()
+      estimated_call.actual_arrival_time |> option.is_none()
     })
     |> list.filter(fn(estimated_call) {
       is_estimated_call_delayed(estimated_call)
@@ -105,7 +105,11 @@ fn is_delayed(
     |> int.absolute_value()
 
   // We allow for a 15 minute wiggleroom before we call something delayed.
-  Ok(minute_difference > 15)
+  case minute_difference > 5 {
+    True -> io.println("THE TRAIN IS DELAYED")
+    False -> io.println("The train is not delayed")
+  }
+  Ok(minute_difference > 5)
 }
 
 fn query(date: Date) -> String {

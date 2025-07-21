@@ -9,15 +9,13 @@ import refund
 import statistics
 import stories
 
-pub fn render(
-  delayed_subject: process.Subject(delayed.DelayMessage),
-) -> Element(msg) {
+pub fn render() -> Element(msg) {
   let articles = news.get_news_articles()
   let latest_news = list.take(articles, 3)
 
   html.main([class("my-10 space-y-16")], [
     blurb(),
-    render_delay_notice(delayed_subject),
+    //render_delay_notice(delayed_subject),
     html.section([], [statistics.render()]),
     html.section([], [refund.render()]),
     html.section([], [stories.render()]),
@@ -25,6 +23,7 @@ pub fn render(
   ])
 }
 
+//TODO Temporary removed due to using the wrong API 🤷🏻‍♂️
 fn render_delay_notice(
   delayed_subject: process.Subject(delayed.DelayMessage),
 ) -> Element(msg) {
