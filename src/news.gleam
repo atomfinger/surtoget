@@ -25,6 +25,14 @@ import gleam/dict
 pub fn get_news_articles() -> List(NewsArticle) {
   let articles = [
     NewsArticle(
+      title: "Togvindu løsnet – avganger innstilt",
+      description: "Go-Ahead har innstilt alle regiontogavganger av type 73 på Sørlandsbanen etter at et sidevindu løsnet på et tog. Åtte togsett er tatt ut av tjeneste for inspeksjon, og det er funnet løse vinduer på tre av dem. Nattogene går som normalt.",
+      external_url: "https://www.nrk.no/sorlandet/avganger-pa-sorlandsbanen-er-innstilt-1.17503849",
+      external_image_url: "https://gfx.nrk.no/uUl2XauH6-h-p1RPbwcMfwDXKlNquOnXuMFEizrB5Xig.jpg",
+      owner: "NRK",
+      date: "24. juli 2025",
+    ),
+    NewsArticle(
       title: "Go-Ahead melder om togtrøbbel i dag, tysdag",
       description: "Togselskapet Go-Ahead melder om togtrøbbel på Sørlandsbanen tirsdag. Avgangen fra Stavanger klokka 4.20 mot Oslo er innstilt. Det blir satt opp buss for tog på strekningen mellom Stavanger og Kongsberg.",
       external_url: "https://www.boblad.no/nyheit/go-ahead-melder-om-togtrobbel-i-dag-tysdag/360802",
