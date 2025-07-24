@@ -18,6 +18,7 @@ import lustre/element/html
 import marceau
 import mist
 import news
+import not_found
 import simplifile
 import wisp.{type Request, type Response}
 import wisp/internal
@@ -62,7 +63,15 @@ pub fn handle_request(req: Request, ctx: Context) -> Response {
   use <- wisp.serve_static(req, under: "/static", from: "priv/static")
   use <- wisp.serve_static(req, under: "/css", from: "priv/css")
   use <- wisp.serve_static(req, under: "/javascript", from: "priv/javascript")
-  route_request(req, ctx)
+  case route_request(req, ctx) {
+    response if response.status == 404 -> {
+      let page = render_page(not_found.render())
+      wisp.not_found()
+      |> wisp.set_body(page.body)
+      |> wisp.set_header("content-type", "text/html; charset=utf-8")
+    }
+    response -> response
+  }
 }
 
 fn route_request(req: Request, ctx: Context) -> Response {
