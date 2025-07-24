@@ -41,11 +41,7 @@ fn scheduler(subject: process.Subject(DelayMessage)) {
 }
 
 fn update(subject: process.Subject(DelayMessage)) {
-  let has_delays = case entur_client.check_for_dealays() {
-    option.Some(result) -> result
-    //Defaulting to False for now.
-    option.None -> False
-  }
+  let has_delays = entur_client.is_train_delayed()
   process.send(subject, SetState(State(has_delays)))
 }
 
