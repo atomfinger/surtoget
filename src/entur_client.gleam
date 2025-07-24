@@ -1,7 +1,6 @@
 import gleam/hackney
 import gleam/http/request
 import gleam/int
-import gleam/io
 import gleam/list
 import gleam/option.{type Option}
 import gleam/result
@@ -90,11 +89,6 @@ fn check_delayed_times(
     datetime.difference(aimed_arrival_datetime, expected_arrival_datetime)
     |> duration.as_minutes()
     |> int.absolute_value()
-
   // We allow for a 15 minute wiggleroom before we call something delayed.
-  case minute_difference > 15 {
-    True -> io.println("THE TRAIN IS DELAYED")
-    False -> io.println("The train is not delayed")
-  }
   Ok(minute_difference > 15)
 }
