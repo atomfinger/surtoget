@@ -36,7 +36,7 @@ type ImageFormat {
 
 pub type ImageCacheMessage {
   GetCachedImage(String, process.Subject(Result(bytes_tree.BytesTree, Nil)))
-  SetCache(State)
+  AddImage(String, bytes_tree.BytesTree)
 }
 
 pub type State {
@@ -76,7 +76,12 @@ fn handle_message(
       process.send(reply_to, dict.get(state.cache, id))
       actor.continue(state)
     }
-    SetCache(cache) -> actor.continue(cache)
+    AddImage(id, image) -> {
+      state.cache
+      |> dict.insert(id, image)
+      |> State()
+      |> actor.continue()
+    }
   }
 }
 
@@ -92,9 +97,13 @@ pub fn start() -> Result(
   // Ensuring that we're loading images async while also avoiding blocking
   // request going to the site.
   let _ = case pid_actor {
-    Ok(pid) ->
-      process.spawn(fn() { load_cache(pid.data) })
-      |> Ok()
+    Ok(pid) -> {
+      news.get_news_articles()
+      |> list.each(fn(article) {
+        process.spawn(fn() { load_image(pid.data, article) })
+      })
+      Ok(Nil)
+    }
     Error(_) -> Error(Nil)
   }
   pid_actor
@@ -112,22 +121,13 @@ pub fn get_cached_image(
   }
 }
 
-fn load_cache(actor: process.Subject(ImageCacheMessage)) {
-  let new_state: State =
-    news.get_news_articles()
-    |> list.map(with: fn(article) {
-      #(
-        news.get_image_id(article),
-        cache_image(article) |> result.unwrap(bytes_tree.new()),
-      )
-    })
-    |> list.filter(keeping: fn(pair) {
-      let #(_, bytes) = pair
-      bytes_tree.byte_size(bytes) != 0
-    })
-    |> dict.from_list()
-    |> State()
-  process.send(actor, SetCache(new_state))
+fn load_image(
+  actor: process.Subject(ImageCacheMessage),
+  article: news.NewsArticle,
+) {
+  let image_id = news.get_image_id(article)
+  let image = cache_image(article) |> result.unwrap(bytes_tree.new())
+  process.send(actor, AddImage(image_id, image))
 }
 
 fn cache_image(article: news.NewsArticle) -> Result(bytes_tree.BytesTree, Nil) {
