@@ -39,16 +39,16 @@ extract_calls(Journey) ->
 maybe_text(Tag, Node) ->
   case xmerl_xpath:string(".//*[local-name()='" ++ Tag ++ "']/text()", Node) of
     [#xmlText{value = V}] when is_list(V) ->
-      {some, V};
+      {some, list_to_binary(V)};
     _ ->
       none
   end.
 
 maybe_bool(Tag, Node) ->
   case maybe_text(Tag, Node) of
-    {some, "true"} ->
+    {some, <<"true">>} ->
       {some, true};
-    {some, "false"} ->
+    {some, <<"false">>} ->
       {some, false};
     _ ->
       none
