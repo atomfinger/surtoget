@@ -6,7 +6,6 @@
 
 import entur_client
 import gleam/erlang/process
-import gleam/option
 import gleam/otp/actor
 
 // 5 minutes in ms
