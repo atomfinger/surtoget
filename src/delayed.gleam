@@ -7,6 +7,7 @@
 import entur_client
 import gleam/erlang/process
 import gleam/otp/actor
+import wisp
 
 // 5 minutes in ms
 const wait_time_ms = 300_000
@@ -34,7 +35,12 @@ pub fn is_delayed(subject: process.Subject(DelayMessage)) -> Bool {
 }
 
 fn scheduler(subject: process.Subject(DelayMessage)) {
-  update(subject)
+  wisp.log_info("Running delayed update check...")
+  // Spawning a new unlinked process to avoid any issues propagating
+  process.spawn_unlinked(fn() {
+    update(subject)
+    wisp.log_info("Update check ran successfully")
+  })
   process.sleep(wait_time_ms)
   scheduler(subject)
 }
