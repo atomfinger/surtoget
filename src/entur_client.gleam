@@ -1,133 +1,94 @@
-import entur_decoder.{type Data, type EstimatedCall, type ServiceJourney}
 import gleam/hackney
+import gleam/http/request
 import gleam/int
-import gleam/io
 import gleam/list
-import gleam/option
+import gleam/option.{type Option}
 import gleam/result
-import gleamql
-import tempo.{type Date, ISO8601Date, ISO8601Seconds}
-import tempo/date
+import gleam/uri
+import tempo.{ISO8601Seconds}
 import tempo/datetime
 import tempo/duration
-import tempo/error
+import wisp
 
-const api_host = "api.entur.io"
+@external(erlang, "xml_et_helper", "parse_and_extract")
+pub fn recorded_calls_for_line(
+  xml: String,
+  line_ref: String,
+) -> List(RecordedCall)
 
-const path = "/journey-planner/v3/graphql"
+pub type RecordedCall {
+  RecordedCall(
+    cancellation: Option(Bool),
+    aimed_arrival_time: Option(String),
+    expected_arrival_time: Option(String),
+    arrival_status: Option(String),
+  )
+}
 
-pub fn check_for_dealays() -> option.Option(Bool) {
-  let query = query(date.current_local())
-  let result: Result(option.Option(Data), gleamql.GraphQLError) =
-    gleamql.new()
-    |> gleamql.set_query(query)
-    |> gleamql.set_host(api_host)
-    |> gleamql.set_path(path)
-    |> gleamql.set_default_content_type_header()
-    |> gleamql.set_decoder(entur_decoder.data_decoder())
-    |> gleamql.send(hackney.send)
+const url = "https://api.entur.io/realtime/v1/rest/et?datasetId=GOA"
 
-  case result {
-    Ok(data_option) ->
-      case data_option {
-        option.Some(data) -> option.Some(has_delays(data))
-        option.None -> option.None
-      }
-    Error(_) -> option.None
+const line = "GOA:Line:50"
+
+pub fn is_train_delayed() -> Bool {
+  let assert Ok(uri) = uri.parse(url)
+  let assert Ok(req) = request.from_uri(uri)
+  case hackney.send(req) {
+    Ok(response) -> response.body |> has_delay()
+    Error(_) -> {
+      wisp.log_error("Error, could not request realtime data")
+      False
+    }
   }
 }
 
-fn has_delays(data: Data) -> Bool {
-  let lines_delayed =
-    data.lines
-    |> list.filter(fn(line) {
-      False == line.service_journeys |> list.is_empty()
+fn has_delay(xml: String) -> Bool {
+  let record_calls = recorded_calls_for_line(xml, line)
+  let delayed_result =
+    record_calls
+    |> list.filter(fn(record_call) {
+      case record_call.arrival_status {
+        option.Some("delayed") -> True
+        option.None -> False
+        option.Some(_) -> False
+      }
     })
-    |> list.filter(fn(line) {
-      any_service_journeys_delayed(line.service_journeys)
+    |> list.find(fn(record_call) {
+      case
+        check_delayed_times(
+          record_call.aimed_arrival_time,
+          record_call.expected_arrival_time,
+        )
+      {
+        Ok(is_delayed) -> is_delayed
+        Error(_) -> False
+      }
     })
-    |> list.length()
-  lines_delayed > 0
-}
-
-fn any_service_journeys_delayed(service_journeys: List(ServiceJourney)) -> Bool {
-  let delayed_journeys =
-    service_journeys
-    |> list.filter(fn(joruney) {
-      any_estimated_calls_delayed(joruney.estimated_calls)
-    })
-    |> list.length()
-  delayed_journeys > 0
-}
-
-fn any_estimated_calls_delayed(estimated_calls: List(EstimatedCall)) -> Bool {
-  let delayed_estimated_calls =
-    estimated_calls
-    |> list.filter(fn(estimated_call) { estimated_call.realtime })
-    |> list.filter(fn(estimated_call) {
-      estimated_call.actual_arrival_time |> option.is_none()
-    })
-    |> list.filter(fn(estimated_call) {
-      is_estimated_call_delayed(estimated_call)
-    })
-    |> list.length()
-  delayed_estimated_calls > 0
-}
-
-fn is_estimated_call_delayed(estimated_call: EstimatedCall) -> Bool {
-  case
-    is_delayed(
-      estimated_call.expected_arrival_time,
-      estimated_call.aimed_arrival_time,
-    )
-  {
-    Ok(is_delayed) -> is_delayed
-    //Default to false in case of error
+  case delayed_result {
+    Ok(_) -> True
     Error(_) -> False
   }
 }
 
-fn is_delayed(
-  expected_arrival: String,
-  aimed_arrival: String,
-) -> Result(Bool, error.DateTimeParseError) {
-  use expected_arrival_datetime <- result.try(datetime.parse(
-    expected_arrival,
-    in: ISO8601Seconds,
+fn check_delayed_times(
+  aimed_arrival_option: Option(String),
+  expected_arrival_option: Option(String),
+) -> Result(Bool, String) {
+  use aimed_arrival <- result.try(option.to_result(
+    aimed_arrival_option,
+    "No aimed arrival",
   ))
-  use aimed_arrival_datetime <- result.try(datetime.parse(
-    aimed_arrival,
-    in: ISO8601Seconds,
+  use expected_arrival <- result.try(option.to_result(
+    expected_arrival_option,
+    "No expected arrival",
   ))
+  let assert Ok(expected_arrival_datetime) =
+    datetime.parse(expected_arrival, in: ISO8601Seconds)
+  let assert Ok(aimed_arrival_datetime) =
+    datetime.parse(aimed_arrival, in: ISO8601Seconds)
   let minute_difference =
     datetime.difference(aimed_arrival_datetime, expected_arrival_datetime)
     |> duration.as_minutes()
     |> int.absolute_value()
-
   // We allow for a 15 minute wiggleroom before we call something delayed.
-  case minute_difference > 5 {
-    True -> io.println("THE TRAIN IS DELAYED")
-    False -> io.println("The train is not delayed")
-  }
-  Ok(minute_difference > 5)
-}
-
-fn query(date: Date) -> String {
-  "query {
-  lines(publicCode: \"F5\") {
-    id
-    serviceJourneys {
-      estimatedCalls(date: \"" <> date.format(date, in: ISO8601Date) <> "\") {
-        aimedArrivalTime
-        cancellation
-        date
-        expectedArrivalTime
-        realtime
-        realtimeState
-        actualArrivalTime
-      }
-    }
-  }
-}
-"
+  Ok(minute_difference > 15)
 }
