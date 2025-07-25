@@ -25,6 +25,14 @@ import gleam/dict
 pub fn get_news_articles() -> List(NewsArticle) {
   let articles = [
     NewsArticle(
+      title: "Kun én avgang om dagen med Sørlandsbanen",
+      description: "Fram til og med onsdag er det kun én daglig avgang på Sørlandsbanen i hver retning. Årsaken er at det er oppdaget løse sideruter på åtte togsett (type 73), som nå er tatt ut av drift for reparasjon.",
+      external_url: "https://www.nrk.no/sorlandet/kun-en-avgang-om-dagen-med-sorlandsbanen--1.17504983",
+      external_image_url: "https://gfx.nrk.no/FLUplHUikquKhdgPCOAtZg6eJGjwKHV-nbChZdoNum8Q.jpg",
+      owner: "NRK",
+      date: "25. juli 2025",
+    ),
+    NewsArticle(
       title: "Togvindu løsnet – avganger innstilt",
       description: "Go-Ahead har innstilt alle regiontogavganger av type 73 på Sørlandsbanen etter at et sidevindu løsnet på et tog. Åtte togsett er tatt ut av tjeneste for inspeksjon, og det er funnet løse vinduer på tre av dem. Nattogene går som normalt.",
       external_url: "https://www.nrk.no/sorlandet/avganger-pa-sorlandsbanen-er-innstilt-1.17503849",
