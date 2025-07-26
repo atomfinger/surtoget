@@ -35,6 +35,7 @@ pub fn render() -> Element(msg) {
             [
               attribute("id", "menu-button"),
               attribute("type", "button"),
+              attribute("aria-label", "Toggle navigation menu"),
               class(
                 "text-gray-500 hover:text-yellow-600 focus:outline-none focus:text-yellow-600",
               ),
