@@ -36,6 +36,7 @@ pub fn render(articles: List(NewsArticle)) -> Element(a) {
           ],
           [
             html.img([
+              attribute.loading("lazy"),
               attribute.src(news.get_image_url(article)),
               attribute.alt(article.title),
               attribute.class("w-full h-48 max-h-48 object-cover"),

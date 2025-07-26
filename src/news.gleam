@@ -1,6 +1,6 @@
 import gleam/bit_array
 import gleam/list
-import lustre/attribute.{alt, class, href, rel, src, target}
+import lustre/attribute.{alt, class, href, loading, rel, src, target}
 import lustre/element.{type Element}
 import lustre/element/html
 
@@ -283,6 +283,7 @@ pub fn render(articles: List(NewsArticle)) -> Element(a) {
             [
               html.div([class("md:w-1/3")], [
                 html.img([
+                  loading("lazy"),
                   src(get_image_url(article)),
                   alt(article.title),
                   class("w-full h-full object-cover max-h-80 md:max-h-full"),
