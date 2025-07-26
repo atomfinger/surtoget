@@ -240,7 +240,7 @@ fn tab_content(tab_id: String, is_first: Bool) -> Element(a) {
     ChartData(
       "GoAhead sin skyld",
       blame_stats.goahead,
-      "/static/goahead_logo.png",
+      "/static/goahead_logo.webp",
     ),
     ChartData("Uforutsette\nårsaker", blame_stats.unforeseen, ""),
     ChartData("Følgeforsinkelser", blame_stats.consequential_delays, ""),
