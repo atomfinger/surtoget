@@ -10,7 +10,7 @@ pub fn render() -> Element(msg) {
         html.div([class("md:hidden flex-shrink-0")], [
           html.a([href("/")], [
             html.img([
-              src("/static/surtoget_logo_train_only.png"),
+              src("/static/surtoget_logo_train_only.webp"),
               attribute("alt", "Surtoget Logo"),
               class("h-16 w-auto"),
             ]),
@@ -24,7 +24,7 @@ pub fn render() -> Element(msg) {
         html.div([class("hidden md:block flex-grow text-center")], [
           html.a([href("/")], [
             html.img([
-              src("/static/surtoget_logo.png"),
+              src("/static/surtoget_logo.webp"),
               attribute("alt", "Surtoget Logo"),
               class("h-24 w-auto mx-auto"),
             ]),
