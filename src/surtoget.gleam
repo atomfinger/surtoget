@@ -50,7 +50,10 @@ pub fn main() -> Nil {
       faq_page: render_page(faq.render()),
       news_page: news.get_news_articles() |> news.render() |> render_page(),
     )
-  let router = handle_request(_, ctx) |> perf_logging.log_request_duration()
+  let router =
+    handle_request(_, ctx)
+    |> set_cache_for_assets()
+    |> perf_logging.log_request_duration()
   let assert Ok(_) =
     wisp_mist.handler(router, secret_key_base)
     |> mist.new()
@@ -59,6 +62,23 @@ pub fn main() -> Nil {
     |> mist.start()
 
   process.sleep_forever()
+}
+
+pub fn set_cache_for_assets(
+  handler: fn(wisp.Request) -> wisp.Response,
+) -> fn(wisp.Request) -> wisp.Response {
+  fn(req) {
+    let response = handler(req)
+    case response.get_header(response, "content-type") {
+      Ok(header) ->
+        case string.starts_with(header, "image") {
+          True ->
+            response |> wisp.set_header("Cache-Control", "max-age=31536000")
+          False -> response
+        }
+      Error(_) -> response
+    }
+  }
 }
 
 pub fn handle_request(req: Request, ctx: Context) -> Response {
@@ -142,6 +162,7 @@ fn handle_news_image_request(
     Ok(image) ->
       wisp.response(200)
       |> wisp.file_download_from_memory(named: image_id, containing: image)
+      |> wisp.set_header("Cache-Control", "max-age=31536000")
       |> handle_etag(req, bytes_tree.byte_size(image))
     Error(_) -> {
       serve_static_image(req, "static/train-placeholder.png")
