@@ -32,10 +32,15 @@ pub fn render() -> Element(msg) {
     Question(
       "Hvordan kan jeg dele min historie?",
       [
-        "Du kan sende din historie til oss på e-post til kontakt@surtoget.no. Vi publiserer historier fortløpende.",
-        "Du kan velge å være anonym, og e-posten din blir slettet etter en uke. Vi forbeholder oss retten til å redigere og korrigere stavefeil, men vi vil ikke skrive om historien din. Hvis du vil ha historien din slettet, kan du kontakte oss på samme e-postadresse.",
+        "Du kan sende din historie til oss via Google Forms eller på e-post til kontakt@surtoget.no. Vi publiserer historier fortløpende.",
+        "Du kan velge å være anonym. Innsendinger via Google-skjema og e-post blir slettet etter en uke. Vi forbeholder oss retten til å redigere og korrigere stavefeil, men vi vil ikke skrive om historien din. Hvis du vil ha historien din slettet, kan du kontakte oss på samme e-postadresse.",
       ],
-      [],
+      [
+        #(
+          "https://docs.google.com/forms/d/e/1FAIpQLSe_x8FSwMMBNf6l_EOhfF2x8ieLVVOKNF6482n4Jfxtqg89oA/viewform?usp=header",
+          "Skjema for historier",
+        ),
+      ],
     ),
     Question(
       "Hvorfor bare Sørlandsbanen?",
