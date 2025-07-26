@@ -235,7 +235,7 @@ fn tab_content(tab_id: String, is_first: Bool) -> Element(a) {
     ChartData(
       "BaneNor sin skyld",
       blame_stats.banenor,
-      "/static/banenor_logo.png",
+      "/static/banenor_logo.webp",
     ),
     ChartData(
       "GoAhead sin skyld",
