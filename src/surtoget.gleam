@@ -19,6 +19,7 @@ import marceau
 import mist
 import news
 import not_found
+import perf_logging
 import simplifile
 import wisp.{type Request, type Response}
 import wisp/internal
@@ -49,8 +50,9 @@ pub fn main() -> Nil {
       faq_page: render_page(faq.render()),
       news_page: news.get_news_articles() |> news.render() |> render_page(),
     )
+  let router = handle_request(_, ctx) |> perf_logging.log_request_duration()
   let assert Ok(_) =
-    wisp_mist.handler(handle_request(_, ctx), secret_key_base)
+    wisp_mist.handler(router, secret_key_base)
     |> mist.new()
     |> mist.bind("0.0.0.0")
     |> mist.port(8000)
