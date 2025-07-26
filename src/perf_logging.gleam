@@ -13,7 +13,7 @@ pub fn log_request_duration(
     let response = handler(req)
     let end_time = instant.now()
     let duration =
-      instant.difference(start_time, end_time) |> duration.as_microseconds()
+      instant.difference(start_time, end_time) |> duration.as_milliseconds()
 
     let msg: String =
       string.concat([
