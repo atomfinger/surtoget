@@ -60,7 +60,7 @@ fn render_delay_notice(
 fn blurb() -> Element(msg) {
   html.section([class("my-10 flex flex-col md:flex-row items-center gap-8")], [
     html.img([
-      src("/static/surtoget_logo.png"),
+      src("/static/surtoget_logo.webp"),
       attribute("alt", "Surtoget Logo"),
       class("h-32 w-auto hidden md:block"),
     ]),
