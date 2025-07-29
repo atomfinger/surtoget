@@ -17,6 +17,7 @@ pub fn render() -> Element(msg) {
       "Hvor kommer dataene fra?",
       [
         "All data vi bruker kommer fra BaneNor. De publiserer sanntidsdata og punktlighetsrapporter som vi bruker for å lage statistikk og visualiseringer.",
+        "Data om forsinkelser hentes fra Entur sitt Real-time data API.",
       ],
       [
         #(
@@ -26,6 +27,10 @@ pub fn render() -> Element(msg) {
         #(
           "https://www.banenor.no/reise-og-trafikk/punktlighetsrapporter/",
           "Punktlighetsrapporter",
+        ),
+        #(
+          "https://developer.entur.org/pages-real-time-api",
+          "Entur real-time API",
         ),
       ],
     ),
