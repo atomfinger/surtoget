@@ -25,6 +25,14 @@ import gleam/dict
 pub fn get_news_articles() -> List(NewsArticle) {
   let articles = [
     NewsArticle(
+      title: "Flere avganger på Sørlandsbanen etter innstillinger",
+      description: "Go-Ahead gjeninnfører flere togavganger på Sørlandsbanen fra og med torsdag, etter at kun én avgang daglig har vært i drift de siste dagene. Årsaken til de tidligere innstillingene var løse sideruter som ble oppdaget på flere togsett, noe som førte til at åtte tog av type 73 ble tatt ut av drift. Etter grundige stresstester og inspeksjoner blir togene nå satt tilbake i trafikk. Enkelte avganger vil fremdeles være innstilt frem til fredag for å fullføre de siste testene, og det vil bli organisert alternativ transport for de berørte reisende.",
+      external_url: "https://www.abcnyheter.no/nyheter/flere-avganger-pa-sorlandsbanen-etter-innstillinger/1152046",
+      external_image_url: "https://image.abcnyheter.no/1146712.webp?imageId=1146712&width=2116&height=1208&format=webp",
+      owner: "ABC Nyheter",
+      date: "29. juli 2025",
+    ),
+    NewsArticle(
       title: "Kun én avgang om dagen med Sørlandsbanen",
       description: "Fram til og med onsdag er det kun én daglig avgang på Sørlandsbanen i hver retning. Årsaken er at det er oppdaget løse sideruter på åtte togsett (type 73), som nå er tatt ut av drift for reparasjon.",
       external_url: "https://www.nrk.no/sorlandet/kun-en-avgang-om-dagen-med-sorlandsbanen--1.17504983",
