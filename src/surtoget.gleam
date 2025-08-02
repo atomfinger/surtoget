@@ -3,6 +3,7 @@ import delayed
 import faq
 import footer
 import gleam/bytes_tree
+import gleam/erlang/atom
 import gleam/erlang/process
 import gleam/http/request
 import gleam/http/response
@@ -28,7 +29,7 @@ import wisp/wisp_mist
 pub type Context {
   Context(
     image_cache_subject: process.Subject(image_cache.ImageCacheMessage),
-    delayed_subject: process.Subject(delayed.DelayMessage),
+    delayed_subject: atom.Atom,
     // Some pages are fully static, so we might as well pre-render them on startup
     // just to avoid doing extra processing (despite it being pretty fast anyway)
     about_page: response.Response(wisp.Body),
@@ -45,7 +46,7 @@ pub fn main() -> Nil {
   let ctx =
     Context(
       image_cache_subject: cache.data,
-      delayed_subject: delayed.data,
+      delayed_subject: delayed,
       about_page: render_page(about.render()),
       faq_page: render_page(faq.render()),
       news_page: news.get_news_articles() |> news.render() |> render_page(),
