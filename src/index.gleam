@@ -1,5 +1,5 @@
 import delayed
-import gleam/erlang/process
+import gleam/erlang/atom
 import gleam/list
 import lustre/attribute.{attribute, class, src}
 import lustre/element.{type Element}
@@ -9,15 +9,13 @@ import refund
 import statistics
 import stories
 
-pub fn render(
-  delayed_subject: process.Subject(delayed.DelayMessage),
-) -> Element(msg) {
+pub fn render(delayed_tid: atom.Atom) -> Element(msg) {
   let articles = news.get_news_articles()
   let latest_news = list.take(articles, 3)
 
   html.main([class("my-10 space-y-16")], [
     blurb(),
-    render_delay_notice(delayed_subject),
+    render_delay_notice(delayed_tid),
     html.section([], [statistics.render()]),
     html.section([], [refund.render()]),
     html.section([], [stories.render()]),
@@ -26,10 +24,8 @@ pub fn render(
 }
 
 //TODO Temporary removed due to using the wrong API 🤷🏻‍♂️
-fn render_delay_notice(
-  delayed_subject: process.Subject(delayed.DelayMessage),
-) -> Element(msg) {
-  case delayed.is_delayed(delayed_subject) {
+fn render_delay_notice(delayed_tid: atom.Atom) -> Element(msg) {
+  case delayed.is_delayed(delayed_tid) {
     True ->
       html.div([class("my-10 p-4 bg-yellow-100 rounded-lg shadow-md")], [
         html.p(

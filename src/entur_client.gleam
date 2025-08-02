@@ -29,14 +29,16 @@ const url = "https://api.entur.io/realtime/v1/rest/et?datasetId=GOA"
 
 const line = "GOA:Line:50"
 
-pub fn is_train_delayed() -> Bool {
-  let assert Ok(uri) = uri.parse(url)
-  let assert Ok(req) = request.from_uri(uri)
+pub fn is_train_delayed() -> Result(Bool, Nil) {
+  use uri <- result.try(uri.parse(url) |> result.map_error(fn(_) { Nil }))
+  use req <- result.try(
+    request.from_uri(uri) |> result.map_error(fn(_) { Nil }),
+  )
   case hackney.send(req) {
-    Ok(response) -> response.body |> has_delay()
+    Ok(response) -> Ok(has_delay(response.body))
     Error(_) -> {
       wisp.log_error("Error, could not request realtime data")
-      False
+      Error(Nil)
     }
   }
 }
@@ -81,10 +83,14 @@ fn check_delayed_times(
     expected_arrival_option,
     "No expected arrival",
   ))
-  let assert Ok(expected_arrival_datetime) =
+  use expected_arrival_datetime <- result.try(
     datetime.parse(expected_arrival, in: ISO8601Seconds)
-  let assert Ok(aimed_arrival_datetime) =
+    |> result.map_error(fn(_) { "" }),
+  )
+  use aimed_arrival_datetime <- result.try(
     datetime.parse(aimed_arrival, in: ISO8601Seconds)
+    |> result.map_error(fn(_) { "" }),
+  )
   let minute_difference =
     datetime.difference(aimed_arrival_datetime, expected_arrival_datetime)
     |> duration.as_minutes()
