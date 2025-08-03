@@ -43,28 +43,22 @@ EOF
 [tasks.deps]
 description = "install npm dependencies"
 run = "npm install"
+sources = ["package.json"]
+outputs = ["node_modules", "package-lock.json"]
 
 [tasks.css]
 description = "generate css"
 depends = ["deps"]
 run = "npx tailwindcss -o ./priv/css/tailwind.css && gzip -k -f ./priv/css/tailwind.css"
-
-[tasks.new]
-description = "generate new project [NAME] from template"
-depends = ["css"]
-run = '''
-gleam new --template=surtoget $1
-cd $1
-gleam run
-'''
+sources = ["src"]
+outputs = ["priv/css"]
 
 [tasks.format]
 description = "gleam format"
-depends = ["css"]
+depends = ["deps"]
 run = "gleam format"
 
 [tasks.run]
 description = "gleam run"
-depends = ["format"]
+depends = ["deps", "format", "css"]
 run = "gleam run"
-
