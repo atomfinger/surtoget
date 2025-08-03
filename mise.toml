@@ -57,8 +57,6 @@ outputs = ["priv/css"]
 description = "gleam format"
 depends = ["deps"]
 run = "gleam format"
-sources = ["src"]
-outputs = ["src"]
 
 [tasks.run]
 description = "gleam run"
