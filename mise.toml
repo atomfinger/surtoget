@@ -1,5 +1,5 @@
 [tools]
-elixir = "1.18.4-otp-28"
+elixir = "1.18.4"
 gleam = "1"
 node = "22"
 npm = "11"
