@@ -15,42 +15,35 @@ Feel free to check out the website here: [surtoget.no](https://surtoget.no)
 
 To run this project, you need:
 
-- [Gleam](https://gleam.run/getting-started/installing/)
-- [Node.js](https://nodejs.org/en/download/) and [npm](https://www.npmjs.com/get-npm)
+- [mise](https://mise.jdx.dev)
 
 ## Development
 
-First, install the Node.js dependencies for Tailwind CSS:
+Install mise. The easiest method is with [brew](https://brew.sh/), but feel free to use another method:
 
-```sh
-npm install
+```
+brew install mise
 ```
 
-Then you need to generate the actual CSS for Tailwind:
+Clone this repository locally:
 
-```sh
- npx tailwindcss -o ./priv/css/tailwind.css && gzip -k -f ./priv/css/tailwind.css
+```
+git clone https://github.com/atomfinger/surtoget
+cd surtoget
 ```
 
-If you have [Gleam](https://gleam.run/getting-started/installing/) installed, you can use the `gleam` CLI to start a new project:
+Build and run:
 
-```sh
-gleam new --template=surtoget my_app
-cd my_app
-gleam run
 ```
-
-The easiest approach is to use the make commands to run the server:
-
-```sh
-make run
+mise run run
 ```
 
 This command will:
 
-1. Format the Gleam code.
-2. Generate the Tailwind CSS file (`./priv/css/tailwind.css`).
-3. Start the Gleam server.
+* Install dependencies
+* Format the Gleam code
+* Generate the Tailwind CSS file (`./priv/css/tailwind.css`)
+* Start the Gleam server
 
 When the server starts it starts on port 8000 and can be reached on:
 [localhost:8000](http://localhost:8000)

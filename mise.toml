@@ -1,0 +1,70 @@
+[tools]
+elixir = "1.18.4-otp-28"
+gleam = "1"
+node = "22"
+npm = "11"
+
+[tasks.help]
+description = "display help"
+run = '''cat << EOF
+To run this project, you need to install the dependencies:
+
+1. install mise 
+
+See https://mise.jdx.dev for install instructions, but generally, brew should work:
+
+	> brew install mise
+	> mise --help
+
+2. clone the surtoget repository and cd into it
+
+3. examine the available tasks
+
+	> mise tasks
+
+4. the common useage is
+
+	> mise run
+
+5. the detailed useage is
+
+	> mise help 	// displays this message
+	> mise tasks 	// displays the tasks in this mise.toml file
+	> mise deps	// installs this projects dependencies
+	> mise css	// generate the tailwind css
+	> mise format	// gleam format's this projects gleam source code
+	> mise run	// gleam run's this project 
+
+That said, 'mise run' is what you will run most of the time.
+
+EOF
+'''
+
+[tasks.deps]
+description = "install npm dependencies"
+run = "npm install"
+
+[tasks.css]
+description = "generate css"
+depends = ["deps"]
+run = "npx tailwindcss -o ./priv/css/tailwind.css && gzip -k -f ./priv/css/tailwind.css"
+
+[tasks.new]
+description = "generate new project [NAME] from template"
+depends = ["css"]
+run = '''
+gleam new --template=surtoget $1
+cd $1
+gleam run
+'''
+
+[tasks.format]
+description = "gleam format"
+depends = ["css"]
+run = "gleam format"
+
+[tasks.run]
+description = "gleam run"
+depends = ["format"]
+run = "gleam run"
+

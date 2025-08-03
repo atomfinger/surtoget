@@ -147,3 +147,5 @@ dist
 
 # End of https://www.toptal.com/developers/gitignore/api/node
 
+# comment out if you want idea project files
+.idea/
