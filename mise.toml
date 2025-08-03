@@ -50,8 +50,8 @@ outputs = ["node_modules", "package.json"]
 description = "generate css"
 depends = ["deps"]
 run = "npx tailwindcss -o ./priv/css/tailwind.css && gzip -k -f ./priv/css/tailwind.css"
-sources = ["priv"]
-outputs = ["priv"]
+sources = ["src"]
+outputs = ["priv/css"]
 
 [tasks.format]
 description = "gleam format"
