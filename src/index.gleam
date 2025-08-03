@@ -1,5 +1,8 @@
-import delayed
+import entur_client
+import gets
 import gleam/erlang/atom
+import gleam/erlang/process
+import gleam/http/response
 import gleam/list
 import lustre/attribute.{attribute, class, src}
 import lustre/element.{type Element}
@@ -8,14 +11,79 @@ import news
 import refund
 import statistics
 import stories
+import wisp
 
-pub fn render(delayed_tid: atom.Atom) -> Element(msg) {
+// 5 minutes
+const wait_time_ms = 300_000
+
+const index_ets_key = "index_page"
+
+pub fn get_cached_index_page(
+  index_tid: atom.Atom,
+  render_page: fn(Element(msg)) -> response.Response(wisp.Body),
+) -> response.Response(wisp.Body) {
+  case gets.lookup(index_tid, atom.create(index_ets_key)) {
+    Ok(page) -> page
+    Error(_) -> {
+      wisp.log_error("Something happened that shouldn't happen")
+      render(False) |> render_page()
+    }
+  }
+}
+
+pub fn start(
+  render_page: fn(Element(msg)) -> response.Response(wisp.Body),
+) -> Result(atom.Atom, atom.Atom) {
+  let cache_name = atom.create("index_page_cache")
+  case gets.new_cache(cache_name) {
+    Ok(tid) -> {
+      // Instant insert to ensure that there's always something ready to go
+      let _ = render(False) |> render_page() |> update_index_page(tid)
+      process.spawn(fn() { scheduler(tid, render_page) })
+      Ok(tid)
+    }
+    Error(reason) -> Error(reason)
+  }
+}
+
+fn scheduler(
+  index_tid: atom.Atom,
+  render_page: fn(Element(msg)) -> response.Response(wisp.Body),
+) {
+  wisp.log_info("Running delayed update check...")
+  // Spawning a new unlinked process to avoid any issues propagating
+  process.spawn_unlinked(fn() {
+    let _ =
+      render_with_entur_check() |> render_page() |> update_index_page(index_tid)
+    wisp.log_info("Entur update successful")
+  })
+  process.sleep(wait_time_ms)
+  scheduler(index_tid, render_page)
+}
+
+fn update_index_page(page: response.Response(wisp.Body), index_tid: atom.Atom) {
+  gets.insert(index_tid, atom.create(index_ets_key), page)
+}
+
+fn render_with_entur_check() {
+  case entur_client.is_train_delayed() {
+    Ok(has_delays) -> {
+      render(has_delays)
+    }
+    Error(_) -> {
+      wisp.log_error("Failed to check for delays")
+      render(False)
+    }
+  }
+}
+
+fn render(is_delayed: Bool) -> Element(a) {
   let articles = news.get_news_articles()
   let latest_news = list.take(articles, 3)
 
   html.main([class("my-10 space-y-16")], [
     blurb(),
-    render_delay_notice(delayed_tid),
+    render_delay_notice(is_delayed),
     html.section([], [statistics.render()]),
     html.section([], [refund.render()]),
     html.section([], [stories.render()]),
@@ -23,9 +91,8 @@ pub fn render(delayed_tid: atom.Atom) -> Element(msg) {
   ])
 }
 
-//TODO Temporary removed due to using the wrong API 🤷🏻‍♂️
-fn render_delay_notice(delayed_tid: atom.Atom) -> Element(msg) {
-  case delayed.is_delayed(delayed_tid) {
+fn render_delay_notice(is_delayed: Bool) -> Element(msg) {
+  case is_delayed {
     True ->
       html.div([class("my-10 p-4 bg-yellow-100 rounded-lg shadow-md")], [
         html.p(
