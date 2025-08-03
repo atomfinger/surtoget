@@ -1,5 +1,4 @@
 import about
-import delayed
 import faq
 import footer
 import gleam/bytes_tree
@@ -29,7 +28,7 @@ import wisp/wisp_mist
 pub type Context {
   Context(
     image_cache_subject: process.Subject(image_cache.ImageCacheMessage),
-    delayed_subject: atom.Atom,
+    index_tid: atom.Atom,
     // Some pages are fully static, so we might as well pre-render them on startup
     // just to avoid doing extra processing (despite it being pretty fast anyway)
     about_page: response.Response(wisp.Body),
@@ -42,11 +41,11 @@ pub fn main() -> Nil {
   let secret_key_base = wisp.random_string(64)
   wisp.configure_logger()
   let assert Ok(cache) = image_cache.start()
-  let assert Ok(delayed) = delayed.start()
+  let assert Ok(index_tid) = index.start(render_page)
   let ctx =
     Context(
       image_cache_subject: cache.data,
-      delayed_subject: delayed,
+      index_tid: index_tid,
       about_page: render_page(about.render()),
       faq_page: render_page(faq.render()),
       news_page: news.get_news_articles() |> news.render() |> render_page(),
@@ -99,7 +98,8 @@ pub fn handle_request(req: Request, ctx: Context) -> Response {
 
 fn route_request(req: Request, ctx: Context) -> Response {
   case wisp.path_segments(req) {
-    [] | ["home"] | ["index"] -> render_page(index.render(ctx.delayed_subject))
+    [] | ["home"] | ["index"] ->
+      index.get_cached_index_page(ctx.index_tid, render_page)
     ["om-surtoget"] -> ctx.about_page
     ["faq"] -> ctx.faq_page
     ["health"] -> wisp.ok()
