@@ -43,8 +43,8 @@ EOF
 [tasks.deps]
 description = "install npm dependencies"
 run = "npm install"
-sources = ["node_modules", "package.json"]
-outputs = ["node_modules", "package.json"]
+sources = ["package.json"]
+outputs = ["node_modules", "package-lock.json"]
 
 [tasks.css]
 description = "generate css"
