@@ -27,7 +27,7 @@ import wisp/wisp_mist
 
 pub type Context {
   Context(
-    image_cache_subject: process.Subject(image_cache.ImageCacheMessage),
+    image_cache_tid: atom.Atom,
     index_tid: atom.Atom,
     // Some pages are fully static, so we might as well pre-render them on startup
     // just to avoid doing extra processing (despite it being pretty fast anyway)
@@ -40,11 +40,11 @@ pub type Context {
 pub fn main() -> Nil {
   let secret_key_base = wisp.random_string(64)
   wisp.configure_logger()
-  let assert Ok(cache) = image_cache.start()
+  let image_cache_tid = image_cache.start()
   let assert Ok(index_tid) = index.start(render_page)
   let ctx =
     Context(
-      image_cache_subject: cache.data,
+      image_cache_tid: image_cache_tid,
       index_tid: index_tid,
       about_page: render_page(about.render()),
       faq_page: render_page(faq.render()),
@@ -106,7 +106,7 @@ fn route_request(req: Request, ctx: Context) -> Response {
     ["favicon.ico"] -> get_favicon(req)
     ["news"] -> ctx.news_page
     ["news", "images", image_id] ->
-      handle_news_image_request(image_id, req, ctx.image_cache_subject)
+      handle_news_image_request(image_id, req, ctx.image_cache_tid)
     _ -> wisp.not_found()
   }
 }
@@ -157,9 +157,9 @@ fn serve_static_image(req: Request, image_path: String) -> Response {
 fn handle_news_image_request(
   image_id: String,
   req: Request,
-  actor: process.Subject(image_cache.ImageCacheMessage),
+  image_cache_tid: atom.Atom,
 ) -> response.Response(wisp.Body) {
-  case image_cache.get_cached_image(image_id, actor) {
+  case image_cache.get_cached_image(image_id, image_cache_tid) {
     Ok(image) ->
       wisp.response(200)
       |> wisp.file_download_from_memory(named: image_id, containing: image)

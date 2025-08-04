@@ -1,10 +1,11 @@
+import gets
 import gleam/bool
 import gleam/bytes_tree
 import gleam/dict
+import gleam/erlang/atom
 import gleam/erlang/process
 import gleam/int
 import gleam/list
-import gleam/otp/actor
 import gleam/result
 import gleam/string
 import news
@@ -32,11 +33,6 @@ type ImageFormat {
   PNG
   WebP(quality: Int, keep_metadata: Bool)
   AVIF(quality: Int, keep_metadata: Bool)
-}
-
-pub type ImageCacheMessage {
-  GetCachedImage(String, process.Subject(Result(bytes_tree.BytesTree, Nil)))
-  AddImage(String, bytes_tree.BytesTree)
 }
 
 pub type State {
@@ -67,67 +63,33 @@ fn format_common_options(quality, keep_metadata) {
   <> "]"
 }
 
-fn handle_message(
-  state: State,
-  message: ImageCacheMessage,
-) -> actor.Next(State, ImageCacheMessage) {
-  case message {
-    GetCachedImage(id, reply_to) -> {
-      process.send(reply_to, dict.get(state.cache, id))
-      actor.continue(state)
-    }
-    AddImage(id, image) -> {
-      state.cache
-      |> dict.insert(id, image)
-      |> State()
-      |> actor.continue()
-    }
-  }
-}
-
-pub fn start() -> Result(
-  actor.Started(process.Subject(ImageCacheMessage)),
-  actor.StartError,
-) {
-  let pid_actor =
-    actor.new(State(dict.new()))
-    |> actor.on_message(handle_message)
-    |> actor.start()
+pub fn start() -> atom.Atom {
+  let assert Ok(tid): Result(atom.Atom, atom.Atom) =
+    gets.new_cache(atom.create("image_cache"))
 
   // Ensuring that we're loading images async while also avoiding blocking
   // request going to the site.
-  let _ = case pid_actor {
-    Ok(pid) -> {
-      news.get_news_articles()
-      |> list.each(fn(article) {
-        process.spawn(fn() { load_image(pid.data, article) })
-      })
-      Ok(Nil)
-    }
-    Error(_) -> Error(Nil)
-  }
-  pid_actor
+  news.get_news_articles()
+  |> list.each(fn(article) {
+    process.spawn_unlinked(fn() { load_image(tid, article) })
+  })
+  tid
 }
 
 pub fn get_cached_image(
   id: String,
-  actor: process.Subject(ImageCacheMessage),
+  tid: atom.Atom,
 ) -> Result(bytes_tree.BytesTree, Nil) {
-  let cache_result: Result(bytes_tree.BytesTree, Nil) =
-    process.call(actor, 100, fn(reply_to) { GetCachedImage(id, reply_to) })
-  case cache_result {
-    Ok(image) -> Ok(image)
+  case gets.lookup(tid, atom.create(id)) {
+    Ok(result) -> Ok(result)
     Error(_) -> load_default_image()
   }
 }
 
-fn load_image(
-  actor: process.Subject(ImageCacheMessage),
-  article: news.NewsArticle,
-) {
+fn load_image(tid: atom.Atom, article: news.NewsArticle) {
   let image_id = news.get_image_id(article)
   let image = cache_image(article) |> result.unwrap(bytes_tree.new())
-  process.send(actor, AddImage(image_id, image))
+  gets.insert(tid, atom.create(image_id), image)
 }
 
 fn cache_image(article: news.NewsArticle) -> Result(bytes_tree.BytesTree, Nil) {
