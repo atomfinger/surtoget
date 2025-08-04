@@ -25,6 +25,14 @@ import gleam/dict
 pub fn get_news_articles() -> List(NewsArticle) {
   let articles = [
     NewsArticle(
+      title: "Innstillingar også kommande veke",
+      description: "Togtrafikken mellom Oslo, Kristiansand og Stavanger vil framleis vere redusert dei kommande dagane.",
+      external_url: "https://www.nrk.no/sorlandet/innstillingar-ogsa-kommande-veke-1.17514370",
+      external_image_url: "https://gfx.nrk.no/umkc38JlKJTZqKNhx3j03wwq_DTLcCv7YZVS4KNAXhgQ.jpg",
+      owner: "NRK",
+      date: "03. august 2025",
+    ),
+    NewsArticle(
       title: "Flere avganger på Sørlandsbanen etter innstillinger",
       description: "Go-Ahead gjeninnfører flere togavganger på Sørlandsbanen fra og med torsdag, etter at kun én avgang daglig har vært i drift de siste dagene. Årsaken til de tidligere innstillingene var løse sideruter som ble oppdaget på flere togsett, noe som førte til at åtte tog av type 73 ble tatt ut av drift. Etter grundige stresstester og inspeksjoner blir togene nå satt tilbake i trafikk. Enkelte avganger vil fremdeles være innstilt frem til fredag for å fullføre de siste testene, og det vil bli organisert alternativ transport for de berørte reisende.",
       external_url: "https://www.abcnyheter.no/nyheter/flere-avganger-pa-sorlandsbanen-etter-innstillinger/1152046",
