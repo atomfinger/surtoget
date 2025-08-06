@@ -25,6 +25,14 @@ import gleam/dict
 pub fn get_news_articles() -> List(NewsArticle) {
   let articles = [
     NewsArticle(
+      title: "Nye innstillinger på Sørlandsbanen: – Fullstendig krise",
+      description: "Den siste uken har vært preget av innstillinger for Sørlandsbanen. Disse ser ut til å vedvare. Situasjonen er uholdbar, mener pendler.",
+      external_url: "https://www.nrk.no/rogaland/nye-innstillinger-pa-sorlandsbanen_-_-fullstendig-krise-nar-alle-regiontog-tas-ut-av-trafikk-1.17516021",
+      external_image_url: "https://gfx.nrk.no/dZe4wF7CS68eU4F5Ys_LZASbMDulw5zOSRaufS-I2nQw.jpg",
+      owner: "NRK",
+      date: "04. august 2025",
+    ),
+    NewsArticle(
       title: "Innstillingar også kommande veke",
       description: "Togtrafikken mellom Oslo, Kristiansand og Stavanger vil framleis vere redusert dei kommande dagane.",
       external_url: "https://www.nrk.no/sorlandet/innstillingar-ogsa-kommande-veke-1.17514370",
