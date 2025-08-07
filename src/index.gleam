@@ -1,9 +1,11 @@
+import clockwork
 import entur_client
 import gets
 import gleam/erlang/atom
 import gleam/erlang/process
 import gleam/http/response
 import gleam/list
+import gleam/time/timestamp
 import lustre/attribute.{attribute, class, src}
 import lustre/element.{type Element}
 import lustre/element/html
@@ -12,9 +14,6 @@ import refund
 import statistics
 import stories
 import wisp
-
-// 5 minutes
-const wait_time_ms = 300_000
 
 const index_ets_key = "index_page"
 
@@ -39,7 +38,16 @@ pub fn start(
     Ok(tid) -> {
       // Instant insert to ensure that there's always something ready to go
       let _ = render(False) |> render_page() |> update_index_page(tid)
-      process.spawn(fn() { scheduler(tid, render_page) })
+
+      let assert Ok(cron) = "*/5 * * * *" |> clockwork.from_string
+      let job = fn() { scheduler(tid, render_page) }
+      //TODO: Clockwork has outdated dependencies. Must wait or fork.
+      schedule.new("minutely-job", cron, job)
+      |> schedule.with_logging()
+      |> schedule.with_telemetry()
+
+      let assert Ok(running_schedule) = schedule.start(scheduler)
+
       Ok(tid)
     }
     Error(reason) -> Error(reason)
@@ -57,8 +65,6 @@ fn scheduler(
       render_with_entur_check() |> render_page() |> update_index_page(index_tid)
     wisp.log_info("Entur update successful")
   })
-  process.sleep(wait_time_ms)
-  scheduler(index_tid, render_page)
 }
 
 fn update_index_page(page: response.Response(wisp.Body), index_tid: atom.Atom) {
