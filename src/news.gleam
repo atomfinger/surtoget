@@ -25,6 +25,14 @@ import gleam/dict
 pub fn get_news_articles() -> List(NewsArticle) {
   let articles = [
     NewsArticle(
+      title: "Visste ikke hvor omfat­tende det var",
+      description: "Go-Ahead har fortsatt trøbbel med flere av togene som ble tatt ut av drift i slutten av juli. ",
+      external_url: "https://www.aftenbladet.no/lokalt/i/lwdOa9/sliter-fortsatt-visste-ikke-hvor-omfattende-det-var",
+      external_image_url: "https://premium.vgc.no/v2/images/a4887169-17c6-4c24-b944-402c591bd977?fit=crop&format=auto&h=1267&w=1900&s=a30b1a91d29aba185ec3d47509cef70abb986e57",
+      owner: "Stavanger Aftenblad",
+      date: "11. august 2025",
+    ),
+    NewsArticle(
       title: "Nye innstillinger på Sørlandsbanen: – Fullstendig krise",
       description: "Den siste uken har vært preget av innstillinger for Sørlandsbanen. Disse ser ut til å vedvare. Situasjonen er uholdbar, mener pendler.",
       external_url: "https://www.nrk.no/rogaland/nye-innstillinger-pa-sorlandsbanen_-_-fullstendig-krise-nar-alle-regiontog-tas-ut-av-trafikk-1.17516021",
