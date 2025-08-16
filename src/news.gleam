@@ -25,6 +25,14 @@ import gleam/dict
 pub fn get_news_articles() -> List(NewsArticle) {
   let articles = [
     NewsArticle(
+      title: "Tekniske problemer med fjernstyringen av tog flere steder i landet",
+      description: "Problemer med fjernstyringsanlegget til Bane Nor førte til mindre forsinkelser på Sørlandsbanen, Jærbanen og på tog i drammensregionen lørdag. ",
+      external_url: "https://www.adressa.no/nyheter/innenriks/i/5E2K06/tekniske-problemer-med-fjernstyringen-av-tog-flere-steder-i-landet",
+      external_image_url: "",
+      owner: "Adressa",
+      date: "16. august 2025",
+    ),
+    NewsArticle(
       title: "Visste ikke hvor omfat­tende det var",
       description: "Go-Ahead har fortsatt trøbbel med flere av togene som ble tatt ut av drift i slutten av juli. ",
       external_url: "https://www.aftenbladet.no/lokalt/i/lwdOa9/sliter-fortsatt-visste-ikke-hvor-omfattende-det-var",
