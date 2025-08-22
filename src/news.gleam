@@ -25,6 +25,14 @@ import gleam/dict
 pub fn get_news_articles() -> List(NewsArticle) {
   let articles = [
     NewsArticle(
+      title: "Osloturen røyk for liv: - Hadde gledet meg i lang tid. Nå er jeg potte sur ",
+      description: "Liv Aasmundsen, fysioterapeut gjennom 46 år, hadde gledd seg til jubileet med kollegaer i Oslo onsdag 20. august kl. 13.00. Det rauk på grunn av innstilt tog på Sørlandsbanen. Pressevakta i Go-Ahead legg seg «paddeflat». ",
+      external_url: "https://www.ta.no/hadde-gledet-meg-i-lang-tid-na-er-jeg-potte-sur/s/5-50-2159340",
+      external_image_url: "https://g.acdn.no/obscura/API/dynamic/r1/ece5/tr_1200_1200_s_f/0000/teav/2025/8/20/17/DSC00505.JPG?chk=3B83C7",
+      owner: "TA",
+      date: "20. august 2025",
+    ),
+    NewsArticle(
       title: "Tekniske problemer med fjernstyringen av tog flere steder i landet",
       description: "Problemer med fjernstyringsanlegget til Bane Nor førte til mindre forsinkelser på Sørlandsbanen, Jærbanen og på tog i drammensregionen lørdag. ",
       external_url: "https://www.adressa.no/nyheter/innenriks/i/5E2K06/tekniske-problemer-med-fjernstyringen-av-tog-flere-steder-i-landet",
