@@ -25,6 +25,46 @@ import gleam/dict
 pub fn get_news_articles() -> List(NewsArticle) {
   let articles = [
     NewsArticle(
+      title: "Buss for tog på Sørlandsbanen",
+      description: "Det går ingen tog mellom Kongsberg og Hokksund og det er satt opp buss for tog på Sørlandsbanen mellom Oslo og Kristiansand. Dette skyldes en feil på grunn av Bane Nor sitt arbeid på jernbanesporet. Det er usikkert når togene går som normalt.",
+      external_url: "https://www.nrk.no/sorlandet/buss-for-tog-pa-sorlandsbanen-1.17559667",
+      external_image_url: "https://gfx.nrk.no/uUl2XauH6-h-p1RPbwcMfw2wYMKa31rhyMFEizrB5Xig.jpg",
+      owner: "NRK",
+      date: "09. september 2025",
+    ),
+    NewsArticle(
+      title: "Innstiller avgang på Sørlandsbanen",
+      description: "Toget som skulle gått fra Oslo S mot Stavanger klokken 15.23 torsdag ettermiddag er innstilt på grunn av problemer med toget. ",
+      external_url: "https://www.nrk.no/sorlandet/innstiller-avgang-pa-sorlandsbanen-1.17554756",
+      external_image_url: "",
+      owner: "NRK",
+      date: "04. september 2025",
+    ),
+    NewsArticle(
+      title: "Store problemer: Vurderte å stanse all togtrafikk",
+      description: "Go-Ahead sliter med vedlikeholdet av togene på Sørlandsbanen og Jærbanen. Bare i sommer har det vært over 400 innstillinger – og på et tidspunkt ble det sendt ut en svært dramatisk melding.",
+      external_url: "https://www.aftenbladet.no/lokalt/i/W0rEb2/go-ahead-har-hatt-over-400-innstillinger-paa-jaerbanen-og-soerlandsbanen-i-sommer",
+      external_image_url: "https://premium.vgc.no/v2/images/eef10787-7d57-4fb3-944b-63924a08e878?fit=crop&format=auto&h=995&w=1900&s=4922e763b00ecba7ff705af7caa9b2fdf95e9f69",
+      owner: "Stavanger Aftenblad",
+      date: "01. september 2025",
+    ),
+    NewsArticle(
+      title: "Kamp for togstoppene i Telemark: – Vi kan ikke planlegge med forsinkelser",
+      description: "Telemark fylkeskommune inviterte fredag 29. august til møte om situasjonen på Sørlandsbanen. Bakgrunnen er at ti togstopp i distriktene i Telemark ble fjernet i 2024 og 2025 – og ifølge Bane Nor er det ikke aktuelt å få dem tilbake i 2026 heller, skriver Siri Blichfeldt Dyrland i et referat fra møtet.",
+      external_url: "https://www.kanalen.no/meninger/kamp-for-togstoppene-i-telemark-vi-kan-ikke-planlegge-med-forsinkelser/368247",
+      external_image_url: "https://image.kanalen.no/368252.webp?imageId=368252&width=2116&height=1208&format=webp",
+      owner: "Kanalen",
+      date: "29. august 2025",
+    ),
+    NewsArticle(
+      title: "Varsler buss for tog",
+      description: "Reisende på Sørlandsbanen kan møte utfordringer mandag. GoAhead opplyser at flere avganger er innstilt.",
+      external_url: "https://www.n247.no/bane-nor-buss-for-tog-goahead/varsler-buss-for-tog/560793",
+      external_image_url: "https://image.n247.no/560797.webp?imageId=560797&width=2116&height=1208&format=webp",
+      owner: "n247",
+      date: "25. august 2025",
+    ),
+    NewsArticle(
       title: "Osloturen røyk for liv: - Hadde gledet meg i lang tid. Nå er jeg potte sur ",
       description: "Liv Aasmundsen, fysioterapeut gjennom 46 år, hadde gledd seg til jubileet med kollegaer i Oslo onsdag 20. august kl. 13.00. Det rauk på grunn av innstilt tog på Sørlandsbanen. Pressevakta i Go-Ahead legg seg «paddeflat». ",
       external_url: "https://www.ta.no/hadde-gledet-meg-i-lang-tid-na-er-jeg-potte-sur/s/5-50-2159340",
