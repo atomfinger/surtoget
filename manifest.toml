@@ -49,7 +49,7 @@ packages = [
   { name = "telemetry", version = "1.3.0", build_tools = ["rebar3"], requirements = [], otp_app = "telemetry", source = "hex", outer_checksum = "7015FC8919DBE63764F4B4B87A95B7C0996BD539E0D499BE6EC9D7F3875B79E6" },
   { name = "unicode_util_compat", version = "0.7.1", build_tools = ["rebar3"], requirements = [], otp_app = "unicode_util_compat", source = "hex", outer_checksum = "B3A917854CE3AE233619744AD1E0102E05673136776FB2FA76234F3E03B23642" },
   { name = "vix", version = "0.35.0", build_tools = ["mix", "make"], requirements = ["cc_precompiler", "elixir_make", "kino"], otp_app = "vix", source = "hex", outer_checksum = "A3E80067A89D0631B6CF2B93594E03C1B303A2C7CDDBBDD28040750D521984E5" },
-  { name = "wisp", version = "1.8.0", build_tools = ["gleam"], requirements = ["directories", "exception", "gleam_crypto", "gleam_erlang", "gleam_http", "gleam_json", "gleam_stdlib", "houdini", "logging", "marceau", "mist", "simplifile"], otp_app = "wisp", source = "hex", outer_checksum = "0FE9049AFFB7C8D5FC0B154EEE2704806F4D51B97F44925D69349B3F4F192957" },
+  { name = "wisp", version = "2.0.0", build_tools = ["gleam"], requirements = ["directories", "exception", "filepath", "gleam_crypto", "gleam_erlang", "gleam_http", "gleam_json", "gleam_stdlib", "houdini", "logging", "marceau", "mist", "simplifile"], otp_app = "wisp", source = "hex", outer_checksum = "E9E4CEE4A5ACB41E3D9CFEF7AB07BF7DF670AB32E1CB434A61C6DA6859C66168" },
 ]
 
 [requirements]
@@ -69,4 +69,4 @@ req = { version = ">= 0.5.15 and < 1.0.0" }
 simplifile = { version = ">= 2.3.0 and < 3.0.0" }
 snag = { version = ">= 1.1.0 and < 2.0.0" }
 vix = { version = ">= 0.30.0 and < 1.0.0" }
-wisp = { version = ">= 1.8.0 and < 2.0.0" }
+wisp = { version = ">= 1.8.0 and < 3.0.0" }
