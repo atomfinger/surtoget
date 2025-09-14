@@ -129,7 +129,7 @@ fn serve_static_image(req: Request, image_path: String) -> Response {
         simplifile.File -> {
           wisp.response(200)
           |> response.set_header("content-type", mime_type)
-          |> response.set_body(wisp.File(path))
+          |> response.set_body(wisp.File(path, 0, option.None))
           |> handle_etag(req, file_info.size)
         }
         _ -> wisp.not_found()
@@ -222,6 +222,6 @@ fn render_page(content: Element(msg)) -> response.Response(wisp.Body) {
     ])
 
   index_page
-  |> element.to_document_string_tree()
+  |> element.to_string()
   |> wisp.html_response(200)
 }
