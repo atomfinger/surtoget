@@ -61,6 +61,22 @@ fn get_monthly_stats() -> List(MonthlyStats) {
       unforeseen: 9.0,
       consequential_delays: 32.0,
     ),
+    MonthlyStats(
+      month: "July",
+      on_time: 64.7,
+      banenor: 25.0,
+      goahead: 48.0,
+      unforeseen: 4.0,
+      consequential_delays: 12.0,
+    ),
+    MonthlyStats(
+      month: "August",
+      on_time: 81.6,
+      banenor: 16.0,
+      goahead: 46.0,
+      unforeseen: 8.0,
+      consequential_delays: 30.0,
+    ),
   ]
 }
 
@@ -189,7 +205,7 @@ pub fn render() -> Element(a) {
               ),
             ],
             [
-              tab_button("last_month", "Siste rapport (Mai)", True),
+              tab_button("last_month", "Siste rapport (August)", True),
               tab_button("this_year", "Dette året så langt", False),
               tab_button("punctuality_over_time", "Punktlighet over tid", False),
             ],
