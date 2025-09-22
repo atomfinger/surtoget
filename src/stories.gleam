@@ -37,6 +37,10 @@ fn get_stories() -> List(Story) {
       quote: "Jeg og gutten min på to år skulle ta turen fra Bø til Oslo, men ikke overraskende ble det trøbbel på strekningen. Vi ble stående på Hokksund stasjon, og ble lovet buss for tog. Stort sett alle kom seg på en buss etter hvert (men ikke før en times tid). Men vi som hadde småbarn, vi måtte bli stående på Hokksund stasjon i tre timer (!) for de klarte ikke å skaffe barneseter til de fem barna som var med. Det endte med at vi måtte regiontoget fra Hokksund til Oslo etter tre timer. Altså ingen buss på oss.",
       author: "Kjersti Kaasa ",
     ),
+    Story(
+      quote: "Konduktørene på sørtoget er verdens beste og alltid i godt humør. Det hjelper litt, men bare litt - når jeg vet at elevene sitter og venter på en togfast lærer som kommer for seint til timen. Eller når besteforeldre må stille opp på kort varsel og hente på SFO. Jeg sparer normalt sett 25 minutter på å reise med tog, fremfor bil mellom Bø og Kongsberg - men den gevinsten blir ofte borte.",
+      author: "Henning Tveito",
+    ),
   ]
   |> list.shuffle()
 }
