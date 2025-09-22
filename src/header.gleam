@@ -79,7 +79,6 @@ pub fn render() -> Element(msg) {
               li_nav_item("/", "Hjem"),
               li_nav_item("/news", "Nyheter"),
               li_nav_item("/om-surtoget", "Om Surtoget"),
-              li_nav_item("/background", "Bakgrunn"),
               li_nav_item("/faq", "Ofte stilte spørsmål"),
             ],
           ),
