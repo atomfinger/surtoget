@@ -7,6 +7,7 @@ import gleam/erlang/process
 import gleam/http/request
 import gleam/http/response
 import gleam/list
+import gleam/option
 import gleam/result
 import gleam/string
 import header
@@ -143,7 +144,7 @@ fn serve_static_image(req: Request, image_path: String) -> Response {
 // on the site. To strike a balance we use a local in-memory cache.
 //
 // The reason we do not use direct links is because we want to be
-// good samaritans and avoid causing unwanted bandwith load due to 
+// good citizens and avoid causing unwanted bandwith load due to
 // direct hotlinking. Read more about it here:
 // https://mailchimp.com/resources/hotlinking/
 //
