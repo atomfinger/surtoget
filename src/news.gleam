@@ -25,6 +25,14 @@ import gleam/dict
 pub fn get_news_articles() -> List(NewsArticle) {
   let articles = [
     NewsArticle(
+      title: "Innstillinger i togtrafikken",
+      description: "Innstillinger i togtrafikken",
+      external_url: "https://www.nrk.no/sorlandet/innstillinger-i-togtrafikken-1.17590049",
+      external_image_url: "",
+      owner: "NRK",
+      date: "29. september 2025",
+    ),
+    NewsArticle(
       title: "Buss for tog på Sørlandsbanen",
       description: "Det går ingen tog mellom Kongsberg og Hokksund og det er satt opp buss for tog på Sørlandsbanen mellom Oslo og Kristiansand. Dette skyldes en feil på grunn av Bane Nor sitt arbeid på jernbanesporet. Det er usikkert når togene går som normalt.",
       external_url: "https://www.nrk.no/sorlandet/buss-for-tog-pa-sorlandsbanen-1.17559667",
