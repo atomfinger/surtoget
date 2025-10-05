@@ -41,6 +41,22 @@ pub fn get_news_articles() -> List(NewsArticle) {
       date: "29. september 2025",
     ),
     NewsArticle(
+      title: "Lanserte surtoget.no og skapte nasjonal merksemd",
+      description: "For John Mikael Lindbakk har togturane mellom Oslo og Lunde blitt meir frustrasjon enn glede. Derfor tok han saka i eigne hender og lanserte surtoget.no",
+      external_url: "https://www.boblad.no/nyheit/lanserte-surtogetno-og-skapte-nasjonal-merksemd/372674",
+      external_image_url: "https://image.boblad.no/372059.webp?imageId=372059&width=600&format=webp",
+      owner: "Bø Blad",
+      date: "27. september 2025",
+    ),
+    NewsArticle(
+      title: "Lundeheringen fikk nok av forsinkelsene. Lanserte surtoget.no og skapte nasjonal oppmerksomhet",
+      description: "For John Mikael Lindbakk har togturene mellom Oslo og Lunde blitt mer frustrasjon enn glede. Derfor tok han saken i egne hender og lanserte surtoget.no – et digitalt opprop for å få Sørlandsbanen på rett spor igjen.",
+      external_url: "https://www.kanalen.no/nyheter/lundeheringen-fikk-nok-av-forsinkelsene-lanserte-surtogetno-og-skapte-nasjonal-oppmerksomhet/372009",
+      external_image_url: "https://image.kanalen.no/372059.webp?imageId=372059&width=600&format=webp",
+      owner: "Kanalen",
+      date: "22. september 2025",
+    ),
+    NewsArticle(
       title: "Buss for tog på Sørlandsbanen",
       description: "Det går ingen tog mellom Kongsberg og Hokksund og det er satt opp buss for tog på Sørlandsbanen mellom Oslo og Kristiansand. Dette skyldes en feil på grunn av Bane Nor sitt arbeid på jernbanesporet. Det er usikkert når togene går som normalt.",
       external_url: "https://www.nrk.no/sorlandet/buss-for-tog-pa-sorlandsbanen-1.17559667",
