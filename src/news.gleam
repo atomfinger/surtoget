@@ -25,6 +25,14 @@ import gleam/dict
 pub fn get_news_articles() -> List(NewsArticle) {
   let articles = [
     NewsArticle(
+      title: "Bane Nors nye hysj-plan ",
+      description: "Holder trafikkmeldingene ute av nyhetsbildet.",
+      external_url: "https://www.vg.no/nyheter/i/gw5RMk/bane-nor-sluttet-aa-dele-trafikkmeldinger-ville-redusere-stoey",
+      external_image_url: "https://akamai.vgc.no/v2/images/76e51be6-0a66-4620-abe4-7e296f28bc61?format=auto&w=2160&s=2621a1f9cdf08d55055ae8d4b239a0511bb69463",
+      owner: "VG",
+      date: "05. oktober 2025",
+    ),
+    NewsArticle(
       title: "Innstillinger i togtrafikken",
       description: "Innstillinger i togtrafikken",
       external_url: "https://www.nrk.no/sorlandet/innstillinger-i-togtrafikken-1.17590049",
