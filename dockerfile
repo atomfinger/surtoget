@@ -6,7 +6,7 @@ RUN npm install
 COPY . .
 RUN ./node_modules/.bin/tailwindcss -i ./src/styles.css -o ./priv/css/tailwind.css --minify
 
-FROM ghcr.io/gleam-lang/gleam:v1.12.0-elixir-alpine
+FROM ghcr.io/gleam-lang/gleam:v1.13.0-elixir-alpine
 RUN mix local.hex --force
 COPY . /build/
 RUN cd /build && gleam export erlang-shipment
