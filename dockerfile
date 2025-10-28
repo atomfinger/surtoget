@@ -1,5 +1,5 @@
 
-FROM node:22-alpine AS tailwind-generation
+FROM node:24-alpine AS tailwind-generation
 WORKDIR /src
 COPY package.json package-lock.json ./
 RUN npm install
