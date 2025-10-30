@@ -1,6 +1,6 @@
 [tools]
 elixir = "1.19.1"
-gleam = "1.12.0"
+gleam = "1.13.0"
 node = "24"
 npm = "11"
 
