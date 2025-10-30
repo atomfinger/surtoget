@@ -25,6 +25,22 @@ import gleam/dict
 pub fn get_news_articles() -> List(NewsArticle) {
   let articles = [
     NewsArticle(
+      title: "Over 32.000 toginnstillingar visest ikkje i statistikken",
+      description: "Sjølv om buss for tog påverkar reiseopplevinga for folk, så påverkar det ikkje statistikken for punktlegheit hos Bane Nor.",
+      external_url: "https://www.nrk.no/norge/over-32.000-toginnstillingar-visest-ikkje-i-statistikken-1.17574607",
+      external_image_url: "https://gfx.nrk.no/nXVc1cN62RHA78WBR6muFQmch5mtBk8D1qOouVshiJKA.jpg",
+      owner: "NRK",
+      date: "29. oktober 2025",
+    ),
+    NewsArticle(
+      title: "Flere innstillinger i togtrafikken",
+      description: "Flere tog som skulle gått mellom Stavanger, Kristiansand og Oslo er innstilt i dag på grunn av problemer med togene. Det melder togselskapet Go-Ahead. ",
+      external_url: "https://www.nrk.no/sorlandet/flere-innstillinger-i-togtrafikken-1.17630697",
+      external_image_url: "https://gfx.nrk.no/aILyt-JiNX4UDr99OLk1bwf_iX8RJ7i_EYPfAMrpWVIw.jpg",
+      owner: "NRK",
+      date: "29. oktober 2025",
+    ),
+    NewsArticle(
       title: "Bane Nors nye hysj-plan ",
       description: "Holder trafikkmeldingene ute av nyhetsbildet.",
       external_url: "https://www.vg.no/nyheter/i/gw5RMk/bane-nor-sluttet-aa-dele-trafikkmeldinger-ville-redusere-stoey",
