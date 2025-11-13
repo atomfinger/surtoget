@@ -1,5 +1,5 @@
 [tools]
-elixir = "1.19.1"
+elixir = "1.19.3"
 gleam = "1.13.0"
 node = "24"
 npm = "11"
