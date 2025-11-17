@@ -25,12 +25,20 @@ import gleam/dict
 pub fn get_news_articles() -> List(NewsArticle) {
   let articles = [
     NewsArticle(
+      title: "Mange toginnstillinger på Sørlandsbanen",
+      description: "Flere tog som skulle gått på Sørlandsbanen mellom Oslo, Kristiansand og Stavanger er innstilt mandag.",
+      external_url: "https://www.nrk.no/sorlandet/mange-toginnstillinger-pa-sorlandsbanen-1.17655818",
+      external_image_url: "https://gfx.nrk.no/FLUplHUikquKhdgPCOAtZg6eJGjwKHV-nbChZdoNum8Q.jpg",
+      owner: "NRK",
+      date: "17. november 2025",
+    ),
+    NewsArticle(
       title: "Innstilt ut uka: – Beklager på det sterkeste",
       description: "Deleproblemer gjør at nattoget fra Stavanger til Oslo tidligst vil være i trafikk igjen fra neste mandag.",
       external_url: "https://www.aftenbladet.no/trafikk/i/zARg94/nattoget-fra-stavanger-til-oslo-innstilt-ut-uka",
       external_image_url: "https://premium.vgc.no/v2/images/c538f50a-60ed-460e-a213-99b7a168759c?fit=crop&format=auto&h=995&w=1900&s=1175140ae9ed42cb1d88d066dce6b3cd64289a68",
       owner: "Stavanger Aftenblad",
-      date: "05. November 2025",
+      date: "05. november 2025",
     ),
     NewsArticle(
       title: "Over 32.000 toginnstillingar visest ikkje i statistikken",
