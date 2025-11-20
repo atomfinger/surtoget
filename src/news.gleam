@@ -25,6 +25,30 @@ import gleam/dict
 pub fn get_news_articles() -> List(NewsArticle) {
   let articles = [
     NewsArticle(
+      title: "Ni toginnstillinger på Sørlandsbanen i dag",
+      description: "Go-ahead har færre togsett tilgjengelig enn vanlig. Derfor er hele ni togavganger på Sørlandsbanen mellom Stavanger, Kristiansand og Oslo innstilt i dag. ",
+      external_url: "https://www.nrk.no/rogaland/ni-toginnstillinger-pa-sorlandsbanen-i-dag-1.17660172",
+      external_image_url: "https://gfx.nrk.no/uUl2XauH6-h-p1RPbwcMfw2wYMKa31rhyMFEizrB5Xig.jpg",
+      owner: "NRK",
+      date: "20. november 2025",
+    ),
+    NewsArticle(
+      title: "Punktligheten raser på togene: – Dette blir min siste tur",
+      description: "Over 40 prosent av avgangene har blitt kansellert i høst. Med rekordmange innstillinger rømmer pendlerne. Finn Pettersen velger nå kronglete flyrute i stedet.",
+      external_url: "https://www.nrk.no/rogaland/pa-sorlandsbanen-har-punktlighetene-pa-togene-rast-de-siste-arene-1.17657229",
+      external_image_url: "https://gfx.nrk.no/X0n3s1aXPBdq9rRCqTTU7ABPdFhHb_nOiLsdMt1V4Ljg.jpg",
+      owner: "NRK",
+      date: "19. november 2025",
+    ),
+    NewsArticle(
+      title: "Mangler fire togsett på Sørlandsbanen",
+      description: "De siste dagene har det vært en rekke kanselleringer på Sørlandsbanen. Og flere vil det bli de neste dagene.",
+      external_url: "https://www.aftenbladet.no/trafikk/i/d45m41/soertoget-dette-er-togavgangene-som-er-kansellert",
+      external_image_url: "https://premium.vgc.no/v2/images/b1a1ecaf-aca7-49f9-8707-efb17554c292?fit=crop&format=auto&h=995&w=1900&s=4a21285f2cf1422c121e46e3a449351aad2f2542",
+      owner: "Stavanger Aftenblad",
+      date: "19. november 2025",
+    ),
+    NewsArticle(
       title: "Mange toginnstillinger på Sørlandsbanen",
       description: "Flere tog som skulle gått på Sørlandsbanen mellom Oslo, Kristiansand og Stavanger er innstilt mandag.",
       external_url: "https://www.nrk.no/sorlandet/mange-toginnstillinger-pa-sorlandsbanen-1.17655818",
