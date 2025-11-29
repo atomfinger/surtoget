@@ -25,6 +25,22 @@ import gleam/dict
 pub fn get_news_articles() -> List(NewsArticle) {
   let articles = [
     NewsArticle(
+      title: "Flere tog innstilt i helgen",
+      description: " Flere tog som skulle gått på Sørlandsbanen mellom Oslo, Kristiansand og Stavanger denne helgen er innstilt.",
+      external_url: "https://www.nrk.no/sorlandet/flere-tog-innstilt-i-helgen-1.17672478",
+      external_image_url: "https://gfx.nrk.no/h4UqRBM89E0doFZxir_irg6xZrHLLG_FjbwN_pUKtBpw.jpg",
+      owner: "NRK",
+      date: "29. november 2025",
+    ),
+    NewsArticle(
+      title: "Togene går nesten som planlagt: – Erfaring tilsier at det blir humpete",
+      description: " Fredag lovet Go-Ahead at alt skulle gå på skinner for togene på Sørlandsbanen denne uka. Men togselskapet måtte likevel trekke i nødbremsen for en av formiddagens avganger.",
+      external_url: "https://www.nrk.no/sorlandet/go-ahead-forventer-at-togene-pa-sorlandsbanen-gar-som-normalt-mandag-1.17663114",
+      external_image_url: "https://gfx.nrk.no/i6TYYMsS9hY0lrgswcNPMQ1rosA1yLu4LCNlbOWtwI4Q.jpg",
+      owner: "NRK",
+      date: "24. november 2025",
+    ),
+    NewsArticle(
       title: "Ni toginnstillinger på Sørlandsbanen i dag",
       description: "Go-ahead har færre togsett tilgjengelig enn vanlig. Derfor er hele ni togavganger på Sørlandsbanen mellom Stavanger, Kristiansand og Oslo innstilt i dag. ",
       external_url: "https://www.nrk.no/rogaland/ni-toginnstillinger-pa-sorlandsbanen-i-dag-1.17660172",
