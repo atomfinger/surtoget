@@ -19,9 +19,10 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tailwindcss -i ./src/surtoget.gleam -o ./priv/css/tailwind.css --minify"
+    "build": "npx @tailwindcss/cli -i ./src/styles.css -o ./priv/css/tailwind.css"
   },
   "dependencies": {
-    "tailwindcss": "^3.4.0"
+    "@tailwindcss/cli": "^4.1.18",
+    "tailwindcss": "^4.1.18"
   }
 }
