@@ -70,6 +70,7 @@ pub fn start() -> atom.Atom {
   // Ensuring that we're loading images async while also avoiding blocking
   // request going to the site.
   news.get_news_articles()
+  |> list.take(5)
   |> list.each(fn(article) {
     process.spawn_unlinked(fn() { load_image(tid, article) })
   })

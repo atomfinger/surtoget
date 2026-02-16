@@ -477,8 +477,34 @@ pub fn get_image_id(article: NewsArticle) -> String {
   |> bit_array.base16_encode()
 }
 
-pub fn get_image_url(article: NewsArticle) -> String {
-  "/news/images/" <> get_image_id(article)
+pub fn get_vendor_logo(owner: String) -> String {
+  case owner {
+    "NRK" -> "/static/nrk_logo.webp"
+    "Bane NOR" -> "/static/banenor_logo.webp"
+    "Go-Ahead" -> "/static/goahead_logo.webp"
+    "Aftenbladet" -> "/static/aftenbladet.png"
+    "Bøblad" -> "/static/boblad_logo.svg"
+    "Dalane Tidende" -> "/static/dalane_tidene_logo.png"
+    "Drangedalsposten" -> "/static/drangedalsposten_logo.png"
+    "Finansavisen" -> "/static/finansavisen_logo.png"
+    "Kanalen" -> "/static/kanalen_logo.png"
+    "n247" -> "/static/n247_logo.png"
+    "Stavanger Aftenblad" -> "/static/aftenbladet.png"
+    "TA" -> "/static/ta_logo.png"
+    "TU" -> "/static/tu_logo.png"
+    "VG" -> "/static/vg_logo.png"
+    "Adressa" -> "/static/addressa_logo.png"
+    "ABC Nyheter" -> "/static/abc_logo.png"
+    "Bø Blad" -> "/static/boblad_logo.svg"
+    _ -> "/static/train-placeholder.png"
+  }
+}
+
+pub fn get_image_url(article: NewsArticle, index: Int) -> String {
+  case index < 5 {
+    True -> "/news/images/" <> get_image_id(article)
+    False -> get_vendor_logo(article.owner)
+  }
 }
 
 pub fn find_article_by_image_id(image_id: String) -> Result(NewsArticle, Nil) {
@@ -510,7 +536,7 @@ pub fn render(articles: List(NewsArticle)) -> Element(a) {
       ]),
       html.div(
         [class("mt-12 space-y-8")],
-        list.map(articles, fn(article) {
+        list.index_map(articles, fn(article: NewsArticle, index) {
           html.a(
             [
               href(article.external_url),
@@ -521,14 +547,26 @@ pub fn render(articles: List(NewsArticle)) -> Element(a) {
               ),
             ],
             [
-              html.div([class("md:w-1/3")], [
-                html.img([
-                  loading("lazy"),
-                  src(get_image_url(article)),
-                  alt(article.title),
-                  class("w-full h-full object-cover max-h-80 md:max-h-full"),
-                ]),
-              ]),
+              html.div(
+                [
+                  class(case index < 5 {
+                    True -> "md:w-1/3"
+                    False -> "md:w-1/3 flex items-center bg-white"
+                  }),
+                ],
+                [
+                  html.img([
+                    loading("lazy"),
+                    src(get_image_url(article, index)),
+                    alt(article.title),
+                    class(case index < 5 {
+                      True ->
+                        "w-full h-full object-cover max-h-80 md:max-h-full"
+                      False -> "max-w-full max-h-full mx-auto object-contain"
+                    }),
+                  ]),
+                ],
+              ),
               html.div([class("md:w-2/3 p-6 flex flex-col justify-between")], [
                 html.div([], [
                   html.h3([class("text-2xl font-bold text-gray-900 mb-2")], [
