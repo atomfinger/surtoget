@@ -11,7 +11,7 @@ RUN mix local.hex --force
 COPY . /build/
 RUN cd /build && gleam export erlang-shipment
 RUN mv /build/build/erlang-shipment /app && rm -r /build
-RUN apk add --no-cache 
+RUN apk add --no-cache curl ca-certificates 
 COPY ./priv /app/priv/
 COPY --from=tailwind-generation /src/priv/css/tailwind.css /app/priv/css/
 
