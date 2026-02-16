@@ -24,7 +24,7 @@ pub fn render(articles: List(NewsArticle)) -> Element(a) {
     ]),
     html.div(
       [attribute.class("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8")],
-      list.map(articles, fn(article: NewsArticle) {
+      list.index_map(articles, fn(article: NewsArticle, index: Int) {
         html.a(
           [
             attribute.href(article.external_url),
@@ -35,12 +35,22 @@ pub fn render(articles: List(NewsArticle)) -> Element(a) {
             ),
           ],
           [
-            html.img([
-              attribute.loading("lazy"),
-              attribute.src(news.get_image_url(article)),
-              attribute.alt(article.title),
-              attribute.class("w-full h-48 max-h-48 object-cover"),
-            ]),
+            html.div(
+              [
+                attribute.class("h-48 flex items-center bg-white rounded-t-lg"),
+              ],
+              [
+                html.img([
+                  attribute.loading("lazy"),
+                  attribute.src(news.get_image_url(article, index)),
+                  attribute.alt(article.title),
+                  attribute.class(case index < 5 {
+                    True -> "w-full h-full object-cover"
+                    False -> "w-full h-full object-contain"
+                  }),
+                ]),
+              ],
+            ),
             html.div([attribute.class("p-6")], [
               html.h3(
                 [attribute.class("text-xl font-semibold text-gray-900 mb-2")],
