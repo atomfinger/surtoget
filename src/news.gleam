@@ -544,8 +544,9 @@ pub fn render(articles: List(NewsArticle)) -> Element(a) {
               html.div(
                 [
                   class(case index < 5 {
-                    True -> "md:w-1/3"
-                    False -> "md:w-1/3 flex items-center bg-white"
+                    True -> "md:w-1/3 md:flex overflow-hidden"
+                    False ->
+                      "md:w-1/3 flex items-center bg-white overflow-hidden"
                   }),
                 ],
                 [
@@ -558,9 +559,8 @@ pub fn render(articles: List(NewsArticle)) -> Element(a) {
                       "this.src='/static/train-placeholder.png'",
                     ),
                     class(case index < 5 {
-                      True ->
-                        "w-full h-full object-cover max-h-80 md:max-h-full"
-                      False -> "max-w-full max-h-full mx-auto object-contain"
+                      True -> "w-full object-cover max-h-80 md:max-h-96"
+                      False -> "max-h-16 max-w-full mx-auto object-contain"
                     }),
                   ]),
                 ],
