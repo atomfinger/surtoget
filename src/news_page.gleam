@@ -37,7 +37,7 @@ pub fn render(articles: List(NewsArticle)) -> Element(a) {
           [
             html.div(
               [
-                attribute.class("h-48 flex items-center bg-white rounded-t-lg"),
+                attribute.class("h-48 overflow-hidden bg-white rounded-t-lg"),
               ],
               [
                 html.img([
@@ -49,8 +49,8 @@ pub fn render(articles: List(NewsArticle)) -> Element(a) {
                     "this.src='/static/train-placeholder.png'",
                   ),
                   attribute.class(case index < 5 {
-                    True -> "w-full h-full object-cover"
-                    False -> "w-full h-full object-contain"
+                    True -> "w-full h-48 object-cover"
+                    False -> "w-full h-48 object-contain"
                   }),
                 ]),
               ],

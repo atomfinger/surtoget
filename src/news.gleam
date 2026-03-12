@@ -544,8 +544,8 @@ pub fn render(articles: List(NewsArticle)) -> Element(a) {
               html.div(
                 [
                   class(case index < 5 {
-                    True -> "md:w-1/3"
-                    False -> "md:w-1/3 flex items-center bg-white"
+                    True -> "md:w-1/3 overflow-hidden"
+                    False -> "md:w-1/3 flex items-center bg-white overflow-hidden"
                   }),
                 ],
                 [
