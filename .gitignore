@@ -3,6 +3,9 @@
 /build
 erl_crash.dump
 
+# Generated at build time by scripts/fetch_news_images.py — do not commit
+/priv/static/news_images/
+
 **/tailwind.css*
 
 ### Node ###
