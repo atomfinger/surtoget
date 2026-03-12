@@ -20,7 +20,6 @@ pub type NewsArticle {
   )
 }
 
-import gleam/dict
 
 pub fn get_news_articles() -> List(NewsArticle) {
   let articles = [
@@ -434,23 +433,25 @@ pub fn get_news_articles() -> List(NewsArticle) {
   })
 }
 
-fn parse_date(date_string: String) -> Result(String, Nil) {
-  let month_map =
-    dict.from_list([
-      #("januar", "01"),
-      #("februar", "02"),
-      #("mars", "03"),
-      #("april", "04"),
-      #("mai", "05"),
-      #("juni", "06"),
-      #("juli", "07"),
-      #("august", "08"),
-      #("september", "09"),
-      #("oktober", "10"),
-      #("november", "11"),
-      #("desember", "12"),
-    ])
+fn month_to_number(month: String) -> Result(String, Nil) {
+  case month {
+    "januar" -> Ok("01")
+    "februar" -> Ok("02")
+    "mars" -> Ok("03")
+    "april" -> Ok("04")
+    "mai" -> Ok("05")
+    "juni" -> Ok("06")
+    "juli" -> Ok("07")
+    "august" -> Ok("08")
+    "september" -> Ok("09")
+    "oktober" -> Ok("10")
+    "november" -> Ok("11")
+    "desember" -> Ok("12")
+    _ -> Error(Nil)
+  }
+}
 
+fn parse_date(date_string: String) -> Result(String, Nil) {
   let parts = string.split(date_string, " ")
   case parts {
     [day_str, month_name, year_str] -> {
@@ -460,7 +461,7 @@ fn parse_date(date_string: String) -> Result(String, Nil) {
       }
       use day <- result.try(int.parse(cleaned_day_str))
       use _year <- result.try(int.parse(year_str))
-      use month_num <- result.try(dict.get(month_map, month_name))
+      use month_num <- result.try(month_to_number(month_name))
 
       let formatted_day = case day < 10 {
         True -> "0" <> int.to_string(day)

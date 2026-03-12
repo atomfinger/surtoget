@@ -8,6 +8,12 @@ primary_region = 'arn'
 
 [build]
 
+[env]
+  # Disable libvips operation cache - it defaults to ~100MB outside the BEAM heap
+  VIPS_CACHE_MAX = "0"
+  VIPS_CACHE_MAX_MEM = "0"
+  VIPS_CACHE_MAX_FILES = "0"
+
 [http_service]
 internal_port = 8000
 force_https = true

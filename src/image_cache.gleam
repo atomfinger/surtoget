@@ -67,12 +67,12 @@ pub fn start() -> atom.Atom {
   let assert Ok(tid): Result(atom.Atom, atom.Atom) =
     gets.new_cache(atom.create("image_cache"))
 
-  // Ensuring that we're loading images async while also avoiding blocking
-  // request going to the site.
-  news.get_news_articles()
-  |> list.take(5)
-  |> list.each(fn(article) {
-    process.spawn_unlinked(fn() { load_image(tid, article) })
+  // Load images sequentially in a background process to avoid peak memory
+  // spikes from parallel downloads and libvips decoding.
+  process.spawn_unlinked(fn() {
+    news.get_news_articles()
+    |> list.take(5)
+    |> list.each(fn(article) { load_image(tid, article) })
   })
   tid
 }
