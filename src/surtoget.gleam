@@ -132,7 +132,6 @@ fn serve_static_image(req: Request, image_path: String) -> Response {
   }
 }
 
-
 fn handle_etag(resp: Response, req: Request, file_size: Int) -> Response {
   let etag = internal.generate_etag(file_size, 0)
   case request.get_header(req, "if-none-match") {

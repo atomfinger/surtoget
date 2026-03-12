@@ -20,7 +20,6 @@ pub type NewsArticle {
   )
 }
 
-
 pub fn get_news_articles() -> List(NewsArticle) {
   let articles = [
     NewsArticle(
