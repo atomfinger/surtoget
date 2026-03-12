@@ -544,8 +544,9 @@ pub fn render(articles: List(NewsArticle)) -> Element(a) {
               html.div(
                 [
                   class(case index < 5 {
-                    True -> "md:w-1/3 overflow-hidden"
-                    False -> "md:w-1/3 flex items-center bg-white overflow-hidden"
+                    True -> "md:w-1/3 md:flex overflow-hidden"
+                    False ->
+                      "md:w-1/3 flex items-center bg-white overflow-hidden"
                   }),
                 ],
                 [
@@ -559,7 +560,7 @@ pub fn render(articles: List(NewsArticle)) -> Element(a) {
                     ),
                     class(case index < 5 {
                       True ->
-                        "w-full h-full object-cover max-h-80 md:max-h-full"
+                        "w-full object-cover max-h-80 md:max-h-none"
                       False -> "max-w-full max-h-full mx-auto object-contain"
                     }),
                   ]),
