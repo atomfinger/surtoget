@@ -23,7 +23,7 @@ pub fn render(articles: List(NewsArticle)) -> Element(a) {
       ]),
     ]),
     html.div(
-      [attribute.class("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8")],
+      [attribute.class("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-start")],
       list.index_map(articles, fn(article: NewsArticle, index: Int) {
         html.a(
           [
