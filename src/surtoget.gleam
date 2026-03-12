@@ -1,7 +1,6 @@
 import about
 import faq
 import footer
-import gleam/bytes_tree
 import gleam/erlang/atom
 import gleam/erlang/process
 import gleam/http/request
@@ -11,7 +10,6 @@ import gleam/option
 import gleam/result
 import gleam/string
 import header
-import image_cache
 import index
 import lustre/attribute.{attribute, class, href, rel, src}
 import lustre/element.{type Element}
@@ -28,7 +26,6 @@ import wisp/wisp_mist
 
 pub type Context {
   Context(
-    image_cache_tid: atom.Atom,
     index_tid: atom.Atom,
     // Some pages are fully static, so we might as well pre-render them on startup
     // just to avoid doing extra processing (despite it being pretty fast anyway)
@@ -41,11 +38,9 @@ pub type Context {
 pub fn main() -> Nil {
   let secret_key_base = wisp.random_string(64)
   wisp.configure_logger()
-  let image_cache_tid = image_cache.start()
   let assert Ok(index_tid) = index.start(render_page)
   let ctx =
     Context(
-      image_cache_tid: image_cache_tid,
       index_tid: index_tid,
       about_page: render_page(about.render()),
       faq_page: render_page(faq.render()),
@@ -106,8 +101,6 @@ fn route_request(req: Request, ctx: Context) -> Response {
     ["health"] -> wisp.ok()
     ["favicon.ico"] -> get_favicon(req)
     ["news"] -> ctx.news_page
-    ["news", "images", image_id] ->
-      handle_news_image_request(image_id, req, ctx.image_cache_tid)
     _ -> wisp.not_found()
   }
 }
@@ -139,38 +132,6 @@ fn serve_static_image(req: Request, image_path: String) -> Response {
   }
 }
 
-// We should not store images that someone else has a license to. At
-// the same time we want to be able to show the actual article photo
-// on the site. To strike a balance we use a local in-memory cache.
-//
-// The reason we do not use direct links is because we want to be
-// good citizens and avoid causing unwanted bandwith load due to
-// direct hotlinking. Read more about it here:
-// https://mailchimp.com/resources/hotlinking/
-//
-// Using an in-memory cahce puts most of the bandwith burden onto
-// surtoget.no, while the traffic for external sources will be
-// negible regardless of traffic to our site.
-//
-// The current implementation is pretty simple and naive. We might
-// have to consider a proper CDN at some point, but this will get
-// the job done for now.
-fn handle_news_image_request(
-  image_id: String,
-  req: Request,
-  image_cache_tid: atom.Atom,
-) -> response.Response(wisp.Body) {
-  case image_cache.get_cached_image(image_id, image_cache_tid) {
-    Ok(image) ->
-      wisp.response(200)
-      |> wisp.file_download_from_memory(named: image_id, containing: image)
-      |> wisp.set_header("Cache-Control", "max-age=31536000")
-      |> handle_etag(req, bytes_tree.byte_size(image))
-    Error(_) -> {
-      serve_static_image(req, "static/train-placeholder.png")
-    }
-  }
-}
 
 fn handle_etag(resp: Response, req: Request, file_size: Int) -> Response {
   let etag = internal.generate_etag(file_size, 0)

@@ -1,6 +1,6 @@
 import gleam/bit_array
 import gleam/list
-import lustre/attribute.{alt, class, href, loading, rel, src, target}
+import lustre/attribute.{alt, attribute, class, href, loading, rel, src, target}
 import lustre/element.{type Element}
 import lustre/element/html
 
@@ -503,15 +503,9 @@ pub fn get_vendor_logo(owner: String) -> String {
 
 pub fn get_image_url(article: NewsArticle, index: Int) -> String {
   case index < 5 {
-    True -> "/news/images/" <> get_image_id(article)
+    True -> "/static/news_images/" <> get_image_id(article) <> ".webp"
     False -> get_vendor_logo(article.owner)
   }
-}
-
-pub fn find_article_by_image_id(image_id: String) -> Result(NewsArticle, Nil) {
-  get_news_articles()
-  |> list.filter(fn(article) { get_image_id(article) == image_id })
-  |> list.first()
 }
 
 pub fn render(articles: List(NewsArticle)) -> Element(a) {
@@ -560,6 +554,10 @@ pub fn render(articles: List(NewsArticle)) -> Element(a) {
                     loading("lazy"),
                     src(get_image_url(article, index)),
                     alt(article.title),
+                    attribute(
+                      "onerror",
+                      "this.src='/static/train-placeholder.png'",
+                    ),
                     class(case index < 5 {
                       True ->
                         "w-full h-full object-cover max-h-80 md:max-h-full"

@@ -1,5 +1,5 @@
 import gleam/list
-import lustre/attribute
+import lustre/attribute.{attribute}
 import lustre/element.{type Element}
 import lustre/element/html
 import news.{type NewsArticle}
@@ -44,6 +44,7 @@ pub fn render(articles: List(NewsArticle)) -> Element(a) {
                   attribute.loading("lazy"),
                   attribute.src(news.get_image_url(article, index)),
                   attribute.alt(article.title),
+                  attribute("onerror", "this.src='/static/train-placeholder.png'"),
                   attribute.class(case index < 5 {
                     True -> "w-full h-full object-cover"
                     False -> "w-full h-full object-contain"
