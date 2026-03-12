@@ -37,7 +37,11 @@ pub fn render(articles: List(NewsArticle)) -> Element(a) {
           [
             html.div(
               [
-                attribute.class("h-48 overflow-hidden bg-white rounded-t-lg"),
+                attribute.class(case index < 5 {
+                  True -> "h-48 overflow-hidden bg-white rounded-t-lg"
+                  False ->
+                    "flex items-center justify-center p-6 bg-white rounded-t-lg"
+                }),
               ],
               [
                 html.img([
@@ -50,7 +54,7 @@ pub fn render(articles: List(NewsArticle)) -> Element(a) {
                   ),
                   attribute.class(case index < 5 {
                     True -> "w-full h-48 object-cover"
-                    False -> "w-full h-48 object-contain"
+                    False -> "max-h-16 max-w-full object-contain"
                   }),
                 ]),
               ],

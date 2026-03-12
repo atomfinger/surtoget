@@ -559,9 +559,8 @@ pub fn render(articles: List(NewsArticle)) -> Element(a) {
                       "this.src='/static/train-placeholder.png'",
                     ),
                     class(case index < 5 {
-                      True ->
-                        "w-full object-cover max-h-80 md:max-h-none"
-                      False -> "max-w-full max-h-full mx-auto object-contain"
+                      True -> "w-full object-cover max-h-80 md:max-h-none"
+                      False -> "max-h-16 max-w-full mx-auto object-contain"
                     }),
                   ]),
                 ],
