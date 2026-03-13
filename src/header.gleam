@@ -4,7 +4,7 @@ import lustre/element/html
 import lustre/element/svg
 
 pub fn render() -> Element(msg) {
-  html.header([class("py-4 bg-white shadow-md")], [
+  html.header([class("py-4 bg-white shadow-md relative z-10")], [
     html.div([class("container mx-auto px-4")], [
       html.div([class("flex justify-between items-center")], [
         html.div([class("md:hidden flex-shrink-0")], [
