@@ -18,7 +18,10 @@ processes = ['app']
 
 
 
+[env]
+  ERL_FLAGS = "+MBacul 80 +MHacul 80 +MLacul 80 +MSacul 80"
+
 [[vm]]
-memory = '512mb'
+memory = '256mb'
 cpu_kind = 'shared'
 cpus = 1
