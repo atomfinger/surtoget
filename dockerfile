@@ -28,6 +28,7 @@ HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
   CMD curl --fail http://localhost:8000/health || exit 1
 
 EXPOSE 8000
+ENV ERL_FLAGS="+MBacul 80 +MHacul 80 +MLacul 80 +MSacul 80"
 WORKDIR /app
 ENTRYPOINT ["/app/entrypoint.sh"]
 CMD ["run"]

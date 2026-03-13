@@ -13,13 +13,9 @@ internal_port = 8000
 force_https = true
 auto_stop_machines = 'suspend'
 auto_start_machines = true
-min_machines_running = 1
+min_machines_running = 0
 processes = ['app']
 
-
-
-[env]
-  ERL_FLAGS = "+MBacul 80 +MHacul 80 +MLacul 80 +MSacul 80"
 
 [[vm]]
 memory = '256mb'
