@@ -195,13 +195,13 @@ pub fn render() -> Element(a) {
       punctuality_over_time_content(False),
     ]),
     html.p([class("mt-3 text-xs text-gray-500")], [
-      html.text("Statistikken er hentet fra BaneNOR og inkluderer ikke innstilte tog eller buss for tog. Det kan derfor antas at statistikken er mer positiv enn virkeligheten. "),
+      html.text("Statistikken er fra BaneNOR og inkluderer ikke innstilte tog eller buss for tog, og kan derfor fremstå mer positiv enn virkeligheten. "),
       html.a(
         [
           href("https://www.nrk.no/norge/over-32.000-toginnstillingar-visest-ikkje-i-statistikken-1.17574607"),
           attribute("target", "_blank"),
           attribute("rel", "noopener noreferrer"),
-          class("underline hover:text-gray-300"),
+          class("text-yellow-500 underline hover:text-yellow-400"),
         ],
         [html.text("Les mer her")],
       ),
