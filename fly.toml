@@ -13,12 +13,11 @@ internal_port = 8000
 force_https = true
 auto_stop_machines = 'suspend'
 auto_start_machines = true
-min_machines_running = 1
+min_machines_running = 0
 processes = ['app']
 
 
-
 [[vm]]
-memory = '512mb'
+memory = '256mb'
 cpu_kind = 'shared'
 cpus = 1
