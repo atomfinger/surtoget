@@ -39,43 +39,19 @@ fn get_monthly_stats() -> List(MonthlyStats) {
   [
     MonthlyStats(
       month: "January",
-      on_time: 57.3,
-      banenor: 38.0,
-      goahead: 20.0,
-      unforeseen: 18.0,
-      consequential_delays: 24.0,
+      on_time: 65.7,
+      banenor: 17.0,
+      goahead: 52.0,
+      unforeseen: 3.0,
+      consequential_delays: 28.0,
     ),
     MonthlyStats(
       month: "February",
-      on_time: 65.6,
-      banenor: 28.0,
+      on_time: 58.9,
+      banenor: 18.0,
       goahead: 42.0,
-      unforeseen: 5.0,
-      consequential_delays: 25.0,
-    ),
-    MonthlyStats(
-      month: "May",
-      on_time: 74.4,
-      banenor: 22.0,
-      goahead: 38.0,
       unforeseen: 9.0,
-      consequential_delays: 32.0,
-    ),
-    MonthlyStats(
-      month: "July",
-      on_time: 64.7,
-      banenor: 25.0,
-      goahead: 48.0,
-      unforeseen: 4.0,
-      consequential_delays: 12.0,
-    ),
-    MonthlyStats(
-      month: "August",
-      on_time: 81.6,
-      banenor: 16.0,
-      goahead: 46.0,
-      unforeseen: 8.0,
-      consequential_delays: 30.0,
+      consequential_delays: 31.0,
     ),
   ]
 }
@@ -205,7 +181,7 @@ pub fn render() -> Element(a) {
               ),
             ],
             [
-              tab_button("last_month", "Siste rapport (August)", True),
+              tab_button("last_month", "Siste rapport (Februar)", True),
               tab_button("this_year", "Dette året så langt", False),
               tab_button("punctuality_over_time", "Punktlighet over tid", False),
             ],
@@ -346,10 +322,11 @@ fn get_punctuality_over_time_data() -> List(ChartData) {
     ChartData(label: "2022", value: 73.9, image_url: ""),
     ChartData(label: "2023", value: 65.0, image_url: ""),
     ChartData(label: "2024", value: 60.6, image_url: ""),
+    ChartData(label: "2025", value: 66.6, image_url: ""),
   ]
   let total_punctuality = get_yearly_average_on_time()
   let current_year_data =
-    ChartData(label: "2025", value: total_punctuality, image_url: "")
+    ChartData(label: "2026", value: total_punctuality, image_url: "")
 
   list.append(historical_data, [current_year_data])
 }
