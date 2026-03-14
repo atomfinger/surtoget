@@ -16,7 +16,7 @@ RUN ARCH=$(uname -m) && \
 
 # Pre-fetch and resize news article images at build time so the runtime
 # doesn't need Elixir, libvips, or any image-processing dependencies.
-FROM python:3.13-slim AS image-fetcher
+FROM python:3.14-slim AS image-fetcher
 RUN pip install --no-cache-dir Pillow
 WORKDIR /build
 COPY src/news.gleam src/
