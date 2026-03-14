@@ -2,7 +2,7 @@
 FROM debian:bookworm-slim AS tailwind-generation
 WORKDIR /src
 RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates && rm -rf /var/lib/apt/lists/*
-COPY src/styles.css src/
+COPY src/ src/
 RUN ARCH=$(uname -m) && \
     case "$ARCH" in \
       x86_64)  TW_ARCH="linux-x64" ;; \
