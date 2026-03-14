@@ -1,10 +1,9 @@
 
-FROM node:24-alpine AS tailwind-generation
+FROM ghcr.io/gleam-lang/gleam:v1.14.0-erlang-alpine AS tailwind-generation
 WORKDIR /src
-COPY package.json package-lock.json ./
-RUN npm install
+RUN apk add --no-cache curl ca-certificates
 COPY . .
-RUN ./node_modules/.bin/tailwindcss -i ./src/styles.css -o ./priv/css/tailwind.css --minify
+RUN gleam run -m tailwind/install && gleam run -m tailwind/run
 
 # Pre-fetch and resize news article images at build time so the runtime
 # doesn't need Elixir, libvips, or any image-processing dependencies.
