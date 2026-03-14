@@ -23,6 +23,14 @@ pub type NewsArticle {
 pub fn get_news_articles() -> List(NewsArticle) {
   let articles = [
     NewsArticle(
+      title: "Krevde at det blir tatt tak i årsakene bak problemene",
+      description: "Denne uka har ordførerne i Nome og Midt-Telemark vært i Oslo for å drøfte utfordringene på Sørlandsbanen.",
+      external_url: "https://www.kanalen.no/nyheter/krevde-at-det-blir-tatt-tak-i-arsakene-bak-problemene/407424",
+      external_image_url: "https://image.kanalen.no/407433.webp?imageId=407433&x=0.00&y=15.59&cropw=100.00&croph=41.09&width=1968&height=1122&format=webp",
+      owner: "Kanalen",
+      date: "23. mars 2026",
+    ),
+    NewsArticle(
       title: "Sørlandsbanen og Jærbanen: Tilfredsheten blant reisende går ned",
       description: "Tilfredsheten med togene på Sørlandsbanen er stabil, men har gått ørlite ned.",
       external_url: "https://www.dalane-tidende.no/sorlandsbanen-og-jarbanen-tilfredsheten-blant-reisende-gar-ned/s/5-101-826913",
