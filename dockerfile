@@ -1,10 +1,18 @@
 
-FROM node:24-alpine AS tailwind-generation
+FROM debian:bookworm-slim AS tailwind-generation
 WORKDIR /src
-COPY package.json package-lock.json ./
-RUN npm install
-COPY . .
-RUN ./node_modules/.bin/tailwindcss -i ./src/styles.css -o ./priv/css/tailwind.css --minify
+RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates && rm -rf /var/lib/apt/lists/*
+COPY src/ src/
+RUN ARCH=$(uname -m) && \
+    case "$ARCH" in \
+      x86_64)  TW_ARCH="linux-x64" ;; \
+      aarch64) TW_ARCH="linux-arm64" ;; \
+      *) echo "Unsupported architecture: $ARCH" >&2 && exit 1 ;; \
+    esac && \
+    mkdir -p priv/css build/bin && \
+    curl -fsSL "https://github.com/tailwindlabs/tailwindcss/releases/download/v4.1.18/tailwindcss-${TW_ARCH}" -o build/bin/tailwindcss && \
+    chmod +x build/bin/tailwindcss && \
+    ./build/bin/tailwindcss --input=./src/styles.css --output=./priv/css/tailwind.css
 
 # Pre-fetch and resize news article images at build time so the runtime
 # doesn't need Elixir, libvips, or any image-processing dependencies.
