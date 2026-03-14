@@ -5,6 +5,7 @@ import gleam/erlang/atom
 import gleam/erlang/process
 import gleam/http/request
 import gleam/http/response
+import gleam/json
 import gleam/list
 import gleam/option
 import gleam/result
@@ -98,11 +99,18 @@ fn route_request(req: Request, ctx: Context) -> Response {
       index.get_cached_index_page(ctx.index_tid, render_page)
     ["om-surtoget"] -> ctx.about_page
     ["faq"] -> ctx.faq_page
-    ["health"] -> wisp.ok()
+    ["health"] -> health()
     ["favicon.ico"] -> get_favicon(req)
     ["news"] -> ctx.news_page
     _ -> wisp.not_found()
   }
+}
+
+fn health() -> Response {
+  let body = json.object([#("status", json.string("ok"))]) |> json.to_string()
+  wisp.response(200)
+  |> wisp.set_header("content-type", "application/json")
+  |> wisp.string_body(body)
 }
 
 fn get_favicon(req: Request) {
