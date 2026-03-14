@@ -3,7 +3,7 @@ FROM ghcr.io/gleam-lang/gleam:v1.14.0-erlang-alpine AS tailwind-generation
 WORKDIR /src
 RUN apk add --no-cache curl ca-certificates
 COPY . .
-RUN gleam run -m tailwind/install && gleam run -m tailwind/run
+RUN mkdir -p priv/css && gleam run -m tailwind/install && gleam run -m tailwind/run
 
 # Pre-fetch and resize news article images at build time so the runtime
 # doesn't need Elixir, libvips, or any image-processing dependencies.
