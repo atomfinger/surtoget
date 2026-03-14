@@ -1,7 +1,5 @@
 [tools]
 gleam = "1.14.0"
-node = "24"
-npm = "11"
 python = "3.13"
 
 [tasks.help]
@@ -30,7 +28,6 @@ See https://mise.jdx.dev for install instructions, but generally, brew should wo
 
 	> mise help 	// displays this message
 	> mise tasks 	// displays the tasks in this mise.toml file
-	> mise deps	// installs this projects dependencies
 	> mise css	// generate the tailwind css
 	> mise images	// pre-fetch and resize news article images (build artifact)
 	> mise format	// gleam format's this projects gleam source code
@@ -41,16 +38,9 @@ That said, 'mise run' is what you will run most of the time.
 EOF
 '''
 
-[tasks.deps]
-description = "install npm dependencies"
-run = "npm install"
-sources = ["package.json"]
-outputs = ["node_modules", "package-lock.json"]
-
 [tasks.css]
 description = "generate css"
-depends = ["deps"]
-run = "npx tailwindcss -o ./priv/css/tailwind.css && gzip -k -f ./priv/css/tailwind.css"
+run = "gleam run -m tailwind/install && gleam run -m tailwind/run && gzip -k -f ./priv/css/tailwind.css"
 sources = ["src"]
 outputs = ["priv/css"]
 
@@ -65,10 +55,9 @@ outputs = ["priv/static/news_images"]
 
 [tasks.format]
 description = "gleam format"
-depends = ["deps"]
 run = "gleam format"
 
 [tasks.run]
 description = "gleam run"
-depends = ["deps", "format", "css", "images"]
+depends = ["format", "css", "images"]
 run = "gleam run"
