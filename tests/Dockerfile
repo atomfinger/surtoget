@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/playwright:v1.50.1-noble
+FROM mcr.microsoft.com/playwright:v1.58.2-noble
 
 WORKDIR /tests
 COPY package.json package-lock.json ./
