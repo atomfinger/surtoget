@@ -23,12 +23,28 @@ pub type NewsArticle {
 pub fn get_news_articles() -> List(NewsArticle) {
   let articles = [
     NewsArticle(
+      title: "Bare mer penger kan løse togtrøbbelet på Sørlandsbanen",
+      description: "Det er kun mer penger og økte bevilgninger som kan løse problemene med forsinkelser og kanselleringer på Sørlandsbanen.",
+      external_url: "https://www.nrk.no/sorlandet/_-bare-mer-penger-kan-lose-togtrobbelet-pa-sorlandsbanen-1.17816672",
+      external_image_url: "https://gfx.nrk.no/CEs1BQnLssrK0LExMog3kgwjcZDMiZNQSIBYdAe0imew.jpg",
+      owner: "NRK",
+      date: "23. mars 2026",
+    ),
+    NewsArticle(
+      title: "Go-Ahead lover forbedringer",
+      description: "Togselskapet Go-Ahead sier de vil få bedre kontroll på vedlikehold og avvik etter en trøblete periode med innstillinger. Selskapet står bak Sørtoget som passerer Kongsberg på linja mellom Oslo og Stavanger.",
+      external_url: "https://www.laagendalsposten.no/go-ahead-lover-forbedringer/s/5-64-1644510",
+      external_image_url: "https://g.acdn.no/obscura/API/dynamic/r1/ece5/tr_1200_1200_s_f/0000/laag/2026/3/18/10/go-ahead%2Bs%25C3%25B8rtoget%2Bregn%2B%25281%2529.JPG?chk=52327A",
+      owner: "Laagendalsposten",
+      date: "23. mars 2026",
+    ),
+    NewsArticle(
       title: "Krevde at det blir tatt tak i årsakene bak problemene",
       description: "Denne uka har ordførerne i Nome og Midt-Telemark vært i Oslo for å drøfte utfordringene på Sørlandsbanen.",
       external_url: "https://www.kanalen.no/nyheter/krevde-at-det-blir-tatt-tak-i-arsakene-bak-problemene/407424",
       external_image_url: "https://image.kanalen.no/407433.webp?imageId=407433&x=0.00&y=15.59&cropw=100.00&croph=41.09&width=1968&height=1122&format=webp",
       owner: "Kanalen",
-      date: "23. mars 2026",
+      date: "13. mars 2026",
     ),
     NewsArticle(
       title: "Sørlandsbanen og Jærbanen: Tilfredsheten blant reisende går ned",
