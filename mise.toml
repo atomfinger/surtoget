@@ -1,5 +1,5 @@
 [tools]
-gleam = "1.14.0"
+gleam = "1.15.2"
 python = "3.14.3"
 
 [tasks.help]
