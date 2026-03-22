@@ -1,0 +1,24 @@
+services:
+  surtoget:
+    build:
+      context: .
+      dockerfile: dockerfile
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health"]
+      interval: 3s
+      retries: 15
+      start_period: 10s
+      timeout: 5s
+
+  playwright:
+    build:
+      context: ./tests
+      dockerfile: Dockerfile
+    depends_on:
+      surtoget:
+        condition: service_healthy
+    environment:
+      - BASE_URL=http://surtoget:8000
+    volumes:
+      - ./tests/snapshots:/tests/snapshots
+      - ./tests/test-results:/tests/test-results

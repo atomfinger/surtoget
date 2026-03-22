@@ -152,5 +152,8 @@ dist
 
 CLAUDE.md
 
+# Playwright test artifacts (snapshots are committed, not ignored)
+tests/test-results/
+
 # comment out if you want idea project files
 .idea/

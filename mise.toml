@@ -61,3 +61,11 @@ run = "gleam format"
 description = "gleam run"
 depends = ["format", "css", "images"]
 run = "gleam run"
+
+[tasks.test-snapshots]
+description = "run Playwright snapshot tests in Docker"
+run = "docker compose -f docker-compose.test.yml up --build --abort-on-container-exit --exit-code-from playwright"
+
+[tasks.update-snapshots]
+description = "update Playwright baseline snapshots"
+run = "docker compose -f docker-compose.test.yml run playwright --update-snapshots"
