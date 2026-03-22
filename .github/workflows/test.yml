@@ -19,3 +19,27 @@ jobs:
           elixir-version: "1.18.1"
       - run: gleam deps download
       - run: gleam format --check src
+
+  snapshot-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Run snapshot tests
+        run: docker compose -f docker-compose.test.yml up --build --abort-on-container-exit --exit-code-from playwright
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: tests/test-results/
+          retention-days: 14
+
+      - name: Upload snapshot diffs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: snapshot-diffs
+          path: tests/snapshots/
+          retention-days: 14
