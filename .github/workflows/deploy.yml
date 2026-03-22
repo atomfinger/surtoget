@@ -77,6 +77,12 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --remote-only
+      - name: Push image to Fly registry and deploy
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          flyctl auth docker
+          docker pull ghcr.io/${{ github.repository }}:${{ steps.version.outputs.version }}
+          docker tag ghcr.io/${{ github.repository }}:${{ steps.version.outputs.version }} registry.fly.io/surtoget:${{ steps.version.outputs.version }}
+          docker push registry.fly.io/surtoget:${{ steps.version.outputs.version }}
+          flyctl deploy --image registry.fly.io/surtoget:${{ steps.version.outputs.version }}
