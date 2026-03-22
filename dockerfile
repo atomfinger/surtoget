@@ -23,7 +23,7 @@ COPY src/news.gleam src/
 COPY scripts/ scripts/
 RUN python3 scripts/fetch_news_images.py
 
-FROM ghcr.io/gleam-lang/gleam:v1.14.0-erlang-alpine
+FROM ghcr.io/gleam-lang/gleam:v1.15.2-erlang-alpine
 COPY . /build/
 RUN cd /build && gleam export erlang-shipment
 RUN mv /build/build/erlang-shipment /app && rm -r /build
