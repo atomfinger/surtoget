@@ -1,6 +1,6 @@
 [tools]
 gleam = "1.15.2"
-python = "3.14.3"
+python = "3.14.4"
 
 [tasks.help]
 description = "display help"
