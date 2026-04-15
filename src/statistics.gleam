@@ -53,6 +53,14 @@ fn get_monthly_stats() -> List(MonthlyStats) {
       unforeseen: 9.0,
       consequential_delays: 31.0,
     ),
+    MonthlyStats(
+      month: "March",
+      on_time: 64.6,
+      banenor: 22.0,
+      goahead: 44.0,
+      unforeseen: 7.0,
+      consequential_delays: 28.0,
+    ),
   ]
 }
 
@@ -181,7 +189,7 @@ pub fn render() -> Element(a) {
               ),
             ],
             [
-              tab_button("last_month", "Siste rapport (Februar)", True),
+              tab_button("last_month", "Siste rapport (Mars)", True),
               tab_button("this_year", "Dette året så langt", False),
               tab_button("punctuality_over_time", "Punktlighet over tid", False),
             ],
