@@ -1,13 +1,14 @@
 import about
 import faq
 import footer
-import gleam/erlang/atom
 import gleam/erlang/process
 import gleam/http/request
 import gleam/http/response
 import gleam/json
 import gleam/list
 import gleam/option
+import gleam/otp/static_supervisor
+import gleam/otp/supervision
 import gleam/result
 import gleam/string
 import header
@@ -27,7 +28,6 @@ import wisp/wisp_mist
 
 pub type Context {
   Context(
-    index_tid: atom.Atom,
     // Some pages are fully static, so we might as well pre-render them on startup
     // just to avoid doing extra processing (despite it being pretty fast anyway)
     about_page: response.Response(wisp.Body),
@@ -37,12 +37,10 @@ pub type Context {
 }
 
 pub fn main() -> Nil {
-  let secret_key_base = wisp.random_string(64)
   wisp.configure_logger()
-  let assert Ok(index_tid) = index.start(render_page)
+  let secret_key_base = wisp.random_string(64)
   let ctx =
     Context(
-      index_tid: index_tid,
       about_page: render_page(about.render()),
       faq_page: render_page(faq.render()),
       news_page: news.get_news_articles() |> news.render() |> render_page(),
@@ -52,12 +50,18 @@ pub fn main() -> Nil {
     |> set_cache_for_assets()
     |> perf_logging.log_request_duration()
   let assert Ok(_) =
-    wisp_mist.handler(router, secret_key_base)
-    |> mist.new()
-    |> mist.bind("0.0.0.0")
-    |> mist.port(8000)
-    |> mist.start()
-
+    static_supervisor.new(static_supervisor.OneForOne)
+    |> static_supervisor.add(index.supervised(render_page))
+    |> static_supervisor.add(
+      supervision.worker(fn() {
+        wisp_mist.handler(router, secret_key_base)
+        |> mist.new()
+        |> mist.bind("0.0.0.0")
+        |> mist.port(8000)
+        |> mist.start()
+      }),
+    )
+    |> static_supervisor.start
   process.sleep_forever()
 }
 
@@ -95,8 +99,7 @@ pub fn handle_request(req: Request, ctx: Context) -> Response {
 
 fn route_request(req: Request, ctx: Context) -> Response {
   case wisp.path_segments(req) {
-    [] | ["home"] | ["index"] ->
-      index.get_cached_index_page(ctx.index_tid, render_page)
+    [] | ["home"] | ["index"] -> index.get_cached_index_page()
     ["om-surtoget"] -> ctx.about_page
     ["faq"] -> ctx.faq_page
     ["health"] -> health()
