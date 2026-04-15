@@ -1,9 +1,11 @@
 import entur_client
 import gets
 import gleam/erlang/atom
-import gleam/erlang/process
+import gleam/erlang/process.{type Subject}
 import gleam/http/response
 import gleam/list
+import gleam/otp/actor
+import gleam/otp/supervision.{type ChildSpecification}
 import lustre/attribute.{attribute, class, src}
 import lustre/element.{type Element}
 import lustre/element/html
@@ -18,47 +20,72 @@ const wait_time_ms = 300_000
 
 const index_ets_key = "index_page"
 
-pub fn get_cached_index_page(
-  index_tid: atom.Atom,
-  render_page: fn(Element(msg)) -> response.Response(wisp.Body),
-) -> response.Response(wisp.Body) {
-  case gets.lookup(index_tid, atom.create(index_ets_key)) {
+const cache_name = "index_page_cache"
+
+pub type Message {
+  Tick
+}
+
+type State {
+  State(
+    tid: atom.Atom,
+    render_page: fn(Element(Nil)) -> response.Response(wisp.Body),
+    self: Subject(Message),
+  )
+}
+
+pub fn get_cached_index_page() -> response.Response(wisp.Body) {
+  let tid = atom.create(cache_name)
+  case gets.lookup(tid, atom.create(index_ets_key)) {
     Ok(page) -> page
     Error(_) -> {
       wisp.log_error("Something happened that shouldn't happen")
-      render(False) |> render_page()
+      wisp.internal_server_error()
     }
   }
+}
+
+pub fn supervised(
+  render_page: fn(Element(Nil)) -> response.Response(wisp.Body),
+) -> ChildSpecification(Subject(Message)) {
+  supervision.worker(fn() { start(render_page) })
 }
 
 pub fn start(
-  render_page: fn(Element(msg)) -> response.Response(wisp.Body),
-) -> Result(atom.Atom, atom.Atom) {
-  let cache_name = atom.create("index_page_cache")
-  case gets.new_cache(cache_name) {
-    Ok(tid) -> {
-      // Instant insert to ensure that there's always something ready to go
-      let _ = render(False) |> render_page() |> update_index_page(tid)
-      process.spawn(fn() { scheduler(tid, render_page) })
-      Ok(tid)
+  render_page: fn(Element(Nil)) -> response.Response(wisp.Body),
+) -> actor.StartResult(Subject(Message)) {
+  let tid = atom.create(cache_name)
+  actor.new_with_initialiser(5000, fn(subject) {
+    case gets.new_cache(tid) {
+      Error(_) -> Error("Failed to create ETS cache")
+      Ok(cache_tid) -> {
+        let _ = render(False) |> render_page() |> update_index_page(cache_tid)
+        process.send_after(subject, wait_time_ms, Tick)
+        actor.initialised(State(tid: cache_tid, render_page:, self: subject))
+        |> actor.returning(subject)
+        |> Ok
+      }
     }
-    Error(reason) -> Error(reason)
-  }
+  })
+  |> actor.on_message(handle_message)
+  |> actor.start
 }
 
-fn scheduler(
-  index_tid: atom.Atom,
-  render_page: fn(Element(msg)) -> response.Response(wisp.Body),
-) {
-  wisp.log_info("Running delayed update check...")
-  // Spawning a new unlinked process to avoid any issues propagating
-  process.spawn_unlinked(fn() {
-    let _ =
-      render_with_entur_check() |> render_page() |> update_index_page(index_tid)
-    wisp.log_info("Entur update successful")
-  })
-  process.sleep(wait_time_ms)
-  scheduler(index_tid, render_page)
+fn handle_message(state: State, message: Message) -> actor.Next(State, Message) {
+  case message {
+    Tick -> {
+      wisp.log_info("Running delayed update check...")
+      process.spawn_unlinked(fn() {
+        let _ =
+          render_with_entur_check()
+          |> state.render_page()
+          |> update_index_page(state.tid)
+        wisp.log_info("Entur update successful")
+      })
+      process.send_after(state.self, wait_time_ms, Tick)
+      actor.continue(state)
+    }
+  }
 }
 
 fn update_index_page(page: response.Response(wisp.Body), index_tid: atom.Atom) {
