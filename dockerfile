@@ -40,4 +40,3 @@ ENV ERL_FLAGS="+MBacul 80 +MHacul 80 +MLacul 80 +MSacul 80"
 WORKDIR /app
 ENTRYPOINT ["/app/entrypoint.sh"]
 CMD ["run"]
-
