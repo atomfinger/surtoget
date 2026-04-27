@@ -71,7 +71,10 @@ pub fn start(
   |> actor.start
 }
 
-fn handle_message(state: State, message: Message) -> actor.Next(State, Message) {
+fn handle_message(
+  state: State,
+  message: Message,
+) -> actor.Next(State, Message) {
   case message {
     Tick -> {
       wisp.log_info("Running delayed update check...")
