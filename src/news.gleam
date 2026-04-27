@@ -23,6 +23,14 @@ pub type NewsArticle {
 pub fn get_news_articles() -> List(NewsArticle) {
   let articles = [
     NewsArticle(
+      title: "Flere innstillinger på Sørlandsbanen",
+      description: "Ti togavganger som skulle gått mellom Oslo, Kristiansand og Stavanger mandag er innstilt på grunn av problemer med toget. ",
+      external_url: "https://www.nrk.no/sorlandet/flere-innstillinger-pa-sorlandsbanen-1.17862223",
+      external_image_url: "https://gfx.nrk.no/h4UqRBM89E0doFZxir_irggtbOT9Ip3pOnYnb-zuYneA.jpg",
+      owner: "NRK",
+      date: "27. april 2026",
+    ),
+    NewsArticle(
       title: "Bare mer penger kan løse togtrøbbelet på Sørlandsbanen",
       description: "Det er kun mer penger og økte bevilgninger som kan løse problemene med forsinkelser og kanselleringer på Sørlandsbanen.",
       external_url: "https://www.nrk.no/sorlandet/_-bare-mer-penger-kan-lose-togtrobbelet-pa-sorlandsbanen-1.17816672",

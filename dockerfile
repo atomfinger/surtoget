@@ -23,7 +23,7 @@ COPY src/news.gleam src/
 COPY scripts/ scripts/
 RUN python3 scripts/fetch_news_images.py
 
-FROM ghcr.io/gleam-lang/gleam:v1.15.4-erlang-alpine
+FROM ghcr.io/gleam-lang/gleam:v1.16.0-erlang-alpine
 COPY . /build/
 RUN cd /build && gleam export erlang-shipment
 RUN mv /build/build/erlang-shipment /app && rm -r /build
@@ -40,4 +40,3 @@ ENV ERL_FLAGS="+MBacul 80 +MHacul 80 +MLacul 80 +MSacul 80"
 WORKDIR /app
 ENTRYPOINT ["/app/entrypoint.sh"]
 CMD ["run"]
-
