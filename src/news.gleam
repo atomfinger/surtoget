@@ -23,6 +23,14 @@ pub type NewsArticle {
 pub fn get_news_articles() -> List(NewsArticle) {
   let articles = [
     NewsArticle(
+      title: "Sørlandsbanen stengt på ubestemt tid",
+      description: "Sørlandsbanen er fortsatt stengt mellom Kongsberg og Nordagutu på grunn av brannen som har blusset opp igjen. Bane Nor vet ikke når strekningen åpner igjen.",
+      external_url: "https://www.nrk.no/sorlandet/sorlandsbanen-stengt-pa-ubestemt-tid-1.17868486",
+      external_image_url: "https://gfx.nrk.no/6eBSIoIUdK1Ixh3eK83-cw8kXV6-i3oLh6kz0AH4u7oQ.jpg",
+      owner: "NRK",
+      date: "1. mai 2026",
+    ),
+    NewsArticle(
       title: "Flere innstillinger på Sørlandsbanen",
       description: "Ti togavganger som skulle gått mellom Oslo, Kristiansand og Stavanger mandag er innstilt på grunn av problemer med toget. ",
       external_url: "https://www.nrk.no/sorlandet/flere-innstillinger-pa-sorlandsbanen-1.17862223",
