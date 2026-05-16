@@ -23,6 +23,14 @@ pub type NewsArticle {
 pub fn get_news_articles() -> List(NewsArticle) {
   let articles = [
     NewsArticle(
+      title: "Tog innstilt fra Kristiansand",
+      description: "Toget som skulle gått fra Kristiansand til Stavanger klokken 14.14 lørdag er innstilt på grunn av problemer med toget, melder Go-Ahead. ",
+      external_url: "https://www.nrk.no/sorlandet/tog-innstilt-fra-kristiansand-1.17885953",
+      external_image_url: "",
+      owner: "NRK",
+      date: "16. mai 2026",
+    ),
+    NewsArticle(
       title: "Sørlandsbanen stengt på ubestemt tid",
       description: "Sørlandsbanen er fortsatt stengt mellom Kongsberg og Nordagutu på grunn av brannen som har blusset opp igjen. Bane Nor vet ikke når strekningen åpner igjen.",
       external_url: "https://www.nrk.no/sorlandet/sorlandsbanen-stengt-pa-ubestemt-tid-1.17868486",
