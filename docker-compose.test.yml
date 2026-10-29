@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: dockerfile
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8000/health"]
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8000/health"]
       interval: 3s
       retries: 15
       start_period: 10s

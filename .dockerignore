@@ -2,3 +2,16 @@ build
 node_modules
 .git
 .DS_Store
+
+# Local-only files that must not end up in the image: crash dumps can hold
+# environment variables and memory contents.
+erl_crash.dump
+.env*
+*.log
+.claude
+.github
+dist
+tests
+trip-updates.pb
+test.json
+result.txt

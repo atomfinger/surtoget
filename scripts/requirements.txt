@@ -1,0 +1,6 @@
+# Used by the Docker build (pip install --require-hashes). The hashes are the
+# CPython 3.15 manylinux wheels for x86_64 and aarch64 from PyPI; update them
+# together with the version, and when the dockerfile's Python minor changes.
+pillow==13.0.0 \
+    --hash=sha256:8f36aa77f74b14a2103622b196402c71330e4e7cf4122ee45c854e9a01e0eecf \
+    --hash=sha256:4f8db54177035a2b5f717f94475b74907e12a96dc74f6d487f3966b0a4694071

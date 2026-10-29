@@ -850,10 +850,8 @@ pub fn render(articles: List(NewsArticle)) -> Element(a) {
                     loading("lazy"),
                     src(get_image_url(article, index)),
                     alt(article.title),
-                    attribute(
-                      "onerror",
-                      "this.src='/static/train-placeholder.png'",
-                    ),
+                    // main.js swaps in the fallback if the image fails to load.
+                    attribute("data-fallback", "/static/train-placeholder.png"),
                     class(case index < 5 {
                       True -> "w-full object-cover max-h-80 md:max-h-96"
                       False -> "max-h-16 max-w-full mx-auto object-contain"

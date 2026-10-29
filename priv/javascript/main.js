@@ -1,4 +1,27 @@
+// Images with data-fallback show that image instead if theirs fails to load.
+// (Not an inline onerror: the Content-Security-Policy blocks those.)
+function useFallback(img) {
+  const fallback = img.dataset.fallback;
+  if (fallback && !img.src.endsWith(fallback)) img.src = fallback;
+}
+
+// Error events don't bubble, so listen in the capture phase.
+document.addEventListener(
+  "error",
+  (event) => {
+    if (event.target instanceof HTMLImageElement) useFallback(event.target);
+  },
+  true,
+);
+
 document.addEventListener("DOMContentLoaded", () => {
+  // Images that already failed before this script ran.
+  document.querySelectorAll("img[data-fallback]").forEach((img) => {
+    if (img.complete && img.naturalWidth === 0 && img.currentSrc) {
+      useFallback(img);
+    }
+  });
+
   const menuButton = document.getElementById("menu-button");
   const menu = document.getElementById("menu");
 

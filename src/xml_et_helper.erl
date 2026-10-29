@@ -7,7 +7,12 @@
 parse_and_extract(XmlBin, LineRefFilter) ->
   XmlString = binary_to_list(XmlBin),
   LineRefFilterString = binary_to_list(LineRefFilter),
-  {XmlRoot, _} = xmerl_scan:string(XmlString),
+  % Never expand entities or fetch external DTDs: with defaults, xmerl reads a
+  % `<!DOCTYPE r SYSTEM "file:///...">` from the local disk.
+  Options = [{allow_entities, false},
+             {fetch_fun, fun(_, _) -> {error, not_allowed} end},
+             {quiet, true}],
+  {XmlRoot, _} = xmerl_scan:string(XmlString, Options),
   recorded_calls_for_line(XmlRoot, LineRefFilterString).
 
 recorded_calls_for_line(Xml, LineRefFilter) ->

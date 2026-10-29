@@ -47,7 +47,8 @@ outputs = ["priv/css"]
 [tasks.images]
 description = "pre-fetch and resize news article images into priv/static/news_images/"
 run = [
-  "pip install --quiet Pillow",
+  # Same version as scripts/requirements.txt (whose hashes are Linux-only).
+  "pip install --quiet pillow==13.0.0",
   "python3 scripts/fetch_news_images.py",
 ]
 sources = ["src/news.gleam", "scripts/fetch_news_images.py"]
