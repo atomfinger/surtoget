@@ -52,10 +52,8 @@ pub fn render(articles: List(NewsArticle)) -> Element(a) {
                   attribute.loading("lazy"),
                   attribute.src(news.get_image_url(article, index)),
                   attribute.alt(article.title),
-                  attribute(
-                    "onerror",
-                    "this.src='/static/train-placeholder.png'",
-                  ),
+                  // main.js swaps in the fallback if the image fails to load.
+                  attribute("data-fallback", "/static/train-placeholder.png"),
                   attribute.class(case index < 5 {
                     True -> "w-full h-48 object-cover"
                     False -> "max-h-16 max-w-full object-contain"

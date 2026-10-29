@@ -16,8 +16,25 @@ auto_start_machines = true
 min_machines_running = 0
 processes = ['app']
 
+# High limits so one page load never counts as "over the soft limit": the
+# proxy then only wakes another stopped machine when the running one is
+# unhealthy or can't start.
+[http_service.concurrency]
+type = "requests"
+soft_limit = 200
+hard_limit = 250
 
+# Gates routing and deploys on the app answering; doesn't keep machines awake.
+[[http_service.checks]]
+grace_period = "10s"
+interval = "1m"
+method = "GET"
+timeout = "2s"
+path = "/health"
+
+# ~115MB used in production (whole VM, flat over 2 days); the app itself
+# ~30MB locally.
 [[vm]]
-memory = '512mb'
+memory = '256mb'
 cpu_kind = 'shared'
 cpus = 1

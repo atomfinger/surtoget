@@ -28,6 +28,8 @@ except ImportError:
 
 OUTPUT_DIR = "priv/static/news_images"
 MAX_WIDTH = 600
+# News photos are a few hundred KB; anything far bigger is not a photo we want.
+MAX_DOWNLOAD_BYTES = 20 * 1024 * 1024
 NEWS_GLEAM_PATH = "src/news.gleam"
 
 
@@ -46,9 +48,13 @@ def extract_image_urls() -> list[str]:
 
 def fetch_and_process(url: str, output_path: str) -> bool:
     try:
+        if not url.startswith("https://"):
+            raise ValueError("only https:// image URLs are fetched")
         req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
         with urllib.request.urlopen(req, timeout=30) as resp:
-            data = resp.read()
+            data = resp.read(MAX_DOWNLOAD_BYTES + 1)
+        if len(data) > MAX_DOWNLOAD_BYTES:
+            raise ValueError(f"larger than {MAX_DOWNLOAD_BYTES} bytes")
 
         img = Image.open(BytesIO(data)).convert("RGB")
 

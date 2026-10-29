@@ -15,14 +15,10 @@ jobs:
   build-and-push-image:
     runs-on: ubuntu-latest
 
+    # Only what the job uses: tag + release (contents) and the ghcr push.
     permissions:
       contents: write
       packages: write
-      attestations: write
-      id-token: write
-      pull-requests: write
-      repository-projects: write
-      deployments: write
 
     concurrency: deploy-group # optional: ensure only one action runs at a time
 

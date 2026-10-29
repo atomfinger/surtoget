@@ -26,6 +26,17 @@ import wisp.{type Request, type Response}
 import wisp/internal
 import wisp/wisp_mist
 
+const d3_url = "https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"
+
+const d3_integrity =
+  "sha384-CjloA8y00+1SDAUkjs099PVfnY2KmDC2BZnws9kh8D/lX1s46w6EPhpXdqMfjK6i"
+
+/// Scripts may only come from the site itself and these hosts.
+const script_hosts = [
+  "https://cdn.jsdelivr.net",
+  "https://scripts.simpleanalyticscdn.com",
+]
+
 pub type Context {
   Context(
     // Some pages are fully static, so we might as well pre-render them on startup
@@ -48,6 +59,7 @@ pub fn main() -> Nil {
   let router =
     handle_request(_, ctx)
     |> set_cache_for_assets()
+    |> set_security_headers()
     |> perf_logging.log_request_duration()
   let assert Ok(_) =
     static_supervisor.new(static_supervisor.OneForOne)
@@ -79,6 +91,29 @@ pub fn set_cache_for_assets(
         }
       Error(_) -> response
     }
+  }
+}
+
+pub fn set_security_headers(
+  handler: fn(wisp.Request) -> wisp.Response,
+) -> fn(wisp.Request) -> wisp.Response {
+  let policy =
+    [
+      "script-src 'self' " <> string.join(script_hosts, " "),
+      "object-src 'none'",
+      "base-uri 'self'",
+      // Don't let other sites embed the site in a frame (clickjacking).
+      "frame-ancestors 'none'",
+    ]
+    |> string.join("; ")
+  fn(req) {
+    handler(req)
+    // HTTPS only (browsers ignore this over plain HTTP, e.g. in development).
+    |> wisp.set_header("strict-transport-security", "max-age=31536000")
+    |> wisp.set_header("x-content-type-options", "nosniff")
+    |> wisp.set_header("referrer-policy", "strict-origin-when-cross-origin")
+    |> wisp.set_header("content-security-policy", policy)
+    |> wisp.set_header("x-frame-options", "DENY")
   }
 }
 
@@ -168,7 +203,16 @@ fn render_head(
       attribute.rel("icon"),
     ]),
     html.script([src("/javascript/main.js"), attribute("defer", "")], ""),
-    html.script([src("https://d3js.org/d3.v7.min.js")], ""),
+    // An exact version with its hash: if the CDN's copy ever changes, the
+    // browser refuses to run it.
+    html.script(
+      [
+        src(d3_url),
+        attribute("integrity", d3_integrity),
+        attribute("crossorigin", "anonymous"),
+      ],
+      "",
+    ),
     html.script(
       [
         attribute.src("https://scripts.simpleanalyticscdn.com/latest.js"),

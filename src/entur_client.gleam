@@ -1,10 +1,8 @@
-import gleam/hackney
-import gleam/http/request
+import gleam/bit_array
 import gleam/int
 import gleam/list
 import gleam/option.{type Option}
 import gleam/result
-import gleam/uri
 import tempo.{ISO8601Seconds}
 import tempo/datetime
 import tempo/duration
@@ -29,13 +27,25 @@ const url = "https://api.entur.io/realtime/v1/rest/et?datasetId=GOA"
 
 const line = "GOA:Line:50"
 
+/// Entur asks clients to identify themselves ("<company>-<application>") and
+/// may rate-limit those that don't.
+const client_name = "surtoget-web"
+
+/// A GET with timeouts, an overall deadline and a body size limit (see
+/// entur_ffi.erl). Only 200 responses count as success.
+@external(erlang, "entur_ffi", "get")
+fn get(url: String, headers: List(#(String, String))) -> Result(BitArray, Nil)
+
 pub fn is_train_delayed() -> Result(Bool, Nil) {
-  use uri <- result.try(uri.parse(url) |> result.map_error(fn(_) { Nil }))
-  use req <- result.try(
-    request.from_uri(uri) |> result.map_error(fn(_) { Nil }),
-  )
-  case hackney.send(req) {
-    Ok(response) -> Ok(has_delay(response.body))
+  case get(url, [#("ET-Client-Name", client_name)]) {
+    Ok(body) ->
+      case bit_array.to_string(body) {
+        Ok(xml) -> Ok(has_delay(xml))
+        Error(_) -> {
+          wisp.log_error("Error, realtime data wasn't valid UTF-8")
+          Error(Nil)
+        }
+      }
     Error(_) -> {
       wisp.log_error("Error, could not request realtime data")
       Error(Nil)
