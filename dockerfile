@@ -19,7 +19,7 @@ RUN ARCH=$(uname -m) && \
 
 # Pre-fetch and resize news article images at build time so the runtime
 # doesn't need Elixir, libvips, or any image-processing dependencies.
-FROM python:3.15.2-slim@sha256:c4158543ecb725b99e57d129dfd43d761d4c43e4577b5e23326aabb223cf7f4e AS image-fetcher
+FROM python:3.15.2-slim@sha256:8c13a3f37a6a5b71498228e902c4b9f51c1f7900d49fabf71f9a650c6120e0d0 AS image-fetcher
 WORKDIR /build
 COPY scripts/requirements.txt scripts/
 RUN pip install --no-cache-dir --require-hashes --only-binary :all: \
