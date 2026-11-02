@@ -35,7 +35,7 @@ jobs:
 
       - name: Determine version
         id: version
-        uses: paulhatch/semantic-version@v6.0.5
+        uses: paulhatch/semantic-version@v6.0.6
         with:
           tag_prefix: "v"
           major_pattern: "(MAJOR)"
