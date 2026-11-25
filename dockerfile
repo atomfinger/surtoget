@@ -42,7 +42,7 @@ COPY --from=tailwind-generation /src/priv/css/tailwind.css /app/priv/css/
 # The tag must be published
 # for linux/amd64; older patch tags aren't, and Docker then silently pulls
 # linux/386. `apk upgrade` picks up Alpine security fixes between base bumps.
-FROM erlang:29.1.2-alpine@sha256:0ac9b63db11be156be4e2834546e44aa0d7446aaffb05fedd4aea8c5a33ad998
+FROM erlang:29.1.3-alpine@sha256:3dafa493351d5cb1dba578c0b49219902a665c56e0b4a86ea6b08779902b1a5d
 RUN apk upgrade --no-cache \
     && addgroup -S app \
     && adduser -S -G app app
